@@ -52,7 +52,7 @@ vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, dist_metho
                     #cat(sprintf(" - Center of atlas '%s' hemi '%s' region #%d '%s' is: %f %f %f.\n", atlas_name, hemi, region_idx, region_name, region_center[1], region_center[2], region_center[3]));
                 }
                 sorted_region_indices = sort(vertex_dist_to_region_centers_xyz, index.return = TRUE)$ix;
-                num_indices = min(length(sorted_region_indices), 3L);
+                num_indices = min(length(sorted_region_indices), 5L);
                 cat(sprintf("  Vertex %s on hemi %s belongs to region '%s'. Closest region centers are:\n", vertex_surface_idx, hemi, vertex_region));
                 for(i in seq.int(num_indices)) {
                     cat(sprintf("  - Region %s in distance '%f'.\n", region_names[sorted_region_indices[i]], vertex_dist_to_region_centers_xyz[sorted_region_indices[i]]));
