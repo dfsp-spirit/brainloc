@@ -12,5 +12,5 @@ test_that("We can construct a brainparc from FreeSurfer data.", {
     testthat::expect_true("lh" %in% names(bp$surfaces$white));
     testthat::expect_true("rh" %in% names(bp$surfaces$white));
 
-    testthat::expect_true("aparc" %in% names(bp$annots$white));
+    testthat::expect_true("aparc" %in% names(bp$annots));
 })

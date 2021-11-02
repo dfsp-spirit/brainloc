@@ -29,13 +29,5 @@ the `fs.surface` instance, as returned by \code{\link[freesurferformats]{read.fs
 \description{
 Load a brain surface mesh for a subject.
 }
-\examples{
-\donttest{
-   fsbrain::download_optional_data();
-   subjects_dir = fsbrain::get_optional_data_filepath("subjects_dir");
-   lh_white = subject.surface(subjects_dir, "subject1", "white", "lh");
-}
-
-}
 \concept{surface mesh functions}
 \keyword{internal}

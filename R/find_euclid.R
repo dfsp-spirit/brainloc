@@ -35,7 +35,7 @@ vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, dist_metho
 
 
     for (vertex_local_idx in seq_along(vertices)) {
-        surfaces = brainregions:::get_surface(brainparc);
+        surfaces = get_surface(brainparc);
         hemi = hemis[vertex_local_idx];
         surface = surfaces[[hemi]];
         vertex_surface_idx = vertices[vertex_local_idx];
@@ -62,7 +62,7 @@ vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, dist_metho
                     #sorted_region_dist_indices = sort(region_vertex_dists_to_query_vertex, index.return = TRUE)$ix;
                     closest_vertex_in_region_to_query_vertex = region_vertex_indices[which.min(region_vertex_dists_to_query_vertex)];
                     regions_closest_vertex_to_query_vertex[region_idx] = closest_vertex_in_region_to_query_vertex;
-                    regions_closest_distance_query_vertex[region_idx] = brainregions:::euclidian.dist(vertex_coords, surface$vertices[closest_vertex_in_region_to_query_vertex, ]);
+                    regions_closest_distance_query_vertex[region_idx] = euclidian.dist(vertex_coords, surface$vertices[closest_vertex_in_region_to_query_vertex, ]);
                 }
                 sorted_region_sort_indices = sort(regions_closest_distance_query_vertex, index.return = TRUE)$ix;
                 sorted_regions = region_names[sorted_region_sort_indices];

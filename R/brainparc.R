@@ -125,13 +125,6 @@ merge.hemi.annots <- function(lh_annot, rh_annot) {
 #'
 #' @return the `fs.surface` instance, as returned by \code{\link[freesurferformats]{read.fs.surface}}. If parameter `hemi` is set to `both`, a named list with entries `lh` and `rh` is returned, and the values of are the respective surfaces. The mesh data structure used in `fs.surface` is a *face index set*.
 #'
-#' @examples
-#' \donttest{
-#'    fsbrain::download_optional_data();
-#'    subjects_dir = fsbrain::get_optional_data_filepath("subjects_dir");
-#'    lh_white = subject.surface(subjects_dir, "subject1", "white", "lh");
-#' }
-#'
 #' @family surface mesh functions
 #'
 #' @keywords internal
@@ -168,9 +161,9 @@ subject.surface <- function(subjects_dir, subject_id, surface = "white", hemi = 
 #'
 #' @param hemi character string, one of 'lh' or 'rh'. The name to use for the data in the returned list.
 #'
-#' @param hemilist optional \code{\link{hemilist}}, an existing hemilist to add the entry to. If left at the default value `NULL`, a new list will be created.
+#' @param hemilist optional hemilist, an existing hemilist to add the entry to. If left at the default value `NULL`, a new list will be created.
 #'
-#' @return a \code{\link{hemilist}}: a named list, with the 'data' in the name given by parameter 'hemi'
+#' @return a hemilist: a named list, with the 'data' in the name given by parameter 'hemi'
 #'
 #' @family hemilist functions
 #'
