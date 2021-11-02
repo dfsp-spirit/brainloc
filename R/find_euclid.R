@@ -2,6 +2,14 @@
 
 #' @title Find closest regions using Euclidean distance.
 #'
+#' @param brainparc a brain parcellation, see functions like \code{\link{brainparc_fs}} to get one.
+#'
+#' @param vertices integer vector, the query vertex indices (from the surface in the \code{brainparc}).
+#'
+#' @param hemis character string vector, the hemispheres for each of the \code{vertices}. Allowed entries are \code{"lh"} and \code{"rh"}, for the left and right brain hemisphere, respectively.
+#'
+#' @param dist_method character string, one of \code{"average"} or \code{"closest"}. Defined how the distance from a vertex to a region of vertices is computed.  \code{"average"}: Euclidean distance from query vertex to the mean of the vertex coordinates of the atlas region. \code{"closest"}: Euclidean distance from query vertex to the closest vertex of the atlas region.
+#'
 #' @examples
 #' \dontrun{
 #' bp = brainparc_fs(fsbrain::fsaverage.path(), "fsaverage", atlas="aparc");
@@ -11,6 +19,12 @@
 vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, dist_method = "average") {
     if(! (dist_method %in% c('closest', 'average'))) {
         stop("Parameter 'dist_method' must be one of c('closest', 'average').");
+    }
+    if(! ("brainparc" %in% class(brainparc))) {
+        stop("Parameter 'brainparc' must contain a brainparc instance.");
+    }
+    if(length(vertices) != length(hemis)) {
+        stop("Parameters 'vertices' and 'hemis' must have the same length: we need to know the hemi for each query vertex.");
     }
 
     nv = length(vertices); # nv = number of vertices.
@@ -45,15 +59,15 @@ vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, dist_metho
                     region_idx = region_idx + 1L;
                     region_vertex_indices = which(annot_min == region_name);
                     region_vertex_dists_to_query_vertex = vdists[region_vertex_indices];
-                    sorted_region_dist_indices = sort(region_vertex_dists_to_query_vertex, index.return = TRUE)$ix;
-                    closest_vertex_in_region_to_query_vertex = region_vertex_indices[which.min(sorted_region_dist_indices)];
+                    #sorted_region_dist_indices = sort(region_vertex_dists_to_query_vertex, index.return = TRUE)$ix;
+                    closest_vertex_in_region_to_query_vertex = region_vertex_indices[which.min(region_vertex_dists_to_query_vertex)];
                     regions_closest_vertex_to_query_vertex[region_idx] = closest_vertex_in_region_to_query_vertex;
                     regions_closest_distance_query_vertex[region_idx] = brainregions:::euclidian.dist(vertex_coords, surface$vertices[closest_vertex_in_region_to_query_vertex, ]);
                 }
                 sorted_region_sort_indices = sort(regions_closest_distance_query_vertex, index.return = TRUE)$ix;
                 sorted_regions = region_names[sorted_region_sort_indices];
                 num_indices = min(length(sorted_regions), 5L);
-                cat(sprintf("  Vertex %s on hemi %s belongs to region '%s'. Closest region vertices are:\n", vertex_surface_idx, hemi, vertex_region));
+                cat(sprintf("  Vertex %s on hemi %s belongs to atlas %s region '%s'. Closest region vertices are:\n", vertex_surface_idx, hemi, atlas_name, vertex_region));
                 for(i in seq.int(num_indices)) {
                     cat(sprintf("  - Region %s with vertex %d in distance '%f'.\n", region_names[sorted_region_sort_indices][i], regions_closest_vertex_to_query_vertex[sorted_region_sort_indices][i], regions_closest_distance_query_vertex[sorted_region_sort_indices][i]));
                 }

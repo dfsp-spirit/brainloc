@@ -11,6 +11,21 @@ vertex_closest_regions_euclid(
   dist_method = "average"
 )
 }
+\arguments{
+\item{brainparc}{a brain parcellation, see functions like \code{\link{brainparc_fs}} to get one.}
+
+\item{vertices}{integer vector, the query vertex indices (from the surface in the \code{brainparc}).}
+
+\item{hemis}{character string vector, the hemispheres for each of the \code{vertices}. Allowed entries are \code{"lh"} and \code{"rh"}, for the left and right brain hemisphere, respectively.}
+
+\item{dist_method}{character string, one of \code{"average"} or \code{"closest"}. Defined how the distance from a vertex to a region of vertices is computed.  \code{"average"}: Euclidean distance from query vertex to the mean of the vertex coordinates of the atlas region. \code{"closest"}: Euclidean distance from query vertex to the closest vertex of the atlas region.}
+}
 \description{
 Find closest regions using Euclidean distance.
+}
+\examples{
+\dontrun{
+bp = brainparc_fs(fsbrain::fsaverage.path(), "fsaverage", atlas="aparc");
+vertex_closest_regions_euclid(bp, vertices=c(10, 20), hemis=c("lh", "rh"));
+}
 }
