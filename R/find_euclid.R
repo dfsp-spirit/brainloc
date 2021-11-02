@@ -26,12 +26,37 @@ vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, dist_metho
         surface = surfaces[[hemi]];
         vertex_surface_idx = vertices[vertex_local_idx];
         vertex_coords = surface$vertices[vertex_surface_idx, ]; # 1x3, xyz
-        #vdists = freesurferformats::vertexdists.to.point(surface, vertex_coords);
 
-        cat(sprintf("Handling vertex %d on hemi %s.\n", vertex_surface_idx, hemi));
+        cat(sprintf("Handling vertex %d on hemi %s using distance method '%s'.\n", vertex_surface_idx, hemi, dist_method));
 
         if(dist_method == "closest") {
-            stop("Sorry, dist_method 'closest' not implemented yet, try 'average' for now.");
+            vdists = freesurferformats::vertexdists.to.point(surface, vertex_coords);
+            for(atlas_name in names(brainparc$annots)) {
+                cat(sprintf(" -Handling atlas %s.\n", atlas_name));
+                annot_min = brainparc$annots[[atlas_name]][[hemi]];
+                region_names = unique(annot_min);
+                vertex_region = annot_min[vertex_surface_idx];
+                nr = length(region_names); # num regions
+
+                region_idx = 0L;
+                regions_closest_vertex_to_query_vertex = rep(NA, nr);
+                regions_closest_distance_query_vertex = rep(NA, nr);
+                for(region_name in region_names) {
+                    region_idx = region_idx + 1L;
+                    region_vertex_indices = which(annot_min == region_name);
+                    region_vertex_dists_to_query_vertex = vdists[region_vertex_indices];
+                    sorted_region_dist_indices = sort(region_vertex_dists_to_query_vertex, index.return = TRUE)$ix;
+                    closest_vertex_in_region_to_query_vertex = sorted_region_dist_indices[1L];
+                    regions_closest_vertex_to_query_vertex[region_idx] = closest_vertex_in_region_to_query_vertex;
+                    regions_closest_distance_query_vertex[region_idx] = euclidian.dist(vertex_coords, surface$vertices[closest_vertex_in_region_to_query_vertex, ]);
+                }
+                sorted_region_indices = sort(regions_closest_distance_query_vertex, index.return = TRUE)$ix;
+                num_indices = min(length(sorted_region_indices), 5L);
+                cat(sprintf("  Vertex %s on hemi %s belongs to region '%s'. Closest region vertices are:\n", vertex_surface_idx, hemi, vertex_region));
+                for(i in seq.int(num_indices)) {
+                    cat(sprintf("  - Region %s with vertex %d in distance '%f'.\n", region_names[sorted_region_indices[i]], regions_closest_vertex_to_query_vertex[sorted_region_indices[i]], regions_closest_distance_query_vertex[sorted_region_indices[i]]));
+                }
+            }
         } else { # 'average'
             for(atlas_name in names(brainparc$annots)) {
                 cat(sprintf(" -Handling atlas %s.\n", atlas_name));
