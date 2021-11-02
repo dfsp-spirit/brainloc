@@ -26,24 +26,50 @@ vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, dist_metho
         surface = surfaces[[hemi]];
         vertex_surface_idx = vertices[vertex_local_idx];
         vertex_coords = surface$vertices[vertex_surface_idx, ]; # 1x3, xyz
-        vdists = freesurferformats::vertexdists.to.point(surface, vertex_coords);
+        #vdists = freesurferformats::vertexdists.to.point(surface, vertex_coords);
 
+        cat(sprintf("Handling vertex %d on hemi %s.\n", vertex_surface_idx, hemi));
 
         if(dist_method == "closest") {
             stop("Sorry, dist_method 'closest' not implemented yet, try 'average' for now.");
         } else { # 'average'
             for(atlas_name in names(brainparc$annots)) {
-                region_names = unique(brainparc$annots[[atlas_name]][[hemi]]);
+                cat(sprintf(" -Handling atlas %s.\n", atlas_name));
+                annot_min = brainparc$annots[[atlas_name]][[hemi]];
+                region_names = unique(annot_min);
+                vertex_region = annot_min[vertex_surface_idx];
+                nr = length(region_names); # num regions
+                region_centers_xyz = matrix(rep(NA, nr*3L), nrow = nr);
+                vertex_dist_to_region_centers_xyz = rep(NA, nr);
+                region_idx = 0L;
                 for(region_name in region_names) {
-                    region_vertex_indices = which(brainparc$annots[[atlas_name]][[hemi]] == region_name);
+                    region_idx = region_idx + 1L;
+                    region_vertex_indices = which(annot_min == region_name);
                     region_vertex_coords = surface$vertices[region_vertex_indices, ];
                     region_center = colMeans(region_vertex_coords);
-                    cat(sprintf("Center of atlas '%s' hemi '%s' region '%s' is: %f %f %f.\n", atlas_name, hemi, region_name, region_center[1], region_center[2], region_center[3]));
+                    region_centers_xyz[region_idx, ] = region_center;
+                    vertex_dist_to_region_centers_xyz[region_idx] = euclidian.dist(vertex_coords, region_center);
+                    #cat(sprintf(" - Center of atlas '%s' hemi '%s' region #%d '%s' is: %f %f %f.\n", atlas_name, hemi, region_idx, region_name, region_center[1], region_center[2], region_center[3]));
+                }
+                sorted_region_indices = sort(vertex_dist_to_region_centers_xyz, index.return = TRUE)$ix;
+                num_indices = min(length(sorted_region_indices), 3L);
+                cat(sprintf("  Vertex %s on hemi %s belongs to region '%s'. Closest region centers are:\n", vertex_surface_idx, hemi, vertex_region));
+                for(i in seq.int(num_indices)) {
+                    cat(sprintf("  - Region %s in distance '%f'.\n", region_names[sorted_region_indices[i]], vertex_dist_to_region_centers_xyz[sorted_region_indices[i]]));
                 }
             }
-
         }
-
     }
-
 }
+
+
+#' @title Compute Euclidean distance.
+#'
+#' @param x1 numerical vector, coords of first point
+#'
+#' @param x2 numerical vector, coords of second point
+#'
+#' @return the Euclidean distance between x1 and x2.
+#'
+#' @keywords internal
+euclidian.dist <- function(x1, x2) sqrt(sum((x1 - x2) ^ 2))
