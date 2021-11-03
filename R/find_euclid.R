@@ -72,7 +72,7 @@ vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, dist_metho
                     cat(sprintf("  - Region #%d %s with vertex %d in distance '%f'.\n", i, region_names[sorted_region_sort_indices][i], regions_closest_vertex_to_query_vertex[sorted_region_sort_indices][i], regions_closest_distance_query_vertex[sorted_region_sort_indices][i]));
                 }
             }
-        } else { # 'average'
+        } else if (dist_method == "average") {
             for(atlas_name in names(brainparc$annots)) {
                 cat(sprintf(" -Handling atlas %s.\n", atlas_name));
                 annot_min = brainparc$annots[[atlas_name]][[hemi]];
@@ -95,9 +95,11 @@ vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, dist_metho
                 num_indices = min(length(sorted_region_indices), 5L);
                 cat(sprintf("  Vertex %s on hemi %s belongs to region '%s'. Closest region centers are:\n", vertex_surface_idx, hemi, vertex_region));
                 for(i in seq.int(num_indices)) {
-                    cat(sprintf("  - Region #%d %s in distance '%f'.\n", i, region_names[sorted_region_indices[i]], vertex_dist_to_region_centers_xyz[sorted_region_indices[i]]));
+                    cat(sprintf("  - Region #%d %s with center at (%f, %f, %f) in distance '%f'.\n", i, region_names[sorted_region_indices[i]], region_centers_xyz[sorted_region_indices[i], 1], region_centers_xyz[sorted_region_indices[i],2], region_centers_xyz[sorted_region_indices[i],3], vertex_dist_to_region_centers_xyz[sorted_region_indices[i]]));
                 }
             }
+        } else {
+            stop("Invalid value for 'dist_method' parameter.");
         }
     }
 }
