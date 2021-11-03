@@ -67,7 +67,7 @@ vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, dist_metho
                 sorted_region_sort_indices = sort(regions_closest_distance_query_vertex, index.return = TRUE)$ix;
                 sorted_regions = region_names[sorted_region_sort_indices];
                 num_indices = min(length(sorted_regions), 5L);
-                cat(sprintf("  Vertex %s on hemi %s belongs to atlas %s region '%s'. Closest region vertices are:\n", vertex_surface_idx, hemi, atlas_name, vertex_region));
+                cat(sprintf("  Vertex %s on hemi %s at (%f %f %f) belongs to atlas %s region '%s'. Closest region vertices are:\n", vertex_surface_idx, hemi, vertex_coords[1], vertex_coords[2], vertex_coords[3], atlas_name, vertex_region));
                 for(i in seq.int(num_indices)) {
                     cat(sprintf("  - Region #%d %s with vertex %d in distance '%f'.\n", i, region_names[sorted_region_sort_indices][i], regions_closest_vertex_to_query_vertex[sorted_region_sort_indices][i], regions_closest_distance_query_vertex[sorted_region_sort_indices][i]));
                 }
@@ -93,7 +93,7 @@ vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, dist_metho
                 }
                 sorted_region_indices = sort(vertex_dist_to_region_centers_xyz, index.return = TRUE)$ix;
                 num_indices = min(length(sorted_region_indices), 5L);
-                cat(sprintf("  Vertex %s on hemi %s belongs to region '%s'. Closest region centers are:\n", vertex_surface_idx, hemi, vertex_region));
+                cat(sprintf("  Vertex %s on hemi %s at (%f %f %f) belongs to region '%s'. Closest region centers are:\n", vertex_surface_idx, hemi, vertex_coords[1], vertex_coords[2], vertex_coords[3], vertex_region));
                 for(i in seq.int(num_indices)) {
                     cat(sprintf("  - Region #%d %s with center at (%f, %f, %f) in distance '%f'.\n", i, region_names[sorted_region_indices[i]], region_centers_xyz[sorted_region_indices[i], 1], region_centers_xyz[sorted_region_indices[i],2], region_centers_xyz[sorted_region_indices[i],3], vertex_dist_to_region_centers_xyz[sorted_region_indices[i]]));
                 }
