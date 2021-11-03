@@ -6,8 +6,10 @@
 #'
 #' @inheritParams subject.annot
 #'
+#' @param atlas vector of character strings, the brain atlases to use. For this FreeSurfer version, something like "aparc" for the Desikan-Killiani atlas, "aparc.a2009s" for Destrieux, etc.
+#'
 #' @export
-brainparc_fs <- function(subjects_dir, subject_id, surface="white", atlas=c("aparc", "aparc.a2009s")) {
+brainparc_fs <- function(subjects_dir, subject_id, surface="white", atlas=c("aparc")) {
     surfaces = subject.surface(subjects_dir, subject_id, hemi="both", surface = surface);
     ret = list("surfaces"=list(), "annots"=list());
     ret$surfaces[[surface]] = surfaces;

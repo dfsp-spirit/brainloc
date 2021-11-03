@@ -4,12 +4,7 @@
 \alias{brainparc_fs}
 \title{Create a brain parcellation from a FreeSurfer annotation.}
 \usage{
-brainparc_fs(
-  subjects_dir,
-  subject_id,
-  surface = "white",
-  atlas = c("aparc", "aparc.a2009s")
-)
+brainparc_fs(subjects_dir, subject_id, surface = "white", atlas = c("aparc"))
 }
 \arguments{
 \item{subjects_dir}{string. The FreeSurfer SUBJECTS_DIR, i.e., a directory containing the data for all your subjects, each in a subdir named after the subject identifier.}
@@ -18,7 +13,7 @@ brainparc_fs(
 
 \item{surface}{string. The surface name. E.g., "white", or "pial". Used to construct the name of the surface file to be loaded.}
 
-\item{atlas}{string. The atlas name. E.g., "aparc", "aparc.2009s", or "aparc.DKTatlas". Used to construct the name of the annotation file to be loaded.}
+\item{atlas}{vector of character strings, the brain atlases to use. For this FreeSurfer version, something like "aparc" for the Desikan-Killiani atlas, "aparc.a2009s" for Destrieux, etc.}
 }
 \description{
 Create a brain parcellation from a FreeSurfer annotation.
