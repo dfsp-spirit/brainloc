@@ -17,15 +17,15 @@ coord_fssurface_to_talairach(subjects_dir, subject_id, surface_coords)
 nx3 numerical matrix of Talairach space coordinates.
 }
 \description{
-This uses the affine transform in \code{subject/mri/transforms/talairach.xfm}, be sure to know about the limitations of this approach. See the FreeSurfer documentation on talairach for details.
+This uses the affine transform in \code{<subject>/mri/transforms/talairach.xfm}, be sure to know about the limitations of this approach. See the FreeSurfer documentation on talairach for details.
 }
 \examples{
 \dontrun{
-# will lead to identity transform, so no change in coords.
+# Will lead to identity transform for fsaverage, so no change in coords.
 sjd = fsbrain::fsaverage.path();
 sj = "fsaverage";
-lh_white = fsbrain::subject.surface(sjd, sj, hemi="lh");
-coord_fssurface_to_talairach(sjd, sj, lh_white$vertices[1:4,]);
+surf = fsbrain::subject.surface(sjd, sj, hemi="lh", surface="orig");
+tal = coord_fssurface_to_talairach(sjd, sj, surf$vertices);
 }
 
 }

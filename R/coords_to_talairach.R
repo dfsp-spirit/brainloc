@@ -30,3 +30,13 @@ coord_fssurface_to_talairach <- function(subjects_dir, subject_id, surface_coord
     tal_coords = freesurferformats::ras.to.talairachras(surface_coords, talairach_file);
     return(tal_coords);
 }
+
+
+#' @title Transform MNI305 coords (FreeSurfer fsaverage surface) to MNI152 coordinates.
+#'
+#' @param vertex_coords nx3 matrix of coordinates, e.g., typically from fsaverage surface vertices.
+#'
+#' @return nx3 numerical matrix if MNI152 coords.
+coords_fsaverage_to_MNI152 <- function(vertex_coords) {
+  return(freesurferformats::doapply.transform.mtx(vertex_coords, freesurferformats::mni152reg()));
+}
