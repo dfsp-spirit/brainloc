@@ -15,7 +15,7 @@ Supported coordinate systems include:
 * MNI152 space coordinates using the linear transformation method with the FreeSurfer matrix ([section 8 here](https://surfer.nmr.mgh.harvard.edu/fswiki/CoordinateSystems)). Have a look at [regfusionr](https://github.com/dfsp-spirit/regfusionr) if you need a more accurate mapping.
 * Talairach coordinates using [Matthew Brett's transform](http://brainmap.org/training/BrettTransform.html) from MNI152.
 
-If you want to double-check the results of the coordinate transformations, I recommend to use Freeview (comes with FreeSurfer) in combination with [The MNI to Talairach Tool](https://bioimagesuiteweb.github.io/bisweb-manual/tools/mni2tal.html) from Bioimagesuite, which uses the mapping described in Lacadie *et al.*, Neuroimage. 2008 Aug 15; 42(2): 717–725.
+If you want to double-check the results of the coordinate transformations, I recommend to use Freeview (comes with FreeSurfer) in combination with the [MNI to Talairach Tool](https://bioimagesuiteweb.github.io/bisweb-manual/tools/mni2tal.html) from Bioimagesuite, which uses the mapping described in Lacadie *et al.*, Neuroimage. 2008 Aug 15; 42(2): 717–725.
 
 ### Closest brain atlas regions
 
