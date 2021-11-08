@@ -22,7 +22,7 @@ If you want to double-check the results of the coordinate transformations, I rec
 Here is an example for fsaverage vertex 145029:
 
 ![Fig1a](./web/fsaverage_vertex_lh_145029.png?raw=true "Vertex 145029 on the left fsaverage surface.")
-**Fig. 1a** *Vertex 145029 on the left fsaverage surface.*
+**Fig. 1a** *Vertex 145029 on the left fsaverage surface (at pink marker).*
 
 ![Fig1b](./web/fsaverage_vertex_lh_145029_MNI152_-39_-30_65.png?raw=true "Vertex 145029 on the left fsaverage surface.")
 **Fig. 1b** *Location of MNI coordinate 39 -30  65, the result of mapping fsaverage vertex 145029 to MNI152 space.*
