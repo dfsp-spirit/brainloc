@@ -7,5 +7,4 @@ test_that("We can transform from MNI305 to Talairach using the FreeSurfer method
     }
 
     bp = brainparc_fs(sjd, "fsaverage");
-    coord_MNI305_info()
 })

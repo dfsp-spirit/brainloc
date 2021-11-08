@@ -51,9 +51,23 @@ coord_fssurface_to_talairach <- function(subjects_dir, subject_id, surface_coord
 #'
 #' @return nx3 numerical matrix if MNI152 coords.
 #'
+#' @note One can check that the results are okay by clicking a vertex in FreeView, using the displayed MNI305 coordinates as input to this function, and looking up the reported MNI152 coordinates at \code{https://bioimagesuiteweb.github.io/webapp/mni2tal.html}.
+#'
 #' @export
 coord_fsaverage_to_MNI152 <- function(vertex_coords) {
-  return(freesurferformats::doapply.transform.mtx(vertex_coords, freesurferformats::mni152reg()));
+  return(freesurferformats::doapply.transform.mtx(vertex_coords, mni152reg_mtx()));
+}
+
+
+#' @title Get fsaverage (MNI305) to MNI152 transformation matrix.
+#'
+#' @description This returns the 4x4 matrix from the FreeSurfer Coordinate Systems documentation.
+#'
+#' @note This is the opposite of using the \cite{Wu et al.} approach. It is mainly implemented in this package to allow you to easily check the difference between the methods.
+#'
+#' @keywords internal
+mni152reg_mtx <- function() {
+  return(matrix(c(0.9975, -0.0073, 0.0176, -0.0429, 0.0146, 1.0009, -0.0024, 1.5496, -0.0130, -0.0093, 0.9971, 1.1840, 0, 0, 0, 1), ncol = 4, byrow = TRUE));
 }
 
 
