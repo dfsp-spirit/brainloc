@@ -7,11 +7,17 @@ This is currently intended to be used with FreeSurfer standard space templates (
 
 This is an R package that takes as input a vertex index of a FreeSurfer brain mesh in MNI305 space (typically fsaverage) and identifies the location in different coordinate systems and with respect to different brain regions. We use this to report the exact locations of clusters or other differences we find.
 
+### Coordinate transformation
+
 Supported coordinate systems include:
 
 * MNI305 space RAS coordinates (simply the coordinate of the input vertex index).
 * MNI152 space coordinates using the linear transformation method with the FreeSurfer matrix ([section 8 here](https://surfer.nmr.mgh.harvard.edu/fswiki/CoordinateSystems)). Have a look at [regfusionr](https://github.com/dfsp-spirit/regfusionr) if you need a more accurate mapping.
 * Talairach coordinates using [Matthew Brett's transform](http://brainmap.org/training/BrettTransform.html) from MNI152.
+
+If you want to double-check the results of the coordinate transformations, I recommend to use Freeview (comes with FreeSurfer) in combination with [The MNI to Talairach Tool](https://bioimagesuiteweb.github.io/bisweb-manual/tools/mni2tal.html) from Bioimagesuite, which uses the conversion method described in Lacadie *et al.*, Neuroimage. 2008 Aug 15; 42(2): 717–725.
+
+### Closest brain atlas regions
 
 The package also computes the closest brain regions and the distance to them, based on an atlas. You can use any atlas you like, the three default ones that [come with FreeSurfer](https://surfer.nmr.mgh.harvard.edu/fswiki/CorticalParcellation) are:
 
