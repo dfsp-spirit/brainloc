@@ -15,4 +15,3 @@ nx3 numerical matrix if MNI152 coords.
 \description{
 Transform MNI305 coords (FreeSurfer fsaverage surface) to MNI152 coordinates.
 }
-\keyword{internal}

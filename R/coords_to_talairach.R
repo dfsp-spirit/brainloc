@@ -1,5 +1,18 @@
 
 
+#' @title Get info on MNI305 surface coord in various coordinate systems.
+#'
+#' @param coords_mni305 nx3 matrix of coordinates, typically from fsaverage surface vertices.
+#'
+#' @return named list with coordinate information
+#'
+#' @export
+coord_MNI305_info <- function(coords_mni305) {
+  coords_mni152 = coord_fsaverage_to_MNI152(coords_mni305);
+  return(list("mni305" = coords_mni305, "mni152" = coords_mni152, "talairach" = coord_MNI152_to_talairach(coords_mni152)));
+}
+
+
 #' @title Transform FreeSurfer surface space coordinates into Talairach space.
 #'
 #' @description This uses the affine transform in \code{<subject>/mri/transforms/talairach.xfm}, be sure to know about the limitations of this approach. See the FreeSurfer documentation on talairach for details.
@@ -38,7 +51,7 @@ coord_fssurface_to_talairach <- function(subjects_dir, subject_id, surface_coord
 #'
 #' @return nx3 numerical matrix if MNI152 coords.
 #'
-#' @keywords internal
+#' @export
 coord_fsaverage_to_MNI152 <- function(vertex_coords) {
   return(freesurferformats::doapply.transform.mtx(vertex_coords, freesurferformats::mni152reg()));
 }
@@ -61,8 +74,14 @@ coord_fsaverage_to_MNI152 <- function(vertex_coords) {
 #' @export
 coord_MNI152_to_talairach <- function(mni152_coords) {
 
+  was_vector = FALSE;
   if(! is.matrix(mni152_coords)) {
-    stop("Parameter 'mni152_coords' must be a matrix.");
+    was_vector = TRUE;
+    if(is.vector(mni152_coords) & length(mni152_coords) == 3L) {
+      mni152_coords = matrix(mni152_coords, ncol = 3, byrow = TRUE);
+    } else {
+      stop("Parameter 'mni152_coords' must be a matrix.");
+    }
   }
 
   mtx_MNI152toTal_rotn  = matrix(c(1, 0, 0, 0,
@@ -87,6 +106,9 @@ coord_MNI152_to_talairach <- function(mni152_coords) {
     } else {
       tal_coords[row_idx, ] = freesurferformats::doapply.transform.mtx(mni152_coords[row_idx, ], (mtx_MNI152toTal_rotn %*% mtx_MNI152toTal_upZ));
     }
+  }
+  if(was_vector) {
+    tal_coords = as.double(tal_coords);
   }
   return(tal_coords);
 }
