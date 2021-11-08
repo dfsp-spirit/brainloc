@@ -12,6 +12,7 @@ Supported coordinate systems include:
 * MNI305 space RAS coordinates
 * FreeSurfer 'MNI talairach' coordinates
 * MNI152 space coordinates (using the linear transformation method, see [github.com/dfsp-spirit/regfusionr](https://github.com/dfsp-spirit/regfusionr) if you need a more accurate mapping).
+* WIP: Talairach coordinates using Matthew Brett's transform from MNI152
 
 The package also computes the closest brain regions and the distance to them, based on an atlas. You can use any atlas you like, the three default ones that come with FreeSurfer are:
 
