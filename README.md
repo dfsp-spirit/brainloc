@@ -13,7 +13,7 @@ Supported coordinate systems include:
 * MNI152 space coordinates using the linear transformation method with the FreeSurfer matrix ([section 8 here](https://surfer.nmr.mgh.harvard.edu/fswiki/CoordinateSystems)). Have a look at [regfusionr](https://github.com/dfsp-spirit/regfusionr) if you need a more accurate mapping.
 * Talairach coordinates using [Matthew Brett's transform](http://brainmap.org/training/BrettTransform.html) from MNI152.
 
-The package also computes the closest brain regions and the distance to them, based on an atlas. You can use any atlas you like, the three default ones that come with FreeSurfer are:
+The package also computes the closest brain regions and the distance to them, based on an atlas. You can use any atlas you like, the three default ones that [come with FreeSurfer](https://surfer.nmr.mgh.harvard.edu/fswiki/CorticalParcellation) are:
 
 * The Desikan-Killiany atlas (Desikan *et al.*, 2006. Neuroimage, 31(3):968-80).
 * The Destrieux atlas (Destrieux *et al.*, 2010. Neuroimage, 53(1):1-15).
