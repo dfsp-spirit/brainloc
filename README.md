@@ -9,10 +9,9 @@ This is an R package that takes as input a vertex index of a FreeSurfer brain me
 
 Supported coordinate systems include:
 
-* MNI305 space RAS coordinates
-* FreeSurfer 'MNI talairach' coordinates
+* MNI305 space RAS coordinates (simply the coordinate of the input vertex index)
 * MNI152 space coordinates (using the linear transformation method, see [github.com/dfsp-spirit/regfusionr](https://github.com/dfsp-spirit/regfusionr) if you need a more accurate mapping).
-* WIP: Talairach coordinates using Matthew Brett's transform from MNI152
+* Talairach coordinates using [Matthew Brett's transform](http://brainmap.org/training/BrettTransform.html) from MNI152
 
 The package also computes the closest brain regions and the distance to them, based on an atlas. You can use any atlas you like, the three default ones that come with FreeSurfer are:
 
