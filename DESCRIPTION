@@ -1,4 +1,4 @@
-Package: brainregions
+Package: brainloc
 Type: Package
 Title: Find region names for a point on the human brain
 Version: 0.0.1

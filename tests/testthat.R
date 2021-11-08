@@ -1,4 +1,4 @@
 library(testthat)
-library(brainregions)
+library(brainloc)
 
-test_check("brainregions")
+test_check("brainloc")
