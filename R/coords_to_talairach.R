@@ -54,8 +54,17 @@ coord_fsaverage_to_MNI152 <- function(vertex_coords) {
 #'
 #' @note This is published under the GPL license. See \code{https://github.com/sccn/dipfit/blob/master/mni2tal_matrix.m} and \code{https://github.com/sccn/dipfit/blob/master/mni2tal.m} for a Matlab implementation of the method. All credits go to Matthew Brett.
 #'
-#' @keywords internal
+#' @examples
+#'     mni_coords = matrix(c(10, 12, 14), nrow = 1, ncol = 3, byrow = TRUE);
+#'     coord_MNI152_to_talairach(mni_coords);
+#'
+#' @export
 coord_MNI152_to_talairach <- function(mni152_coords) {
+
+  if(! is.matrix(mni152_coords)) {
+    stop("Parameter 'mni152_coords' must be a matrix.");
+  }
+
   mtx_MNI152toTal_rotn  = matrix(c(1, 0, 0, 0,
                                  0, 0.9988, 0.0500, 0,
                                  0, -0.0500, 0.9988, 0,
@@ -70,5 +79,15 @@ coord_MNI152_to_talairach <- function(mni152_coords) {
                 0,    0.9700,         0,         0,
                 0,         0,    0.8400,         0,
                 0,         0,         0,    1.0000), nrow = 4, ncol = 4, byrow = TRUE);
+
+  tal_coords = matrix(rep(NA, length(mni152_coords)), ncol = 3);
+  for(row_idx in seq.int(nrow(mni152_coords))) {
+    if(mni152_coords[row_idx, 3] < 0) { # whether below AZ
+      tal_coords[row_idx, ] = freesurferformats::doapply.transform.mtx(mni152_coords[row_idx, ], (mtx_MNI152toTal_rotn %*% mtx_MNI152toTal_downZ));
+    } else {
+      tal_coords[row_idx, ] = freesurferformats::doapply.transform.mtx(mni152_coords[row_idx, ], (mtx_MNI152toTal_rotn %*% mtx_MNI152toTal_upZ));
+    }
+  }
+  return(tal_coords);
 }
 
