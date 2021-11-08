@@ -23,4 +23,14 @@ The package also computes the closest brain regions and the distance to them, ba
 To use a different or custom atlas, just drop the respective annot files for the two hemispheres into the `/label/` directory of your template subject. See [the FreeSurfer documentation on Cortical Parcellations](https://surfer.nmr.mgh.harvard.edu/fswiki/CorticalParcellation) for details on FreeSurfer brain atlases.
 
 
+## Atlas distances
+
+The following methods are available to compute the distance of a point on a brain surface to a brain atlas region:
+
+* Euclidean distance: point to mean value of region coordinates
+* Euclidean distance: point to closest vertex of region
+
+The following methods are work in progress:
+
+* Geodesic distance to closest vertex of region
 
