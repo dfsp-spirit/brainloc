@@ -15,6 +15,12 @@ Supported coordinate systems include:
 * MNI152 space coordinates using the linear transformation method with the FreeSurfer matrix ([section 8 here](https://surfer.nmr.mgh.harvard.edu/fswiki/CoordinateSystems)). Have a look at [regfusionr](https://github.com/dfsp-spirit/regfusionr) if you need a more accurate mapping.
 * Talairach coordinates using [Matthew Brett's transform](http://brainmap.org/training/BrettTransform.html) from MNI152.
 
+![Fig1a](./web/fsaverage_vertex_lh_145029.png?raw=true "Vertex 145029 on the left fsaverage surface.")
+**Fig. 1a** *Vertex 145029 on the left fsaverage surface.*
+
+![Fig1b](./web/fsaverage_vertex_lh_145029_MNI152_-39_-30_65.png?raw=true "Vertex 145029 on the left fsaverage surface.")
+**Fig. 1b** *Location of MNI coordinate 39 -30  65, the result of mapping fsaverage vertex 145029 to MNI152 space.*
+
 If you want to double-check the results of the coordinate transformations, I recommend to use Freeview (comes with FreeSurfer) in combination with the [MNI to Talairach Tool](https://bioimagesuiteweb.github.io/bisweb-manual/tools/mni2tal.html) from Bioimagesuite, which uses the mapping described in Lacadie *et al.*, Neuroimage. 2008 Aug 15; 42(2): 717–725.
 
 ### Closest brain atlas regions
