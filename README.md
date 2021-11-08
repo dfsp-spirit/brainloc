@@ -9,7 +9,7 @@ This is an R package that takes as input a vertex index of a FreeSurfer brain me
 * FreeSurfer 'MNI talairach' coordinates
 * MNI152 space coordinates.
 
-The package also computes the closest brain regions, based on an fsaverage atlas. You can use any atlas you like, the 3 default ones that come with FreeSurfer for fsaverage are:
+The package also computes the closest brain regions, based on an fsaverage atlas. You can use any atlas you like, the three default ones that come with FreeSurfer for fsaverage are:
 
 * The Desikan-Killiany atlas (Desikan *et al.*, 2006. Neuroimage, 31(3):968-80)
 * The Destrieux atlas (Destrieux *et al.*, 2010. Neuroimage, 53(1):1–15)
