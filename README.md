@@ -9,14 +9,14 @@ This is an R package that takes as input a vertex index of a FreeSurfer brain me
 
 Supported coordinate systems include:
 
-* MNI305 space RAS coordinates (simply the coordinate of the input vertex index)
+* MNI305 space RAS coordinates (simply the coordinate of the input vertex index).
 * MNI152 space coordinates using the linear transformation method with the FreeSurfer matrix ([section 8 here](https://surfer.nmr.mgh.harvard.edu/fswiki/CoordinateSystems)). Have a look at [regfusionr](https://github.com/dfsp-spirit/regfusionr) if you need a more accurate mapping.
-* Talairach coordinates using [Matthew Brett's transform](http://brainmap.org/training/BrettTransform.html) from MNI152
+* Talairach coordinates using [Matthew Brett's transform](http://brainmap.org/training/BrettTransform.html) from MNI152.
 
 The package also computes the closest brain regions and the distance to them, based on an atlas. You can use any atlas you like, the three default ones that come with FreeSurfer are:
 
-* The Desikan-Killiany atlas (Desikan *et al.*, 2006. Neuroimage, 31(3):968-80)
-* The Destrieux atlas (Destrieux *et al.*, 2010. Neuroimage, 53(1):1-15)
+* The Desikan-Killiany atlas (Desikan *et al.*, 2006. Neuroimage, 31(3):968-80).
+* The Destrieux atlas (Destrieux *et al.*, 2010. Neuroimage, 53(1):1-15).
 * The DKT40 altas from the [Mindboggle data set](https://mindboggle.info/data.html).
 
 To use a different or custom atlas, just drop the respective annot files for the two hemispheres into the `/label/` directory of your template subject. See [the FreeSurfer documentation on Cortical Parcellations](https://surfer.nmr.mgh.harvard.edu/fswiki/CorticalParcellation) for details on FreeSurfer brain atlases.
