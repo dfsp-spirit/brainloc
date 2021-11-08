@@ -1,6 +1,8 @@
 # brainloc
 Given a point on the human brain, identify standard space coordinates and find the closest brain regions according to a brain atlas.
 
+This is currently intended to be used with FreeSurfer standard space template (fsaverage, fsaverage6, ... fsaverage3).
+
 ## About
 
 This is an R package that takes as input a vertex index of a FreeSurfer brain mesh in MNI305 space (typically fsaverage) and identifies the location in different coordinate systems, including:
