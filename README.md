@@ -20,9 +20,7 @@ The package also computes the closest brain regions and the distance to them, ba
 * The Destrieux atlas (Destrieux *et al.*, 2010. Neuroimage, 53(1):1-15)
 * The DKT40 altas from the [Mindboggle data set](https://mindboggle.info/data.html).
 
-To use a different or custom atlas, just drop the respective annot files for the two hemispheres into the `/label/` directory of your template subject.
-
-See [the FreeSurfer documentation on Cortical Parcellations](https://surfer.nmr.mgh.harvard.edu/fswiki/CorticalParcellation) for details.
+To use a different or custom atlas, just drop the respective annot files for the two hemispheres into the `/label/` directory of your template subject. See [the FreeSurfer documentation on Cortical Parcellations](https://surfer.nmr.mgh.harvard.edu/fswiki/CorticalParcellation) for details on FreeSurfer brain atlases.
 
 
 
