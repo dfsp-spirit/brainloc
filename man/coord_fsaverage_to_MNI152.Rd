@@ -15,3 +15,6 @@ nx3 numerical matrix if MNI152 coords.
 \description{
 Transform MNI305 coords (FreeSurfer fsaverage surface) to MNI152 coordinates.
 }
+\note{
+One can check that the results are okay by clicking a vertex in FreeView, using the displayed MNI305 coordinates as input to this function, and looking up the reported MNI152 coordinates at \code{https://bioimagesuiteweb.github.io/webapp/mni2tal.html}.
+}
