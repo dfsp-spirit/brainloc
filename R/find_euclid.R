@@ -1,6 +1,6 @@
 
 
-#' @title Find closest regions using Euclidean distance.
+#' @title Find closest regions to vertex using Euclidean distance.
 #'
 #' @param brainparc a brain parcellation, see functions like \code{\link{brainparc_fs}} to get one.
 #'
@@ -105,6 +105,25 @@ vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, dist_metho
             stop("Invalid value for 'dist_method' parameter.");
         }
     }
+}
+
+
+#' @title Find closest regions to coordinate using Euclidean distance.
+#'
+#' @inheritParams vertex_closest_regions_euclid
+#'
+#' @inheritParams coord_closest_vertex
+#'
+#' @examples
+#' \dontrun{
+#' bp = brainparc_fs(fsbrain::fsaverage.path(), "fsaverage", atlas="aparc");
+#' coord_closest_regions_euclid(bp, bp$surfaces$white$lh$vertices[1:3,]);
+#' }
+#'
+#' @export
+coord_closest_regions_euclid <- function(brainparc, coordinate, dist_method = "average") {
+    closest_vertex_info = coord_closest_vertex(coordinate, get_surface(brainparc));
+    return(vertex_closest_regions_euclid(brainparc, closest_vertex_info$both_closest_vertex, closest_vertex_info$both_hemi, dist_method = dist_method));
 }
 
 
