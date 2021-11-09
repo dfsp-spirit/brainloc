@@ -2,10 +2,11 @@
 
 test_that("We can construct a brainparc from FreeSurfer data.", {
 
-    sjd = "~/software/freesurfer/subjects";
-    if(! dir.exists(sjd)) {
-        testthat::skip("No test data on system.");
+    fs_info = brainloc:::find.freesurferhome();
+    if(! fs_info$found) {
+        testthat::skip("No FreeSurfer installation found on system, but tghe FreeSurfer fsaverage subject is required for this test.");
     }
+    sjd = file.path(fs_info$found_at, "subjects");
 
     bp = brainparc_fs(sjd, "fsaverage");
     testthat::expect_true("white" %in% names(bp$surfaces));

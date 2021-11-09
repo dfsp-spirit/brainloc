@@ -157,6 +157,39 @@ subject.surface <- function(subjects_dir, subject_id, surface = "white", hemi = 
 }
 
 
+#' @title Check whether object is a brainparc instance.
+#'
+#' @param x any `R` object
+#'
+#' @return logical, \code{TRUE} if parameter \code{x} is a brainparc instance (that is, has "brainparc" in its classes) and \code{FALSE} otherwise.
+#'
+#' @export
+is.brainparc <- function(x) inherits(x, "brainparc")
+
+
+#' @title Print description of a brainparce.
+#'
+#' @param x brainparc instance, with class `brainparc`.
+#'
+#' @param ... further arguments passed to or from other methods.
+#'
+#' @return Called for side effects.
+#'
+#' @export
+print.brainparc <- function(x, ...) { # nocov start
+    cat(sprintf("Brain parcellation for surface '%s'.\n * Left hemi with %d vertices and %d faces, right hemi with %d vertices and %d faces.\n", names(x$surfaces)[1], nrow(x$surfaces[[1]]$lh$vertices), nrow(x$surfaces[[1]]$lh$faces), nrow(x$surfaces[[1]]$rh$vertices), nrow(x$surfaces[[1]]$rh$faces)));
+    num_atlases = length(names(x$annots));
+    atl = "atlas";
+    if(num_atlases > 1L) {
+        atl = "atlases";
+    }
+    cat(sprintf(" * %d available brain %s: %s.\n", num_atlases, atl, paste(names(x$annots), collapse = ", ")));
+    for (atlas in names(x$annots)) {
+        cat(sprintf("  - atlas '%s' with %d lh regions and %d rh regions.\n", atlas, length(unique(x$annots[[atlas]]$lh)), length(unique(x$annots[[atlas]]$rh))));
+    }
+} # nocov end
+
+
 #' @title Wrap data into a named hemi list.
 #'
 #' @param data something to wrap, typically some data for a hemisphere, e.g., a vector of morphometry data values. If NULL, the name will not be created.
