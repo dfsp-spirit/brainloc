@@ -8,9 +8,9 @@
 #'
 #' @param vertices integer vector, the query vertex indices (from the surface in the \code{brainparc}).
 #'
-#' @param hemis character string vector, the hemispheres for each of the \code{vertices}. Allowed entries are \code{"lh"} and \code{"rh"}, for the left and right brain hemisphere, respectively.
+#' @param hemis character string vector, the hemispheres for each of the \code{vertices}. Allowed entries are \code{"lh"} and \code{"rh"}, for the left and right brain hemisphere, respectively. Must have same length as the 'vertices' vector (or exactly length 1, in which case we assume that this is the hemi for ALL query vertices).
 #'
-#' @param dist_method character string, one of \code{"average"} or \code{"closest"}. Defines how the distance from a vertex to a region of vertices is computed. \code{"average"}: Euclidean distance from query vertex to the mean of the vertex coordinates of the atlas region. \code{"closest"}: Euclidean distance from query vertex to the closest vertex of the atlas region.
+#' @param linkage character string, one of \code{"single"} or \code{"centroid"}. Defines how the distance from a vertex to a region of vertices is computed. \code{"single"}: Euclidean distance from query vertex to the closest vertex of the atlas region. \code{"centroid"}: Euclidean distance from query vertex to the mean of the vertex coordinates of the atlas region.
 #'
 #' @examples
 #' \dontrun{
@@ -21,15 +21,19 @@
 #' @seealso \code{\link{coord_closest_regions_euclid}} if you have a coordinate (on or near the surface) instead of a vertex.
 #'
 #' @export
-vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, dist_method = "average") {
-    if(! (dist_method %in% c('closest', 'average'))) {
-        stop("Parameter 'dist_method' must be one of c('closest', 'average').");
+vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, linkage = "single") {
+    if(! (linkage %in% c('single', 'closest'))) {
+        stop("Parameter 'linkage' must be one of c('single', 'closest').");
     }
     if(! ("brainparc" %in% class(brainparc))) {
         stop("Parameter 'brainparc' must contain a brainparc instance.");
     }
     if(length(vertices) != length(hemis)) {
-        stop("Parameters 'vertices' and 'hemis' must have the same length: we need to know the hemi for each query vertex.");
+        if(length(hemis) == 1L) {
+            hemis = rep(hemis, length(vertices)); # Assume all the same hemi.
+        } else {
+            stop("Parameters 'vertices' and 'hemis' must have the same length: we need to know the hemi for each query vertex.");
+        }
     }
 
     num_regions_to_report = 3L;
@@ -48,9 +52,9 @@ vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, dist_metho
         vertex_surface_idx = vertices[vertex_local_idx];
         vertex_coords = surface$vertices[vertex_surface_idx, ]; # 1x3, xyz
 
-        cat(sprintf("Handling vertex %d on hemi %s using distance method '%s'.\n", vertex_surface_idx, hemi, dist_method));
+        cat(sprintf("Handling vertex %d on hemi %s using distance method '%s'.\n", vertex_surface_idx, hemi, linkage));
 
-        if(dist_method == "closest") {
+        if(linkage == "closest") {
             vdists = freesurferformats::vertexdists.to.point(surface, vertex_coords);
             for(atlas_name in names(brainparc$annots)) {
                 cat(sprintf(" -Handling atlas %s.\n", atlas_name));
@@ -79,7 +83,7 @@ vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, dist_metho
                     cat(sprintf("  - Region #%d %s with vertex %d in distance '%f'.\n", i, region_names[sorted_region_sort_indices][i], regions_closest_vertex_to_query_vertex[sorted_region_sort_indices][i], regions_closest_distance_query_vertex[sorted_region_sort_indices][i]));
                 }
             }
-        } else if (dist_method == "average") {
+        } else if (linkage == "average") {
             for(atlas_name in names(brainparc$annots)) {
                 cat(sprintf(" -Handling atlas %s.\n", atlas_name));
                 annot_min = brainparc$annots[[atlas_name]][[hemi]];
@@ -106,7 +110,7 @@ vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, dist_metho
                 }
             }
         } else {
-            stop("Invalid value for 'dist_method' parameter.");
+            stop("Invalid value for 'linkage' parameter.");
         }
     }
 }
@@ -132,9 +136,9 @@ vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, dist_metho
 #' @seealso \code{\link{vertex_closest_regions_euclid}} is faster if you have a vertex index for the surface in 'brainparc' instead of a coordinate.
 #'
 #' @export
-coord_closest_regions_euclid <- function(brainparc, coordinate, dist_method = "average") {
+coord_closest_regions_euclid <- function(brainparc, coordinate, linkage = "single") {
     closest_vertex_info = coord_closest_vertex(coordinate, get_surface(brainparc));
-    return(vertex_closest_regions_euclid(brainparc, closest_vertex_info$both_closest_vertex, closest_vertex_info$both_hemi, dist_method = dist_method));
+    return(vertex_closest_regions_euclid(brainparc, closest_vertex_info$both_closest_vertex, closest_vertex_info$both_hemi, linkage = linkage));
 }
 
 
