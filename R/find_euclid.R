@@ -12,6 +12,8 @@
 #'
 #' @param linkage character string, one of \code{"single"} or \code{"centroid"}. Defines how the distance from a vertex to a region of vertices is computed. \code{"single"}: Euclidean distance from query vertex to the closest vertex of the atlas region. \code{"centroid"}: Euclidean distance from query vertex to the mean of the vertex coordinates of the atlas region.
 #'
+#' @param distance character string, one of \code{"euclidean"} or \code{"geodesic"}. The latter is only supported with \code{linkage = 'single'}.
+#'
 #' @examples
 #' \dontrun{
 #' bp = brainparc_fs(fsbrain::fsaverage.path(), "fsaverage", atlas="aparc");
@@ -21,9 +23,15 @@
 #' @seealso \code{\link{coord_closest_regions_euclid}} if you have a coordinate (on or near the surface) instead of a vertex.
 #'
 #' @export
-vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, linkage = "single") {
-    if(! (linkage %in% c('single', 'closest'))) {
-        stop("Parameter 'linkage' must be one of c('single', 'closest').");
+vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, linkage = "single", distance = "euclidean") {
+    if(! (linkage %in% c('single', 'centroid'))) {
+        stop("Parameter 'linkage' must be one of c('single', 'centroid').");
+    }
+    if(! (distance %in% c('euclidean', 'geodesic'))) {
+        stop("Parameter 'distance' must be one of c('euclidean', 'geodesic').");
+    }
+    if(distance == "geodesic" & linkage == "centroid") {
+        stop("The distance type 'geodesic' is only supported with linkage = 'single'.");
     }
     if(! ("brainparc" %in% class(brainparc))) {
         stop("Parameter 'brainparc' must contain a brainparc instance.");
@@ -52,10 +60,14 @@ vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, linkage = 
         vertex_surface_idx = vertices[vertex_local_idx];
         vertex_coords = surface$vertices[vertex_surface_idx, ]; # 1x3, xyz
 
-        cat(sprintf("Handling vertex %d on hemi %s using distance method '%s'.\n", vertex_surface_idx, hemi, linkage));
+        cat(sprintf("Handling vertex %d on hemi %s using %s distance and %s linkage.\n", vertex_surface_idx, hemi, distance, linkage));
 
-        if(linkage == "closest") {
-            vdists = freesurferformats::vertexdists.to.point(surface, vertex_coords);
+        if(linkage == "single") {
+            if(distance == "geodesic") {
+                vdists = fsbrain::geodesic.dists.to.vertex(surface, vertex_surface_idx);
+            } else {
+                vdists = freesurferformats::vertexdists.to.point(surface, vertex_coords);
+            }
             for(atlas_name in names(brainparc$annots)) {
                 cat(sprintf(" -Handling atlas %s.\n", atlas_name));
                 annot_min = brainparc$annots[[atlas_name]][[hemi]];
@@ -71,19 +83,20 @@ vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, linkage = 
                     region_vertex_indices = which(annot_min == region_name);
                     region_vertex_dists_to_query_vertex = vdists[region_vertex_indices];
                     #sorted_region_dist_indices = sort(region_vertex_dists_to_query_vertex, index.return = TRUE)$ix;
-                    closest_vertex_in_region_to_query_vertex = region_vertex_indices[which.min(region_vertex_dists_to_query_vertex)];
+                    regions_closest_distance_query_vertex[region_idx] = which.min(region_vertex_dists_to_query_vertex);
+                    closest_vertex_in_region_to_query_vertex = region_vertex_indices[regions_closest_distance_query_vertex[region_idx]];
                     regions_closest_vertex_to_query_vertex[region_idx] = closest_vertex_in_region_to_query_vertex;
-                    regions_closest_distance_query_vertex[region_idx] = euclidian.dist(vertex_coords, surface$vertices[closest_vertex_in_region_to_query_vertex, ]);
+                    #regions_closest_distance_query_vertex[region_idx] = euclidian.dist(vertex_coords, surface$vertices[closest_vertex_in_region_to_query_vertex, ]);
                 }
                 sorted_region_sort_indices = sort(regions_closest_distance_query_vertex, index.return = TRUE)$ix;
                 sorted_regions = region_names[sorted_region_sort_indices];
                 num_indices = min(length(sorted_regions), num_regions_to_report);
-                cat(sprintf("  Vertex %s on hemi %s at (%f %f %f) belongs to atlas %s region '%s'. Closest region vertices are:\n", vertex_surface_idx, hemi, vertex_coords[1], vertex_coords[2], vertex_coords[3], atlas_name, vertex_region));
+                cat(sprintf("  Vertex %s on hemi %s at (%f %f %f) belongs to atlas %s region '%s'. Closest region vertices with %s distance are:\n", vertex_surface_idx, hemi, vertex_coords[1], vertex_coords[2], vertex_coords[3], atlas_name, vertex_region, distance));
                 for(i in seq.int(num_indices)) {
-                    cat(sprintf("  - Region #%d %s with vertex %d in distance '%f'.\n", i, region_names[sorted_region_sort_indices][i], regions_closest_vertex_to_query_vertex[sorted_region_sort_indices][i], regions_closest_distance_query_vertex[sorted_region_sort_indices][i]));
+                    cat(sprintf("  - Region #%d %s with vertex %d in %s distance '%f'.\n", i, region_names[sorted_region_sort_indices][i], regions_closest_vertex_to_query_vertex[sorted_region_sort_indices][i], distance, regions_closest_distance_query_vertex[sorted_region_sort_indices][i]));
                 }
             }
-        } else if (linkage == "average") {
+        } else if (linkage == "centroid") {
             for(atlas_name in names(brainparc$annots)) {
                 cat(sprintf(" -Handling atlas %s.\n", atlas_name));
                 annot_min = brainparc$annots[[atlas_name]][[hemi]];

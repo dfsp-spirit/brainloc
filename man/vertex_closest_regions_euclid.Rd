@@ -4,7 +4,13 @@
 \alias{vertex_closest_regions_euclid}
 \title{Find closest regions to vertex using Euclidean distance.}
 \usage{
-vertex_closest_regions_euclid(brainparc, vertices, hemis, linkage = "single")
+vertex_closest_regions_euclid(
+  brainparc,
+  vertices,
+  hemis,
+  linkage = "single",
+  distance = "euclidean"
+)
 }
 \arguments{
 \item{brainparc}{a brain parcellation, see functions like \code{\link{brainparc_fs}} to get one.}
@@ -14,6 +20,8 @@ vertex_closest_regions_euclid(brainparc, vertices, hemis, linkage = "single")
 \item{hemis}{character string vector, the hemispheres for each of the \code{vertices}. Allowed entries are \code{"lh"} and \code{"rh"}, for the left and right brain hemisphere, respectively. Must have same length as the 'vertices' vector (or exactly length 1, in which case we assume that this is the hemi for ALL query vertices).}
 
 \item{linkage}{character string, one of \code{"single"} or \code{"centroid"}. Defines how the distance from a vertex to a region of vertices is computed. \code{"single"}: Euclidean distance from query vertex to the closest vertex of the atlas region. \code{"centroid"}: Euclidean distance from query vertex to the mean of the vertex coordinates of the atlas region.}
+
+\item{distance}{character string, one of \code{"euclidean"} or \code{"geodesic"}. The latter is only supported with \code{linkage = 'single'}.}
 }
 \description{
 Finds the closest atlas regions according to the brain surface parcellation 'brainparc' for the given query vertices.
