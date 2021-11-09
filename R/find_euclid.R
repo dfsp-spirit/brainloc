@@ -2,19 +2,23 @@
 
 #' @title Find closest regions to vertex using Euclidean distance.
 #'
+#' @description Finds the closest atlas regions according to the brain surface parcellation 'brainparc' for the given query vertices.
+#'
 #' @param brainparc a brain parcellation, see functions like \code{\link{brainparc_fs}} to get one.
 #'
 #' @param vertices integer vector, the query vertex indices (from the surface in the \code{brainparc}).
 #'
 #' @param hemis character string vector, the hemispheres for each of the \code{vertices}. Allowed entries are \code{"lh"} and \code{"rh"}, for the left and right brain hemisphere, respectively.
 #'
-#' @param dist_method character string, one of \code{"average"} or \code{"closest"}. Defined how the distance from a vertex to a region of vertices is computed.  \code{"average"}: Euclidean distance from query vertex to the mean of the vertex coordinates of the atlas region. \code{"closest"}: Euclidean distance from query vertex to the closest vertex of the atlas region.
+#' @param dist_method character string, one of \code{"average"} or \code{"closest"}. Defines how the distance from a vertex to a region of vertices is computed. \code{"average"}: Euclidean distance from query vertex to the mean of the vertex coordinates of the atlas region. \code{"closest"}: Euclidean distance from query vertex to the closest vertex of the atlas region.
 #'
 #' @examples
 #' \dontrun{
 #' bp = brainparc_fs(fsbrain::fsaverage.path(), "fsaverage", atlas="aparc");
 #' vertex_closest_regions_euclid(bp, vertices=c(10, 20), hemis=c("lh", "rh"));
 #' }
+#'
+#' @seealso \code{\link{coord_closest_regions_euclid}} if you have a coordinate (on or near the surface) instead of a vertex.
 #'
 #' @export
 vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, dist_method = "average") {
@@ -110,6 +114,10 @@ vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, dist_metho
 
 #' @title Find closest regions to coordinate using Euclidean distance.
 #'
+#' @description Finds the closest atlas regions according to the brain surface parcellation 'brainparc' for the given query vertex coordinates. The coordinates must be in the surface space of the surface included in the 'brainparc'.
+#'
+#' @note This is a wrapper around \code{\link{vertex_closest_regions_euclid}}. It first computes the surface vertex closest to the given coordinate (using \code{\link{coord_closest_vertex}}), then runs \code{\link{vertex_closest_regions_euclid}} with that vertices coordinates.
+#'
 #' @inheritParams vertex_closest_regions_euclid
 #'
 #' @inheritParams coord_closest_vertex
@@ -119,6 +127,9 @@ vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, dist_metho
 #' bp = brainparc_fs(fsbrain::fsaverage.path(), "fsaverage", atlas="aparc");
 #' coord_closest_regions_euclid(bp, bp$surfaces$white$lh$vertices[1:3,]);
 #' }
+#'
+#'
+#' @seealso \code{\link{vertex_closest_regions_euclid}} is faster if you have a vertex index for the surface in 'brainparc' instead of a coordinate.
 #'
 #' @export
 coord_closest_regions_euclid <- function(brainparc, coordinate, dist_method = "average") {
@@ -148,7 +159,7 @@ euclidian.dist <- function(x1, x2) sqrt(sum((x1 - x2) ^ 2))
 #'
 #' @return a data.frame with columns named 'query_x', 'query_y', 'query_z', 'lh_closest_vertex', 'lh_distance', 'rh_closest_vertex', 'rh_distance', 'both_closest_vertex', 'both_distance', 'both_hemi'.
 #'
-#' #' @examples
+#' @examples
 #' \dontrun{
 #' bp = brainparc_fs(fsbrain::fsaverage.path(), "fsaverage", atlas="aparc");
 #' query_coords = matrix(seq.int(9), ncol = 3, byrow = TRUE);

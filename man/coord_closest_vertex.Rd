@@ -13,14 +13,15 @@ coord_closest_vertex(coordinate, surfaces)
 }
 \value{
 a data.frame with columns named 'query_x', 'query_y', 'query_z', 'lh_closest_vertex', 'lh_distance', 'rh_closest_vertex', 'rh_distance', 'both_closest_vertex', 'both_distance', 'both_hemi'.
-
-#' @examples
+}
+\description{
+Find closest surface vertex to a point, using Euclidean distance.
+}
+\examples{
 \dontrun{
 bp = brainparc_fs(fsbrain::fsaverage.path(), "fsaverage", atlas="aparc");
 query_coords = matrix(seq.int(9), ncol = 3, byrow = TRUE);
 coord_closest_vertex(query_coords, bp$surfaces$white);
 }
-}
-\description{
-Find closest surface vertex to a point, using Euclidean distance.
+
 }

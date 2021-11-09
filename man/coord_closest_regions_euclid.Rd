@@ -11,10 +11,13 @@ coord_closest_regions_euclid(brainparc, coordinate, dist_method = "average")
 
 \item{coordinate}{\code{nx3} numerical matrix or vector of length 3, the query point coordinates.}
 
-\item{dist_method}{character string, one of \code{"average"} or \code{"closest"}. Defined how the distance from a vertex to a region of vertices is computed.  \code{"average"}: Euclidean distance from query vertex to the mean of the vertex coordinates of the atlas region. \code{"closest"}: Euclidean distance from query vertex to the closest vertex of the atlas region.}
+\item{dist_method}{character string, one of \code{"average"} or \code{"closest"}. Defines how the distance from a vertex to a region of vertices is computed. \code{"average"}: Euclidean distance from query vertex to the mean of the vertex coordinates of the atlas region. \code{"closest"}: Euclidean distance from query vertex to the closest vertex of the atlas region.}
 }
 \description{
-Find closest regions to coordinate using Euclidean distance.
+Finds the closest atlas regions according to the brain surface parcellation 'brainparc' for the given query vertex coordinates. The coordinates must be in the surface space of the surface included in the 'brainparc'.
+}
+\note{
+This is a wrapper around \code{\link{vertex_closest_regions_euclid}}. It first computes the surface vertex closest to the given coordinate (using \code{\link{coord_closest_vertex}}), then runs \code{\link{vertex_closest_regions_euclid}} with that vertices coordinates.
 }
 \examples{
 \dontrun{
@@ -22,4 +25,8 @@ bp = brainparc_fs(fsbrain::fsaverage.path(), "fsaverage", atlas="aparc");
 coord_closest_regions_euclid(bp, bp$surfaces$white$lh$vertices[1:3,]);
 }
 
+
+}
+\seealso{
+\code{\link{vertex_closest_regions_euclid}} is faster if you have a vertex index for the surface in 'brainparc' instead of a coordinate.
 }

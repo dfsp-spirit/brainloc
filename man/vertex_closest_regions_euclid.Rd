@@ -18,10 +18,10 @@ vertex_closest_regions_euclid(
 
 \item{hemis}{character string vector, the hemispheres for each of the \code{vertices}. Allowed entries are \code{"lh"} and \code{"rh"}, for the left and right brain hemisphere, respectively.}
 
-\item{dist_method}{character string, one of \code{"average"} or \code{"closest"}. Defined how the distance from a vertex to a region of vertices is computed.  \code{"average"}: Euclidean distance from query vertex to the mean of the vertex coordinates of the atlas region. \code{"closest"}: Euclidean distance from query vertex to the closest vertex of the atlas region.}
+\item{dist_method}{character string, one of \code{"average"} or \code{"closest"}. Defines how the distance from a vertex to a region of vertices is computed. \code{"average"}: Euclidean distance from query vertex to the mean of the vertex coordinates of the atlas region. \code{"closest"}: Euclidean distance from query vertex to the closest vertex of the atlas region.}
 }
 \description{
-Find closest regions to vertex using Euclidean distance.
+Finds the closest atlas regions according to the brain surface parcellation 'brainparc' for the given query vertices.
 }
 \examples{
 \dontrun{
@@ -29,4 +29,7 @@ bp = brainparc_fs(fsbrain::fsaverage.path(), "fsaverage", atlas="aparc");
 vertex_closest_regions_euclid(bp, vertices=c(10, 20), hemis=c("lh", "rh"));
 }
 
+}
+\seealso{
+\code{\link{coord_closest_regions_euclid}} if you have a coordinate (on or near the surface) instead of a vertex.
 }
