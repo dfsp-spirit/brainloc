@@ -1,4 +1,6 @@
 
+# tm = fsbrain::fs.surface.to.tmesh3d(bp$surfaces$white$lh);
+#
 
 #' @title Find closest regions to vertex using Euclidean distance.
 #'
@@ -63,10 +65,17 @@ vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, linkage = 
         cat(sprintf("Handling vertex %d on hemi %s using %s distance and %s linkage.\n", vertex_surface_idx, hemi, distance, linkage));
 
         if(linkage == "single") {
+            vdists = NULL;
             if(distance == "geodesic") {
-                vdists = fsbrain::geodesic.dists.to.vertex(surface, vertex_surface_idx);
-            } else {
+                if(requireNamespace("fsbrain", quietly = TRUE)) { # TODO: the conversion should be possible without fsbrain/rgl.
+                    vdists = Rvcg::vcgDijkstra(fsbrain::fs.surface.to.tmesh3d(surface), vertex_surface_idx);
+                } else {
+                    stop("Using linkage = 'geodesic' requires the optional dependency package 'fsbrain'. Please install it to use this.");
+                }
+            } else if (distance == "euclidean") {
                 vdists = freesurferformats::vertexdists.to.point(surface, vertex_coords);
+            } else {
+                stop("Invalid 'distance' parameter.")
             }
             for(atlas_name in names(brainparc$annots)) {
                 cat(sprintf(" -Handling atlas %s.\n", atlas_name));
@@ -83,10 +92,10 @@ vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, linkage = 
                     region_vertex_indices = which(annot_min == region_name);
                     region_vertex_dists_to_query_vertex = vdists[region_vertex_indices];
                     #sorted_region_dist_indices = sort(region_vertex_dists_to_query_vertex, index.return = TRUE)$ix;
-                    regions_closest_distance_query_vertex[region_idx] = which.min(region_vertex_dists_to_query_vertex);
-                    closest_vertex_in_region_to_query_vertex = region_vertex_indices[regions_closest_distance_query_vertex[region_idx]];
+                    local_regions_closest_vertex_to_query_vertex = which.min(region_vertex_dists_to_query_vertex);
+                    closest_vertex_in_region_to_query_vertex = region_vertex_indices[local_regions_closest_vertex_to_query_vertex];
                     regions_closest_vertex_to_query_vertex[region_idx] = closest_vertex_in_region_to_query_vertex;
-                    #regions_closest_distance_query_vertex[region_idx] = euclidian.dist(vertex_coords, surface$vertices[closest_vertex_in_region_to_query_vertex, ]);
+                    regions_closest_distance_query_vertex[region_idx] = min(region_vertex_dists_to_query_vertex);
                 }
                 sorted_region_sort_indices = sort(regions_closest_distance_query_vertex, index.return = TRUE)$ix;
                 sorted_regions = region_names[sorted_region_sort_indices];
@@ -126,6 +135,7 @@ vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, linkage = 
             stop("Invalid value for 'linkage' parameter.");
         }
     }
+    return(vdists);
 }
 
 
