@@ -15,6 +15,7 @@
 #' bp = brainparc_fs(fsbrain::fsaverage.path(), "fsaverage", atlas="aparc");
 #' vertex_closest_regions_euclid(bp, vertices=c(10, 20), hemis=c("lh", "rh"));
 #' }
+#'
 #' @export
 vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, dist_method = "average") {
     if(! (dist_method %in% c('closest', 'average'))) {
@@ -117,3 +118,78 @@ vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, dist_metho
 #'
 #' @keywords internal
 euclidian.dist <- function(x1, x2) sqrt(sum((x1 - x2) ^ 2))
+
+
+
+#' @title Find closest surface vertex to a point, using Euclidean distance.
+#'
+#' @param coordinate \code{nx3} numerical matrix or vector of length 3, the query point coordinates.
+#'
+#' @param surfaces hemilist of \code{fs.surface} instances
+#'
+#' @return a data.frame with columns named 'query_x', 'query_y', 'query_z', 'lh_closest_vertex', 'lh_distance', 'rh_closest_vertex', 'rh_distance', 'both_closest_vertex', 'both_distance', 'both_hemi'.
+#'
+#' #' @examples
+#' \dontrun{
+#' bp = brainparc_fs(fsbrain::fsaverage.path(), "fsaverage", atlas="aparc");
+#' query_coords = matrix(seq.int(9), ncol = 3, byrow = TRUE);
+#' coord_closest_vertex(query_coords, bp$surfaces$white);
+#' }
+#'
+#' @export
+coord_closest_vertex <- function(coordinate, surfaces) {
+    if(is.vector(coordinate) & length(coordinate) == 3L) {
+        coordinate = matrix(coordinate, ncol = 3, nrow = 1, byrow = TRUE);
+    }
+    if(! is.matrix(coordinate)) {
+        stop("Parameter 'coordinate' must be a vector of length 3 or an nx3 matrix.");
+    }
+
+    num_coords = nrow(coordinate);
+    lh_closest_vertex = rep(NA, num_coords);
+    rh_closest_vertex = rep(NA, num_coords);
+    both_closest_vertex = rep(NA, num_coords);
+    lh_distance = rep(NA, num_coords);
+    rh_distance = rep(NA, num_coords);
+    both_distance = rep(NA, num_coords);
+    both_hemi = rep(NA, num_coords);
+
+    for (row_idx in seq.int(num_coords)) {
+        has_surf = FALSE;
+        if(freesurferformats::is.fs.surface(surfaces$lh)) {
+            lh_vd = freesurferformats::vertexdists.to.point(surfaces$lh, coordinate[row_idx, ]);
+            lh_closest_vertex[row_idx] = which.min(lh_vd);
+            lh_distance[row_idx] = lh_vd[lh_closest_vertex[row_idx]];
+            both_closest_vertex[row_idx] = lh_closest_vertex[row_idx]; # for now, may change below.
+            both_distance[row_idx] = lh_distance[row_idx];             # for now, may change below.
+            both_hemi[row_idx] = "lh";
+            has_surf = TRUE;
+        }
+        if(freesurferformats::is.fs.surface(surfaces$rh)) {
+            rh_vd = freesurferformats::vertexdists.to.point(surfaces$rh, coordinate[row_idx, ]);
+            rh_closest_vertex[row_idx] = which.min(rh_vd);
+            rh_distance[row_idx] = rh_vd[rh_closest_vertex[row_idx]];
+            if(has_surf) { # whether there was a left surface. in this case we need to compare the values and pick the smaller dist.
+                if(lh_distance[row_idx] < rh_distance[row_idx]) {
+                    both_closest_vertex[row_idx] = lh_closest_vertex[row_idx];
+                    both_distance[row_idx] = lh_distance[row_idx];
+                    both_hemi[row_idx] = "lh";
+                } else {
+                    both_closest_vertex[row_idx] = rh_closest_vertex[row_idx];
+                    both_distance[row_idx] = rh_distance[row_idx];
+                    both_hemi[row_idx] = "rh";
+                }
+            } else { # Only the rh surface was given.
+                both_closest_vertex[row_idx] = rh_closest_vertex[row_idx];
+                both_distance[row_idx] = rh_distance[row_idx];
+                both_hemi[row_idx] = "rh";
+            }
+            has_surf = TRUE;
+        }
+        if(! has_surf) {
+            stop("The hemilist in parameter 'surfaces' must contain at least one fs.surface instance in keys 'lh' or 'rh'.");
+        }
+    }
+    return(data.frame("query_x"=coordinate[,1], "query_y"=coordinate[,2], "query_z"=coordinate[,3], "lh_closest_vertex"=lh_closest_vertex, "lh_distance"=lh_distance, "rh_closest_vertex"=rh_closest_vertex, "rh_distance"=rh_distance, "both_closest_vertex"=both_closest_vertex, "both_distance"=both_distance, "both_hemi"=both_hemi));
+}
+

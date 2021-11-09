@@ -28,4 +28,5 @@ Find closest regions using Euclidean distance.
 bp = brainparc_fs(fsbrain::fsaverage.path(), "fsaverage", atlas="aparc");
 vertex_closest_regions_euclid(bp, vertices=c(10, 20), hemis=c("lh", "rh"));
 }
+
 }

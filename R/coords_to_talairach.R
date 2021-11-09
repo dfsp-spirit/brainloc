@@ -8,22 +8,22 @@
 #'
 #' @export
 coord_MNI305_info <- function(coords_mni305) {
-  coords_mni152 = coord_fsaverage_to_MNI152(coords_mni305);
+  coords_mni152 = coord_MNI305_to_MNI152(coords_mni305);
   return(list("mni305" = coords_mni305, "mni152" = coords_mni152, "talairach" = coord_MNI152_to_talairach(coords_mni152)));
 }
 
 
-#' @title Transform FreeSurfer surface space coordinates into Talairach space.
+#' @title Transform FreeSurfer surface space coordinates into MNI Talairach space using talairach.xfm file.
 #'
-#' @description This uses the affine transform in \code{<subject>/mri/transforms/talairach.xfm}, be sure to know about the limitations of this approach. See the FreeSurfer documentation on talairach for details.
+#' @description This uses the affine transform in \code{<subject>/mri/transforms/talairach.xfm}, be sure to know about the limitations of this approach. See the FreeSurfer documentation on talairach for details. The coordinates produced by this approach are referred to as 'MNI Talairach' coordinates in the FreeSurfer documentation, and are not identical to Talairach space.
 #'
 #' @param subjects_dir character string, the path to the recon-all SUBJECTS_DIR containing the data of all subjects of your study.
 #'
-#' @param subject_id character string, the subject identifier (i.e., the sub directory name under the \code{subjects_dir}).
+#' @param subject_id character string, the subject identifier (i.e., the sub directory name under the \code{subjects_dir}). This can be a template like fsaverage, but it also works for other subjects.
 #'
 #' @param surface_coords nx3 numerical matrix of surface coordinates (vertex positions in FreeSurfer surface space).
 #'
-#' @return nx3 numerical matrix of Talairach space coordinates.
+#' @return nx3 numerical matrix of MNI Talairach space coordinates.
 #'
 #' @examples
 #' \dontrun{
@@ -34,8 +34,8 @@ coord_MNI305_info <- function(coords_mni305) {
 #' tal = coord_fssurface_to_talairach(sjd, sj, surf$vertices);
 #' }
 #'
-#' @export
-coord_fssurface_to_talairach <- function(subjects_dir, subject_id, surface_coords) {
+#' @keywords internal
+coord_fssurface_to_fstalairach <- function(subjects_dir, subject_id, surface_coords) {
     talairach_file = file.path(subjects_dir, subject_id, "mri", "transforms", "talairach.xfm");
     if(! file.exists(talairach_file)) {
       stop(sprintf("Could not read talairach file for subject '%s' at '%s'.\n", subject_id, talairach_file));
@@ -47,23 +47,28 @@ coord_fssurface_to_talairach <- function(subjects_dir, subject_id, surface_coord
 
 #' @title Transform MNI305 coords (FreeSurfer fsaverage surface) to MNI152 coordinates.
 #'
-#' @param vertex_coords nx3 matrix of coordinates, e.g., typically from fsaverage surface vertices.
+#' @param vertex_coords \code{nx3} numerical matrix of MNI305 surface RAS coordinates, typically from fsaverage surface vertices.
 #'
-#' @return nx3 numerical matrix if MNI152 coords.
+#' @return \code{nx3} numerical matrix of MNI152 coords.
 #'
 #' @note One can check that the results are okay by clicking a vertex in FreeView, using the displayed MNI305 coordinates as input to this function, and looking up the reported MNI152 coordinates at \code{https://bioimagesuiteweb.github.io/webapp/mni2tal.html}.
 #'
+#' @examples
+#' \dontrun{
+#' # Get MNI152 coordinates for first 3 fsaverage lh vertices:
+#' surf = freesurferformats::read.fs.surface("/opt/freesurfer/subjects/fsaverage/surf/lh.white");
+#' coord_MNI305_to_MNI152(surf$vertices[1:3, ]);
+#' }
+#'
 #' @export
-coord_fsaverage_to_MNI152 <- function(vertex_coords) {
+coord_MNI305_to_MNI152 <- function(vertex_coords) {
   return(freesurferformats::doapply.transform.mtx(vertex_coords, mni152reg_mtx()));
 }
 
 
 #' @title Get fsaverage (MNI305) to MNI152 transformation matrix.
 #'
-#' @description This returns the 4x4 matrix from the FreeSurfer Coordinate Systems documentation.
-#'
-#' @note This is the opposite of using the \cite{Wu et al.} approach. It is mainly implemented in this package to allow you to easily check the difference between the methods.
+#' @description This returns the 4x4 matrix from the FreeSurfer Coordinate Systems documentation to transform between MNI305 and MNI152.
 #'
 #' @keywords internal
 mni152reg_mtx <- function() {

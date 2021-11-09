@@ -7,9 +7,6 @@
 mni152reg_mtx()
 }
 \description{
-This returns the 4x4 matrix from the FreeSurfer Coordinate Systems documentation.
-}
-\note{
-This is the opposite of using the \cite{Wu et al.} approach. It is mainly implemented in this package to allow you to easily check the difference between the methods.
+This returns the 4x4 matrix from the FreeSurfer Coordinate Systems documentation to transform between MNI305 and MNI152.
 }
 \keyword{internal}
