@@ -16,6 +16,9 @@ Suggests:
     knitr,
     rmarkdown,
     testthat (>= 2.1.0),
-    fsbrain (>= 0.5.0)
+    fsbrain (>= 0.5.0),
+    drat,
+    regfusionr (>= 0.1.1)
+Additional_repositories: https://dfsp-spirit.github.io/drat/
 VignetteBuilder: knitr
 RoxygenNote: 7.1.2
