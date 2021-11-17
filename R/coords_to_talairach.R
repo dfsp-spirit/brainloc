@@ -61,7 +61,19 @@ coord_fssurface_to_fstalairach <- function(subjects_dir, subject_id, surface_coo
 #' }
 #'
 #' @export
-coord_MNI305_to_MNI152 <- function(vertex_coords) {
+coord_MNI305_to_MNI152 <- function(vertex_coords, method = getOption("brainloc.method_MNI305_to_from_MNI152", default="best_available")) {
+  if(! (method %in% c("best_available", "regfusionr", "linear"))) {
+    stop("Parameter 'method' must be one of c('best_available', 'regfusionr', 'linear').");
+  }
+  if(method %in% c("best_available", "regfusionr")) {
+    if(requireNamespace("regfusionr", quietly = TRUE)) {
+      return(regfusionr::mni305_coords_to_mni152_coords(vertex_coords); # TODO: fix this and add regfusionr function for coords
+    } else {
+      if(method == "regfusionr") {
+        stop("Parameter 'method' forces regfusionr but package not available. Please install the regfusionr pacakge from https://github.com/dfsp-spirit/regfusionr or change the 'method' parameter.");
+      }
+    }
+  }
   return(freesurferformats::doapply.transform.mtx(vertex_coords, mni152reg_mtx()));
 }
 
