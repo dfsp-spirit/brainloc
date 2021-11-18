@@ -12,6 +12,7 @@ test_that("We can transform from MNI305 vertex to MNI152 RAS using the FreeSurfe
 
 
     coord_info = coord_MNI305_info(bp$surfaces$white$lh$vertices[test_vertex_fsaverage_lh, ]);
+    testthat::expect_true(is.vector(coord_info$mni152));
     testthat::expect_equal(coord_info$mni152, c(-39.37023, -30.47030,  65.31317), tolerance = 0.001);
 })
 

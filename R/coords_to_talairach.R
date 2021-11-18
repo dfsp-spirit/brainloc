@@ -67,7 +67,7 @@ coord_fssurface_to_fstalairach <- function(subjects_dir, subject_id, surface_coo
 #' }
 #'
 #' @export
-coord_MNI305_to_MNI152 <- function(vertex_coords, method = getOption("brainloc.method_MNI305_to_from_MNI152", default="best_available"), surface = "orig", fs_home = getOption("brainloc.fs_home", default = Sys.getenv("FREESURFER_HOME"))) {
+coord_MNI305_to_MNI152 <- function(vertex_coords, method = getOption("brainloc.method_MNI305_to_from_MNI152", default="linear"), surface = "orig", fs_home = getOption("brainloc.fs_home", default = Sys.getenv("FREESURFER_HOME"))) {
   if(! (method %in% c("best_available", "regfusionr", "linear"))) {
     stop("Parameter 'method' must be one of c('best_available', 'regfusionr', 'linear').");
   }
@@ -87,7 +87,7 @@ coord_MNI305_to_MNI152 <- function(vertex_coords, method = getOption("brainloc.m
       return(regfusionr::mni305_coords_to_mni152_coords(vertex_coords, surface = surface, fs_home = fs_home));
     } else {
       if(method == "regfusionr") {
-        stop("Parameter 'method' forces regfusionr but package not available. Please install the regfusionr pacakge from https://github.com/dfsp-spirit/regfusionr or change the 'method' parameter.");
+        stop("Parameter 'method' forces regfusionr but package not available. Please install the regfusionr package from https://github.com/dfsp-spirit/regfusionr or change the 'method' parameter.");
       }
     }
   }
