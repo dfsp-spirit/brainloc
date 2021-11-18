@@ -1,6 +1,6 @@
 
 
-test_that("We can transform from MNI305 vertex to MNI152 RAS using the FreeSurfer method", {
+test_that("We can transform from MNI305 vertex to MNI152 RAS using the linear FreeSurfer method", {
     fs_info = brainloc:::find.freesurferhome();
     if(! fs_info$found) {
         testthat::skip("No FreeSurfer installation found on system, but tghe FreeSurfer fsaverage subject is required for this test.");
@@ -11,9 +11,31 @@ test_that("We can transform from MNI305 vertex to MNI152 RAS using the FreeSurfe
     test_vertex_fsaverage_lh = 145029L;
 
 
-    coord_info = coord_MNI305_info(bp$surfaces$white$lh$vertices[test_vertex_fsaverage_lh, ]);
+    coord_info = coord_MNI305_info(bp$surfaces$white$lh$vertices[test_vertex_fsaverage_lh, ], method = "linear");
     testthat::expect_true(is.vector(coord_info$mni152));
     testthat::expect_equal(coord_info$mni152, c(-39.37023, -30.47030,  65.31317), tolerance = 0.001);
+})
+
+
+test_that("We can transform from MNI305 vertex to MNI152 RAS using the regfusionr method", {
+    fs_info = brainloc:::find.freesurferhome();
+    if(! fs_info$found) {
+        testthat::skip("No FreeSurfer installation found on system, but tghe FreeSurfer fsaverage subject is required for this test.");
+    }
+    sjd = file.path(fs_info$found_at, "subjects");
+
+    if(requireNamespace("regfusionr", quietly = TRUE)) {
+
+        bp = brainparc_fs(sjd, "fsaverage");
+        test_vertex_fsaverage_lh = 145029L;
+
+
+        coord_info = coord_MNI305_info(bp$surfaces$white$lh$vertices[test_vertex_fsaverage_lh, ], method = "regfusionr");
+        testthat::expect_true(is.vector(coord_info$mni152));
+        testthat::expect_equal(coord_info$mni152, c(-39.4, -31.7,  65.5), tolerance = 0.10);
+    } else {
+        testthat::skip("The regfusionr package is required for this test but not installed.");
+    }
 })
 
 

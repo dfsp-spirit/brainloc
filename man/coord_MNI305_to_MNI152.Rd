@@ -6,8 +6,7 @@
 \usage{
 coord_MNI305_to_MNI152(
   vertex_coords,
-  method = getOption("brainloc.method_MNI305_to_from_MNI152", default =
-    "best_available"),
+  method = getOption("brainloc.method_MNI305_to_from_MNI152", default = "linear"),
   surface = "orig",
   fs_home = getOption("brainloc.fs_home", default = Sys.getenv("FREESURFER_HOME"))
 )

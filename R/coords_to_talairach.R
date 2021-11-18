@@ -4,11 +4,13 @@
 #'
 #' @param coords_mni305 nx3 matrix of coordinates, typically from fsaverage surface vertices.
 #'
+#' @param ... Passed on to \code{\link{coord_MNI305_to_MNI152}}.
+#'
 #' @return named list with coordinate information
 #'
 #' @export
-coord_MNI305_info <- function(coords_mni305) {
-  coords_mni152 = coord_MNI305_to_MNI152(coords_mni305);
+coord_MNI305_info <- function(coords_mni305, ...) {
+  coords_mni152 = coord_MNI305_to_MNI152(coords_mni305, ...);
   return(list("mni305" = coords_mni305, "mni152" = coords_mni152, "talairach" = coord_MNI152_to_talairach(coords_mni152)));
 }
 
@@ -84,7 +86,7 @@ coord_MNI305_to_MNI152 <- function(vertex_coords, method = getOption("brainloc.m
           surface = list("lh" = lh_surf, "rh" = rh_surf);
         }
       }
-      return(regfusionr::mni305_coords_to_mni152_coords(vertex_coords, surface = surface, fs_home = fs_home));
+      return(regfusionr::mni305_coords_to_mni152_coords(vertex_coords, surface = surface, fs_home = fs_home, simplify = TRUE));
     } else {
       if(method == "regfusionr") {
         stop("Parameter 'method' forces regfusionr but package not available. Please install the regfusionr package from https://github.com/dfsp-spirit/regfusionr or change the 'method' parameter.");
