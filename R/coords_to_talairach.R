@@ -67,19 +67,24 @@ coord_fssurface_to_fstalairach <- function(subjects_dir, subject_id, surface_coo
 #' }
 #'
 #' @export
-coord_MNI305_to_MNI152 <- function(vertex_coords, method = getOption("brainloc.method_MNI305_to_from_MNI152", default="best_available"), surface = "orig", fs_home = Sys.getenv("FS_HOME")) {
+coord_MNI305_to_MNI152 <- function(vertex_coords, method = getOption("brainloc.method_MNI305_to_from_MNI152", default="best_available"), surface = "orig", fs_home = getOption("brainloc.fs_home", default = Sys.getenv("FREESURFER_HOME"))) {
   if(! (method %in% c("best_available", "regfusionr", "linear"))) {
     stop("Parameter 'method' must be one of c('best_available', 'regfusionr', 'linear').");
   }
   if(method %in% c("best_available", "regfusionr")) {
     if(requireNamespace("regfusionr", quietly = TRUE)) {
       if(! is.list(surface)) {
+        surface_name = surface;
         fsaverage_path = file.path(fs_home, 'subjects', 'fsaverage');
         if(! dir.exists(fsaverage_path)) {
           stop(sprintf("The fsaverage data for regfusionr cannot be loaded: directory '%s' does not exist or cannot be read.\n", fsaverage_path));
+        } else {
+          lh_surf = freesurferformats::read.fs.surface(file.path(fsaverage_path, "surf", sprintf("lh.%s", surface_name)));
+          rh_surf = freesurferformats::read.fs.surface(file.path(fsaverage_path, "surf", sprintf("rh.%s", surface_name)));
+          surface = list("lh" = lh_surf, "rh" = rh_surf);
         }
       }
-      return(regfusionr::mni305_coords_to_mni152_coords(vertex_coords, surface = surface, fs_home = fs_home)); # TODO: fix this and add regfusionr function for coords
+      return(regfusionr::mni305_coords_to_mni152_coords(vertex_coords, surface = surface, fs_home = fs_home));
     } else {
       if(method == "regfusionr") {
         stop("Parameter 'method' forces regfusionr but package not available. Please install the regfusionr pacakge from https://github.com/dfsp-spirit/regfusionr or change the 'method' parameter.");
