@@ -1,6 +1,6 @@
 
 
-#' @title Get info on MNI305 surface coord in various coordinate systems.
+#' @title Get info on MNI305 surface coordinate in various coordinate systems.
 #'
 #' @param coords_mni305 nx3 matrix of coordinates, typically from fsaverage surface vertices.
 #'
@@ -49,6 +49,12 @@ coord_fssurface_to_fstalairach <- function(subjects_dir, subject_id, surface_coo
 #'
 #' @param vertex_coords \code{nx3} numerical matrix of MNI305 surface RAS coordinates, typically from fsaverage surface vertices.
 #'
+#' @param method character string, the method to use to map from MNI305 to MNI152 along the way. One of "best_available", "regfusionr", and "linear".
+#'
+#' @param surface optional character string or hemilist of surfaces, the surface to use to find a surface vertex close to the given query coordinates. Only used if 'method' results in \code{regfusionr} being used. Passed on to \code{regfusionrregfusionr::mni305_coords_to_mni152_coords}.
+#'
+#' @param fs_home optional character string, the path to the FREESURFER_HOME directory from which to load the surfaces from the 'surface' parameter. Only used if 'method' results in \code{regfusionr} being used. Passed on to \code{regfusionrregfusionr::mni305_coords_to_mni152_coords}.
+#'
 #' @return \code{nx3} numerical matrix of MNI152 coords.
 #'
 #' @note One can check that the results are okay by clicking a vertex in FreeView, using the displayed MNI305 coordinates as input to this function, and looking up the reported MNI152 coordinates at \code{https://bioimagesuiteweb.github.io/webapp/mni2tal.html}.
@@ -61,13 +67,19 @@ coord_fssurface_to_fstalairach <- function(subjects_dir, subject_id, surface_coo
 #' }
 #'
 #' @export
-coord_MNI305_to_MNI152 <- function(vertex_coords, method = getOption("brainloc.method_MNI305_to_from_MNI152", default="best_available")) {
+coord_MNI305_to_MNI152 <- function(vertex_coords, method = getOption("brainloc.method_MNI305_to_from_MNI152", default="best_available"), surface = "orig", fs_home = Sys.getenv("FS_HOME")) {
   if(! (method %in% c("best_available", "regfusionr", "linear"))) {
     stop("Parameter 'method' must be one of c('best_available', 'regfusionr', 'linear').");
   }
   if(method %in% c("best_available", "regfusionr")) {
     if(requireNamespace("regfusionr", quietly = TRUE)) {
-      return(regfusionr::mni305_coords_to_mni152_coords(vertex_coords)); # TODO: fix this and add regfusionr function for coords
+      if(! is.list(surface)) {
+        fsaverage_path = file.path(fs_home, 'subjects', 'fsaverage');
+        if(! dir.exists(fsaverage_path)) {
+          stop(sprintf("The fsaverage data for regfusionr cannot be loaded: directory '%s' does not exist or cannot be read.\n", fsaverage_path));
+        }
+      }
+      return(regfusionr::mni305_coords_to_mni152_coords(vertex_coords, surface = surface, fs_home = fs_home)); # TODO: fix this and add regfusionr function for coords
     } else {
       if(method == "regfusionr") {
         stop("Parameter 'method' forces regfusionr but package not available. Please install the regfusionr pacakge from https://github.com/dfsp-spirit/regfusionr or change the 'method' parameter.");

@@ -2,7 +2,7 @@
 % Please edit documentation in R/coords_to_talairach.R
 \name{coord_MNI305_info}
 \alias{coord_MNI305_info}
-\title{Get info on MNI305 surface coord in various coordinate systems.}
+\title{Get info on MNI305 surface coordinate in various coordinate systems.}
 \usage{
 coord_MNI305_info(coords_mni305)
 }
@@ -13,5 +13,5 @@ coord_MNI305_info(coords_mni305)
 named list with coordinate information
 }
 \description{
-Get info on MNI305 surface coord in various coordinate systems.
+Get info on MNI305 surface coordinate in various coordinate systems.
 }
