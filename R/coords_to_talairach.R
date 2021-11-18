@@ -67,7 +67,7 @@ coord_MNI305_to_MNI152 <- function(vertex_coords, method = getOption("brainloc.m
   }
   if(method %in% c("best_available", "regfusionr")) {
     if(requireNamespace("regfusionr", quietly = TRUE)) {
-      return(regfusionr::mni305_coords_to_mni152_coords(vertex_coords); # TODO: fix this and add regfusionr function for coords
+      return(regfusionr::mni305_coords_to_mni152_coords(vertex_coords)); # TODO: fix this and add regfusionr function for coords
     } else {
       if(method == "regfusionr") {
         stop("Parameter 'method' forces regfusionr but package not available. Please install the regfusionr pacakge from https://github.com/dfsp-spirit/regfusionr or change the 'method' parameter.");
