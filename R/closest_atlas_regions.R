@@ -247,6 +247,6 @@ coord_closest_vertex <- function(coordinate, surfaces) {
             stop("The hemilist in parameter 'surfaces' must contain at least one fs.surface instance in keys 'lh' or 'rh'.");
         }
     }
-    return(data.frame("query_x"=coordinate[,1], "query_y"=coordinate[,2], "query_z"=coordinate[,3], "lh_closest_vertex"=lh_closest_vertex, "lh_distance"=lh_distance, "rh_closest_vertex"=rh_closest_vertex, "rh_distance"=rh_distance, "both_closest_vertex"=both_closest_vertex, "both_distance"=both_distance, "both_hemi"=both_hemi));
+    return(data.frame("query_x"=coordinate[,1], "query_y"=coordinate[,2], "query_z"=coordinate[,3], "lh_closest_vertex"=lh_closest_vertex, "lh_distance"=lh_distance, "rh_closest_vertex"=rh_closest_vertex, "rh_distance"=rh_distance, "both_closest_vertex"=both_closest_vertex, "both_distance"=both_distance, "both_hemi"=both_hemi, stringsAsFactors = FALSE));
 }
 

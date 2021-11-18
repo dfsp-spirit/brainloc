@@ -4,7 +4,11 @@
 \alias{coord_MNI305_to_MNI152}
 \title{Transform MNI305 coords (FreeSurfer fsaverage surface) to MNI152 coordinates.}
 \usage{
-coord_MNI305_to_MNI152(vertex_coords)
+coord_MNI305_to_MNI152(
+  vertex_coords,
+  method = getOption("brainloc.method_MNI305_to_from_MNI152", default =
+    "best_available")
+)
 }
 \arguments{
 \item{vertex_coords}{\code{nx3} numerical matrix of MNI305 surface RAS coordinates, typically from fsaverage surface vertices.}
