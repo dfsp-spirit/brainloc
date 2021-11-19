@@ -6,7 +6,7 @@
 #'
 #' @param background_code scalar integer, the code in the data that should be interpreted as background or 'not part of any cluster'.
 #'
-#' @param hemi character string, ignore.
+#' @param hemi character string, ignore unless clusterdata is a vector. In that case, it must be 'lh' or 'rh'. Used to name clusters, as a prefix.
 #'
 #' @keywords internal
 clusters_to_annot <- function(clusterdata, background_code=0L, hemi=NULL) {
@@ -16,6 +16,9 @@ clusters_to_annot <- function(clusterdata, background_code=0L, hemi=NULL) {
         annot_rh = clusters_to_annot(clusterdata$rh, background_code=background_code, hemi="rh");
         return(list("lh"=annot_lh, "rh"=annot_rh));
     } else {
+        if(! (hemi %in% c("lh", "rh"))) {
+            stop("If clusterdata is a vector, parameter 'hemi' must be one of 'lh' or 'rh'.");
+        }
         clusterdata = as.integer(clusterdata);
         label_vertices_by_region = list();
         region_int_codes = unique(clusterdata);
