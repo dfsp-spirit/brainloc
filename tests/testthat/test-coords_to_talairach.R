@@ -3,7 +3,7 @@
 test_that("We can transform from MNI305 vertex to MNI152 RAS using the linear FreeSurfer method", {
     fs_info = brainloc:::find.freesurferhome();
     if(! fs_info$found) {
-        testthat::skip("No FreeSurfer installation found on system, but tghe FreeSurfer fsaverage subject is required for this test.");
+        testthat::skip("No FreeSurfer installation found on system, but the FreeSurfer fsaverage subject is required for this test.");
     }
     sjd = file.path(fs_info$found_at, "subjects");
 
@@ -20,7 +20,7 @@ test_that("We can transform from MNI305 vertex to MNI152 RAS using the linear Fr
 test_that("We can transform from MNI305 vertex to MNI152 RAS using the regfusionr method", {
     fs_info = brainloc:::find.freesurferhome();
     if(! fs_info$found) {
-        testthat::skip("No FreeSurfer installation found on system, but tghe FreeSurfer fsaverage subject is required for this test.");
+        testthat::skip("No FreeSurfer installation found on system, but the FreeSurfer fsaverage subject is required for this test.");
     }
     sjd = file.path(fs_info$found_at, "subjects");
 
@@ -46,7 +46,7 @@ test_that("We can transform from MNI305 RAS to MNI152 RAS using the FreeSurfer m
 
     fs_info = brainloc:::find.freesurferhome();
     if(! fs_info$found) {
-        testthat::skip("No FreeSurfer installation found on system, but tghe FreeSurfer fsaverage subject is required for this test.");
+        testthat::skip("No FreeSurfer installation found on system, but the FreeSurfer fsaverage subject is required for this test.");
     }
     sjd = file.path(fs_info$found_at, "subjects");
 

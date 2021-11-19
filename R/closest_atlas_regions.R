@@ -2,7 +2,7 @@
 # tm = fsbrain::fs.surface.to.tmesh3d(bp$surfaces$white$lh);
 #
 
-#' @title Find closest regions to vertex using Euclidean distance.
+#' @title Find closest regions to vertex using Euclidean or geodesic distance.
 #'
 #' @description Finds the closest atlas regions according to the brain surface parcellation 'brainparc' for the given query vertices.
 #'
@@ -19,13 +19,13 @@
 #' @examples
 #' \dontrun{
 #' bp = brainparc_fs(fsbrain::fsaverage.path(), "fsaverage", atlas="aparc");
-#' vertex_closest_regions_euclid(bp, vertices=c(10, 20), hemis=c("lh", "rh"));
+#' vertex_closest_regions(bp, vertices=c(10, 20), hemis=c("lh", "rh"));
 #' }
 #'
-#' @seealso \code{\link{coord_closest_regions_euclid}} if you have a coordinate (on or near the surface) instead of a vertex.
+#' @seealso \code{\link{coord_closest_regions}} if you have a coordinate (on or near the surface) instead of a vertex.
 #'
 #' @export
-vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, linkage = "single", distance = "euclidean") {
+vertex_closest_regions <- function(brainparc, vertices, hemis, linkage = "single", distance = "euclidean") {
     if(! (linkage %in% c('single', 'centroid'))) {
         stop("Parameter 'linkage' must be one of c('single', 'centroid').");
     }
@@ -67,10 +67,12 @@ vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, linkage = 
         if(linkage == "single") {
             vdists = NULL;
             if(distance == "geodesic") {
-                if(requireNamespace("fsbrain", quietly = TRUE)) { # TODO: the conversion should be possible without fsbrain/rgl.
+                if(exists('fs.surface.to.tmesh3d', where=asNamespace('freesurferformats'), mode='function')) {
+                    vdists = Rvcg::vcgDijkstra(freesurferformats::fs.surface.to.tmesh3d(surface), vertex_surface_idx);
+                } else if (requireNamespace("fsbrain", quietly = TRUE)) {
                     vdists = Rvcg::vcgDijkstra(fsbrain::fs.surface.to.tmesh3d(surface), vertex_surface_idx);
                 } else {
-                    stop("Using linkage = 'geodesic' requires the optional dependency package 'fsbrain'. Please install it to use this.");
+                    stop("Using linkage = 'geodesic' requires a recent version of the 'freesurferformats' package or the optional dependency package 'fsbrain'. Please install one of them to use this.");
                 }
             } else if (distance == "euclidean") {
                 vdists = freesurferformats::vertexdists.to.point(surface, vertex_coords);
@@ -139,29 +141,29 @@ vertex_closest_regions_euclid <- function(brainparc, vertices, hemis, linkage = 
 }
 
 
-#' @title Find closest regions to coordinate using Euclidean distance.
+#' @title Find closest regions to coordinate using Euclidean or geodesic distance.
 #'
 #' @description Finds the closest atlas regions according to the brain surface parcellation 'brainparc' for the given query vertex coordinates. The coordinates must be in the surface space of the surface included in the 'brainparc'.
 #'
-#' @note This is a wrapper around \code{\link{vertex_closest_regions_euclid}}. It first computes the surface vertex closest to the given coordinate (using \code{\link{coord_closest_vertex}}), then runs \code{\link{vertex_closest_regions_euclid}} with that vertices coordinates.
+#' @note This is a wrapper around \code{\link{vertex_closest_regions}}. It first computes the surface vertex closest to the given coordinate (using \code{\link{coord_closest_vertex}}), then runs \code{\link{vertex_closest_regions}} with that vertices coordinates.
 #'
-#' @inheritParams vertex_closest_regions_euclid
+#' @inheritParams vertex_closest_regions
 #'
 #' @inheritParams coord_closest_vertex
 #'
 #' @examples
 #' \dontrun{
 #' bp = brainparc_fs(fsbrain::fsaverage.path(), "fsaverage", atlas="aparc");
-#' coord_closest_regions_euclid(bp, bp$surfaces$white$lh$vertices[1:3,]);
+#' coord_closest_regions(bp, bp$surfaces$white$lh$vertices[1:3,]);
 #' }
 #'
 #'
-#' @seealso \code{\link{vertex_closest_regions_euclid}} is faster if you have a vertex index for the surface in 'brainparc' instead of a coordinate.
+#' @seealso \code{\link{vertex_closest_region}} is faster if you have a vertex index for the surface in 'brainparc' instead of a coordinate.
 #'
 #' @export
-coord_closest_regions_euclid <- function(brainparc, coordinate, linkage = "single") {
+coord_closest_regions <- function(brainparc, coordinate, linkage = "single", distance = "euclidean") {
     closest_vertex_info = coord_closest_vertex(coordinate, get_surface(brainparc));
-    return(vertex_closest_regions_euclid(brainparc, closest_vertex_info$both_closest_vertex, closest_vertex_info$both_hemi, linkage = linkage));
+    return(vertex_closest_regions(brainparc, closest_vertex_info$both_closest_vertex, closest_vertex_info$both_hemi, linkage = linkage, distance = distance));
 }
 
 

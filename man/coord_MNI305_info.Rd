@@ -4,10 +4,12 @@
 \alias{coord_MNI305_info}
 \title{Get info on MNI305 surface coordinate in various coordinate systems.}
 \usage{
-coord_MNI305_info(coords_mni305)
+coord_MNI305_info(coords_mni305, ...)
 }
 \arguments{
 \item{coords_mni305}{nx3 matrix of coordinates, typically from fsaverage surface vertices.}
+
+\item{...}{Passed on to \code{\link{coord_MNI305_to_MNI152}}.}
 }
 \value{
 named list with coordinate information
