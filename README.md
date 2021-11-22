@@ -12,7 +12,9 @@ This is an R package that takes as input a vertex index of a FreeSurfer brain me
 Supported coordinate systems include:
 
 * MNI305 space RAS coordinates (simply the coordinate of the input vertex index).
-* MNI152 space coordinates using the linear transformation method with the FreeSurfer matrix ([section 8 here](https://surfer.nmr.mgh.harvard.edu/fswiki/CoordinateSystems)). Have a look at [regfusionr](https://github.com/dfsp-spirit/regfusionr) if you need a more accurate mapping.
+* MNI152 space coordinates computed from MNI305 coordinates, with 2 different methods available:
+  - using the linear transformation method with the 4x4 FreeSurfer matrix ([section 8 here](https://surfer.nmr.mgh.harvard.edu/fswiki/CoordinateSystems)), or 
+  - the more accurate [regfusionr](https://github.com/dfsp-spirit/regfusionr) method.
 * Talairach coordinates using [Matthew Brett's transform](http://brainmap.org/training/BrettTransform.html) from MNI152.
 
 #### Validation
