@@ -35,5 +35,5 @@ coord_closest_regions(bp, bp$surfaces$white$lh$vertices[1:3,]);
 
 }
 \seealso{
-\code{\link{vertex_closest_region}} is faster if you have a vertex index for the surface in 'brainparc' instead of a coordinate.
+\code{\link{vertex_closest_regions}} is faster if you have a vertex index for the surface in 'brainparc' instead of a coordinate.
 }
