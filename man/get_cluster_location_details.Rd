@@ -6,6 +6,9 @@
 \usage{
 get_cluster_location_details(clusters)
 }
+\arguments{
+\item{clusters}{a clusterinfo instance, see the \code{clusterinfo} function on how to get one.}
+}
 \value{
 a new version of the input data.frame, with additional columns appended.
 }

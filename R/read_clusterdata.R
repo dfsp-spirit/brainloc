@@ -203,6 +203,8 @@ strvec2int <- function(input) { as.integer(as.factor(input)); }
 
 #' @title Get details on cluster location, required brainparc.
 #'
+#' @param clusters a clusterinfo instance, see the \code{clusterinfo} function on how to get one.
+#'
 #' @return a new version of the input data.frame, with additional columns appended.
 get_cluster_location_details <- function(clusters) {
     extrema = cluster_extrema(clusters);
