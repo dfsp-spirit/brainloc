@@ -30,7 +30,7 @@ test_that("We can transform from MNI305 vertex to MNI152 RAS using the regfusion
         test_vertex_fsaverage_lh = 145029L;
 
 
-        coord_info = coord_MNI305_info(bp$surfaces$white$lh$vertices[test_vertex_fsaverage_lh, ], method = "regfusionr");
+        coord_info = coord_MNI305_info(bp$surfaces$white$lh$vertices[test_vertex_fsaverage_lh, ], method = "regfusionr", fs_home = fs_info$found_at);
         testthat::expect_true(is.vector(coord_info$mni152));
         testthat::expect_equal(coord_info$mni152, c(-39.4, -31.7,  65.5), tolerance = 0.10);
     } else {
