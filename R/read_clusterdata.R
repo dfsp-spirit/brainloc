@@ -114,7 +114,7 @@ cluster_extrema <- function(clusterinfo, type = "extreme", silent = getOption("b
                 all_cluster_extreme_value[current_cluster_idx] = cluster_extreme_value;
                 all_cluster_extreme_vertex[current_cluster_idx] = cluster_vertex_with_extreme_value;
                 if(! silent) {
-                    cat(sprintf("Hemi lh cluster '%s' has size %d vertices and %s stat value %f at vertex %d.\n", cluster_name, cluster_num_vertices, type, cluster_extreme_value, cluster_vertex_with_extreme_value));
+                    cat(sprintf("Hemi %s cluster '%s' has size %d vertices and %s stat value %f at vertex %d.\n", hemi, cluster_name, cluster_num_vertices, type, cluster_extreme_value, cluster_vertex_with_extreme_value));
                 }
                 current_cluster_idx = current_cluster_idx + 1L;
             }
@@ -194,10 +194,14 @@ strvec2int <- function(input) { as.integer(as.factor(input)); }
 
 
 #' @keywords internal
-test_clusters_to_annot <- function(sjd = "~/data/tim_only", sj="tim") {
-    lh_an = fsbrain::subject.annot(sjd, sj, hemi="lh", atlas="aparc");
+test_clusters_to_annot <- function(sjd = "~/software/freesurfer/subjects", sj="fsaverage") {
+    lh_an = fsbrain::subject.annot(sjd, sj, hemi="lh", atlas="aparc"); # we abuse an atlas as a cluster overlay file in this example  because it works technically. It does not make any sense, I just did not have a Matlab surfstat output file at hand.
     rh_an = fsbrain::subject.annot(sjd, sj, hemi="rh", atlas="aparc");
     clusteroverlay = list("lh"=strvec2int(lh_an$label_codes), "rh"=strvec2int(rh_an$label_codes));
-    annots = clusteroverlay_to_annot(clusteroverlay);
+    thickness = fsbrain::subject.morph.native(sjd, sj, "thickness", hemi="both", split_by_hemi = TRUE);
+    tmap = list("lh"=thickness$lh * 2 - 2L, "rh"=thickness$lh * 2 - 2L);  # We abuse a cortical thickness map as a t-value map. Yes, that's really ugly.
+    clusters = clusterinfo(clusteroverlay$lh, clusteroverlay$rh, tmap$lh, tmap$rh);
+    annots = clusteroverlay_to_annot(clusters$overlay);
     #fsbrain::vis.colortable.legend(annots$lh);
+    extrema = cluster_extrema(clusters);
 }
