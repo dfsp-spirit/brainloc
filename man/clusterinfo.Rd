@@ -9,7 +9,9 @@ clusterinfo(
   rh_overlay,
   lh_statmap,
   rh_statmap,
-  template_subject = "fsaverage"
+  template_subject = "fsaverage",
+  subjects_dir = file.path(getOption("brainloc.fs_home", default =
+    Sys.getenv("FREESURFER_HOME")), "subjects")
 )
 }
 \arguments{
@@ -22,6 +24,8 @@ clusterinfo(
 \item{rh_statmap}{double vector, just like \code{lh_statmap}, but for the right hemisphere.}
 
 \item{template_subject}{character string, the template subject name. Typically 'fsaverage' or 'fsaverage6'. Must be some MNI305 space subject.}
+
+\item{subjects_dir}{character string, file system path to a directory containing the recon-all data for the template_subject. Used to load surfaces and annotations to identify cluster coordinates and atlas regions.}
 }
 \value{
 named list with entries 'overlay', 'statmap', and 'metadata': a clusterinfo data structure. Each of the 'overlay' and 'statmap' keys holds a hemilist of numerical vectors.

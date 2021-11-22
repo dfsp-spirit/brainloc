@@ -6,7 +6,7 @@
 #'
 #' @param ... Passed on to \code{\link{coord_MNI305_to_MNI152}}.
 #'
-#' @return named list with coordinate information
+#' @return named list with coordinate information (matrices)
 #'
 #' @export
 coord_MNI305_info <- function(coords_mni305, ...) {

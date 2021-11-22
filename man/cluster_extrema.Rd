@@ -18,7 +18,7 @@ cluster_extrema(
 \item{silent}{whether to suppress printing messages to stdout.}
 }
 \value{
-a data.frame with cluster information.
+a \code{data.frame} with cluster information. The column names should be self-explanatory.
 }
 \description{
 Print information on cluster extreme values.

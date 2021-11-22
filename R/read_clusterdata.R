@@ -64,7 +64,7 @@ clusteroverlay_to_annot <- function(clusteroverlay, background_code=1L, hemi=NUL
 #'
 #' @param silent whether to suppress printing messages to stdout.
 #'
-#' @return a data.frame with cluster information.
+#' @return a \code{data.frame} with cluster information. The column names should be self-explanatory.
 #'
 #' @keywords internal
 cluster_extrema <- function(clusterinfo, type = "extreme", silent = getOption("brainloc.silent", default = FALSE)) {
@@ -120,7 +120,7 @@ cluster_extrema <- function(clusterinfo, type = "extreme", silent = getOption("b
             }
         }
     }
-    return(data.frame("cluster"=all_cluster_names, "hemi"=all_cluster_hemis, "num_vertices"=all_cluster_num_vertices, "extreme_value"=all_cluster_extreme_value, "extrema_at_vertex"=cluster_vertex_with_extreme_value, stringsAsFactors = FALSE));
+    return(data.frame("cluster"=all_cluster_names, "hemi"=all_cluster_hemis, "num_vertices"=all_cluster_num_vertices, "extremum_value"=all_cluster_extreme_value, "extremum_vertex"=all_cluster_extreme_vertex, stringsAsFactors = FALSE));
 }
 
 
@@ -161,10 +161,12 @@ num_clusters <- function(cluster_annots) {
 #'
 #' @param template_subject character string, the template subject name. Typically 'fsaverage' or 'fsaverage6'. Must be some MNI305 space subject.
 #'
+#' @param subjects_dir character string, file system path to a directory containing the recon-all data for the template_subject. Used to load surfaces and annotations to identify cluster coordinates and atlas regions.
+#'
 #' @return named list with entries 'overlay', 'statmap', and 'metadata': a clusterinfo data structure. Each of the 'overlay' and 'statmap' keys holds a hemilist of numerical vectors.
 #'
 #' @export
-clusterinfo <- function(lh_overlay, rh_overlay, lh_statmap, rh_statmap, template_subject="fsaverage") {
+clusterinfo <- function(lh_overlay, rh_overlay, lh_statmap, rh_statmap, template_subject="fsaverage", subjects_dir=file.path(getOption("brainloc.fs_home", default = Sys.getenv("FREESURFER_HOME")), 'subjects')) {
     if(is.character(lh_overlay)) {
         lh_overlay = freesurferformats::read.fs.morph(lh_overlay);
     }
@@ -177,7 +179,13 @@ clusterinfo <- function(lh_overlay, rh_overlay, lh_statmap, rh_statmap, template
     if(is.character(rh_statmap)) {
         rh_statmap = freesurferformats::read.fs.morph(rh_statmap);
     }
-    res = list("overlay"=list("lh"=lh_overlay, "rh"=rh_overlay), "statmap"=list("lh"=lh_statmap, "rh"=rh_statmap), "metadata"=list("template_subject"=template_subject));
+    res = list("overlay"=list("lh"=lh_overlay, "rh"=rh_overlay), "statmap"=list("lh"=lh_statmap, "rh"=rh_statmap), "metadata"=list("template_subject"=template_subject, "brainparc"=NULL));
+    if(dir.exists(file.path(subjects_dir, template_subject))) { # Load surfaces and atlas if possible.
+        res$brainparc = brainparc_fs(subjects_dir, template_subject);
+    } else {
+        message(sprintf("Could not load brainparc for template subject '%s': directory '%s' not found.\n", template_subject, file.path(subjects_dir, template_subject)));
+    }
+
     class(res) = c(class(res), "clusterinfo");
     return(res);
 }
@@ -193,15 +201,34 @@ clusterinfo <- function(lh_overlay, rh_overlay, lh_statmap, rh_statmap, template
 strvec2int <- function(input) { as.integer(as.factor(input)); }
 
 
+get_cluster_location_details <- function(clusters) {
+    extrema = cluster_extrema(clusters);
+    for(cluster_idx in seq.int(nrow(extrema))) {
+        hemi = extrema$hemi[cluster_idx];
+        surface = clusters$brainparc$surfaces$white[[hemi]];
+        query_vertex = extrema$extremum_vertex[cluster_idx];
+        vertex_coords_MNI305 = surface$vertices[query_vertex, ];
+        coord_info = coord_MNI305_info(vertex_coords_MNI305);
+        mni152_coord_vec = coord_info$mni152;
+        cat(sprintf("Cluster %s extremum vertex %d has MNI152 coords: %f %f %f.\n", extrema$cluster[cluster_idx], query_vertex, mni152_coord_vec[1], mni152_coord_vec[2], mni152_coord_vec[3]));
+
+    }
+}
+
+
 #' @keywords internal
 test_clusters_to_annot <- function(sjd = "~/software/freesurfer/subjects", sj="fsaverage") {
+    options("brainloc.fs_home"="~/software/freesurfer/");
     lh_an = fsbrain::subject.annot(sjd, sj, hemi="lh", atlas="aparc"); # we abuse an atlas as a cluster overlay file in this example  because it works technically. It does not make any sense, I just did not have a Matlab surfstat output file at hand.
     rh_an = fsbrain::subject.annot(sjd, sj, hemi="rh", atlas="aparc");
     clusteroverlay = list("lh"=strvec2int(lh_an$label_codes), "rh"=strvec2int(rh_an$label_codes));
     thickness = fsbrain::subject.morph.native(sjd, sj, "thickness", hemi="both", split_by_hemi = TRUE);
     tmap = list("lh"=thickness$lh * 2 - 2L, "rh"=thickness$lh * 2 - 2L);  # We abuse a cortical thickness map as a t-value map. Yes, that's really ugly.
     clusters = clusterinfo(clusteroverlay$lh, clusteroverlay$rh, tmap$lh, tmap$rh);
-    annots = clusteroverlay_to_annot(clusters$overlay);
-    #fsbrain::vis.colortable.legend(annots$lh);
+    #cluster_annots = clusteroverlay_to_annot(clusters$overlay);
+    #fsbrain::vis.colortable.legend(cluster_annots$lh);
     extrema = cluster_extrema(clusters);
+    if(! is.null(clusters$brainparc)) {
+        get_cluster_location_details(clusters);
+    }
 }
