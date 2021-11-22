@@ -23,6 +23,9 @@ vertex_closest_regions(
 
 \item{distance}{character string, one of \code{"euclidean"} or \code{"geodesic"}. The latter is only supported with \code{linkage = 'single'}.}
 }
+\value{
+not decided yet, WIP. Currently called for the side effect of text output to console.
+}
 \description{
 Finds the closest atlas regions according to the brain surface parcellation 'brainparc' for the given query vertices.
 }

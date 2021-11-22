@@ -16,6 +16,8 @@
 #'
 #' @param distance character string, one of \code{"euclidean"} or \code{"geodesic"}. The latter is only supported with \code{linkage = 'single'}.
 #'
+#' @return not decided yet, WIP. Currently called for the side effect of text output to console.
+#'
 #' @examples
 #' \dontrun{
 #' bp = brainparc_fs(fsbrain::fsaverage.path(), "fsaverage", atlas="aparc");
