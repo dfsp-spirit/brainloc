@@ -201,18 +201,45 @@ clusterinfo <- function(lh_overlay, rh_overlay, lh_statmap, rh_statmap, template
 strvec2int <- function(input) { as.integer(as.factor(input)); }
 
 
+#' @title Get details on cluster location, required brainparc.
+#'
+#' @return a new version of the input data.frame, with additional columns appended.
 get_cluster_location_details <- function(clusters) {
     extrema = cluster_extrema(clusters);
-    for(cluster_idx in seq.int(nrow(extrema))) {
+    nc = nrow(extrema); # number of clusters
+
+    # results, to be filled.
+    all_mni152_R = rep(0.0, nc);
+    all_mni152_A = rep(0.0, nc);
+    all_mni152_S = rep(0.0, nc);
+    all_Tal_R = rep(0.0, nc);
+    all_Tal_A = rep(0.0, nc);
+    all_Tal_S = rep(0.0, nc);
+
+    for(cluster_idx in seq.int(nc)) {
         hemi = extrema$hemi[cluster_idx];
         surface = clusters$brainparc$surfaces$white[[hemi]];
         query_vertex = extrema$extremum_vertex[cluster_idx];
         vertex_coords_MNI305 = surface$vertices[query_vertex, ];
         coord_info = coord_MNI305_info(vertex_coords_MNI305);
         mni152_coord_vec = coord_info$mni152;
+        talairach_coord_vec = coord_info$talairach;
+        all_mni152_R[cluster_idx] = mni152_coord_vec[1];
+        all_mni152_A[cluster_idx] = mni152_coord_vec[2];
+        all_mni152_S[cluster_idx] = mni152_coord_vec[3];
+        all_Tal_R[cluster_idx] = talairach_coord_vec[1];
+        all_Tal_A[cluster_idx] = talairach_coord_vec[2];
+        all_Tal_S[cluster_idx] = talairach_coord_vec[3];
         cat(sprintf("Cluster %s extremum vertex %d has MNI152 coords: %f %f %f.\n", extrema$cluster[cluster_idx], query_vertex, mni152_coord_vec[1], mni152_coord_vec[2], mni152_coord_vec[3]));
-
     }
+
+    extrema$mni152_r = all_mni152_R;
+    extrema$mni152_a = all_mni152_A;
+    extrema$mni152_s = all_mni152_S;
+    extrema$talairach_r = all_Tal_R;
+    extrema$talairach_a = all_Tal_A;
+    extrema$talairach_s = all_Tal_S;
+    return(extrema);
 }
 
 
@@ -229,6 +256,6 @@ test_clusters_to_annot <- function(sjd = "~/software/freesurfer/subjects", sj="f
     #fsbrain::vis.colortable.legend(cluster_annots$lh);
     extrema = cluster_extrema(clusters);
     if(! is.null(clusters$brainparc)) {
-        get_cluster_location_details(clusters);
+        extrema = get_cluster_location_details(clusters);
     }
 }
