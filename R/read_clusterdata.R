@@ -55,6 +55,134 @@ clusteroverlay_to_annot <- function(clusteroverlay, background_code=1L, hemi=NUL
     }
 }
 
+
+#' @title Print information on cluster extreme values.
+#'
+#' @param clusterinfo a clusterinfo instance, see the \code{clusterinfo} function to get one.
+#'
+#' @param type character string, one of 'extreme', 'min' or 'max'. Which cluster value to report. The default of 'extreme' reports the absolutely larger one of the min and the max value and is for the typical use case of \code{t}-value maps.
+#'
+#' @param silent whether to suppress printing messages to stdout.
+#'
+#' @return a data.frame with cluster information.
+#'
+#' @keywords internal
+cluster_extrema <- function(clusterinfo, type = "extreme", silent = getOption("brainloc.silent", default = FALSE)) {
+    annots = clusteroverlay_to_annot(clusterinfo$overlay);
+
+    num_clusters_total = num_clusters(annots)$total;
+
+    all_cluster_names = rep("?", num_clusters_total);
+    all_cluster_hemis = rep("?", num_clusters_total);
+    all_cluster_num_vertices = rep(0L, num_clusters_total);
+    all_cluster_extreme_value = rep(0.0, num_clusters_total);
+    all_cluster_extreme_vertex = rep(0L, num_clusters_total);
+
+
+    current_cluster_idx = 1L;
+    for (hemi in c("lh", "rh")) {
+        for(cluster_name in unique(annots[[hemi]]$label_names)) {
+            if(! (cluster_name %in% c("", "unknown"))) {
+                cluster_vertices = which(annots[[hemi]]$label_names == cluster_name);
+                cluster_num_vertices = length(cluster_vertices);
+                all_cluster_names[current_cluster_idx] = cluster_name;
+                all_cluster_hemis[current_cluster_idx] = hemi;
+                all_cluster_num_vertices[current_cluster_idx] = cluster_num_vertices;
+                cluster_min_statvalue = min(clusterinfo$statmap[[hemi]][cluster_vertices]);
+                cluster_vertex_with_min_statvalue = cluster_vertices[which.min(clusterinfo$statmap[[hemi]][cluster_vertices])];
+                cluster_max_statvalue = max(clusterinfo$statmap[[hemi]][cluster_vertices]);
+                cluster_vertex_with_max_statvalue = cluster_vertices[which.max(clusterinfo$statmap[[hemi]][cluster_vertices])];
+
+                if(type == "extreme") {
+                    is_pos_greater = abs(cluster_max_statvalue) > abs(cluster_min_statvalue);
+                    if(is_pos_greater) {
+                        cluster_extreme_value = cluster_max_statvalue;
+                        cluster_vertex_with_extreme_value = cluster_vertex_with_max_statvalue;
+                    } else {
+                        cluster_extreme_value = cluster_min_statvalue;
+                        cluster_vertex_with_extreme_value = cluster_vertex_with_min_statvalue;
+                    }
+                } else if(type == "min") {
+                    cluster_extreme_value = cluster_min_statvalue;
+                    cluster_vertex_with_extreme_value = cluster_vertex_with_min_statvalue;
+                } else if (type == "max") {
+                    cluster_extreme_value = cluster_max_statvalue;
+                    cluster_vertex_with_extreme_value = cluster_vertex_with_max_statvalue;
+                } else {
+                    stop("Invalid 'type' argument. Must be one of 'min', 'max', 'extreme'");
+                }
+                all_cluster_extreme_value[current_cluster_idx] = cluster_extreme_value;
+                all_cluster_extreme_vertex[current_cluster_idx] = cluster_vertex_with_extreme_value;
+                if(! silent) {
+                    cat(sprintf("Hemi lh cluster '%s' has size %d vertices and %s stat value %f at vertex %d.\n", cluster_name, cluster_num_vertices, type, cluster_extreme_value, cluster_vertex_with_extreme_value));
+                }
+                current_cluster_idx = current_cluster_idx + 1L;
+            }
+        }
+    }
+    return(data.frame("cluster"=all_cluster_names, "hemi"=all_cluster_hemis, "num_vertices"=all_cluster_num_vertices, "extreme_value"=all_cluster_extreme_value, "extrema_at_vertex"=cluster_vertex_with_extreme_value, stringsAsFactors = FALSE));
+}
+
+
+#' @title Compute number of clusters from cluster annots.
+#'
+#' @param cluster_annots hemilist of cluster annots, see \code{clusteroverlay_to_annot}.
+#'
+#' @return named list with keys 'lh', 'rh' and 'total', each holdign a scalar integer. The cluster counts.
+#'
+#' @keywords internal
+num_clusters <- function(cluster_annots) {
+    res = list("lh"=0L, "rh"=0L, "total"=0L);
+    for (hemi in c("lh", "rh")) {
+        for(cluster_name in unique(cluster_annots[[hemi]]$label_names)) {
+            if(! (cluster_name %in% c("", "unknown"))) {
+                if(hemi == "lh") {
+                    res$lh = res$lh + 1L;
+                } else {
+                    res$rh = res$rh + 1L;
+                }
+            }
+        }
+    }
+    res$total = res$lh + res$rh;
+    return(res);
+}
+
+
+#' @title Create clusterinfo data structure from files or pre-loaded data.
+#'
+#' @param lh_overlay integer vector, the cluster overlay data: one integer per vertex of the left hemisphere. This assigns each vertex to a cluster, and all vertices of one cluster have the same number. Background is typically 1L. If a character string, the parameter will be interpreted as file path and loaded with \code{freesurferformats::read.fs.morph}.
+#'
+#' @param rh_overlay integer vector, just like \code{lh_overlay}, but for the right hemisphere.
+#'
+#' @param lh_statmap double vector, the stats map. Typically a t-value map. Must have one value per vertex. If a character string, the parameter will be interpreted as file path and loaded with \code{freesurferformats::read.fs.morph}.
+#'
+#' @param rh_statmap double vector, just like \code{lh_statmap}, but for the right hemisphere.
+#'
+#' @param template_subject character string, the template subject name. Typically 'fsaverage' or 'fsaverage6'. Must be some MNI305 space subject.
+#'
+#' @return named list with entries 'overlay', 'statmap', and 'metadata': a clusterinfo data structure. Each of the 'overlay' and 'statmap' keys holds a hemilist of numerical vectors.
+#'
+#' @export
+clusterinfo <- function(lh_overlay, rh_overlay, lh_statmap, rh_statmap, template_subject="fsaverage") {
+    if(is.character(lh_overlay)) {
+        lh_overlay = freesurferformats::read.fs.morph(lh_overlay);
+    }
+    if(is.character(rh_overlay)) {
+        rh_overlay = freesurferformats::read.fs.morph(rh_overlay);
+    }
+    if(is.character(lh_statmap)) {
+        lh_statmap = freesurferformats::read.fs.morph(lh_statmap);
+    }
+    if(is.character(rh_statmap)) {
+        rh_statmap = freesurferformats::read.fs.morph(rh_statmap);
+    }
+    res = list("overlay"=list("lh"=lh_overlay, "rh"=rh_overlay), "statmap"=list("lh"=lh_statmap, "rh"=rh_statmap), "metadata"=list("template_subject"=template_subject));
+    class(res) = c(class(res), "clusterinfo");
+    return(res);
+}
+
+
 #' @title Convert vector of character strings to integer vector.
 #'
 #' @param input vector of character strings
