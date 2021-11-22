@@ -5,7 +5,7 @@ This is currently intended to be used with FreeSurfer standard space templates (
 
 ## About
 
-This is an R package that takes as input a vertex index of a FreeSurfer brain mesh in MNI305 space (typically fsaverage) and identifies the location in different coordinate systems and with respect to different brain regions. We use this to report the exact locations of clusters or other differences we find.
+This is an R package that takes as input a vertex index of a FreeSurfer brain mesh in MNI305 space (typically fsaverage) and identifies the location in different coordinate systems and with respect to different brain regions. We use this to report the exact locations of clusters or other differences we find. It can also be used to find the vertex in an fsaverage mesh that is closest to a given MNI305 coordinate.
 
 ### Coordinate transformation
 
