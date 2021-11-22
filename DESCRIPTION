@@ -19,6 +19,6 @@ Suggests:
     fsbrain (>= 0.5.0),
     drat,
     regfusionr (>= 0.1.1)
-Additional_repositories: https://dfsp-spirit.github.io/drat/
+Additional_repositories: https://dfsp-spirit.r-universe.dev
 VignetteBuilder: knitr
 RoxygenNote: 7.1.2
