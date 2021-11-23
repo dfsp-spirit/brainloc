@@ -68,6 +68,11 @@ clusteroverlay_to_annot <- function(clusteroverlay, background_code=1L, hemi=NUL
 #'
 #' @keywords internal
 cluster_extrema <- function(clusterinfo, type = "extreme", silent = getOption("brainloc.silent", default = FALSE)) {
+
+    if(! silent) {
+        cat(sprintf("Computing cluster extrema.\n"));
+    }
+
     annots = clusteroverlay_to_annot(clusterinfo$overlay);
 
     num_clusters_total = num_clusters(annots)$total;
@@ -94,14 +99,14 @@ cluster_extrema <- function(clusterinfo, type = "extreme", silent = getOption("b
                 if(is.na(cluster_min_statvalue) | is.na(cluster_max_statvalue)) {
                     num_na = sum(is.na(clusterinfo$statmap[[hemi]][cluster_vertices]));
                     if(num_na == cluster_num_vertices) {
-                        warning(sprintf("Cluster #%d %s on hemi %s with %d vertices has %d NA stat data values: min = %s, max = %s. Skipping. Vertex indices are in range %d - %d (%d unique).\n", current_cluster_idx, cluster_name, hemi, cluster_num_vertices, num_na, cluster_min_statvalue, cluster_max_statvalue, min(cluster_vertices), max(cluster_vertices), length(unique(cluster_vertices))));
+                        warning(sprintf(" - Cluster #%d %s on hemi %s with %d vertices has %d NA stat data values: min = %s, max = %s. Skipping. Vertex indices are in range %d - %d (%d unique).\n", current_cluster_idx, cluster_name, hemi, cluster_num_vertices, num_na, cluster_min_statvalue, cluster_max_statvalue, min(cluster_vertices), max(cluster_vertices), length(unique(cluster_vertices))));
                         all_cluster_extreme_value[current_cluster_idx] = NA;
                         all_cluster_extreme_vertex[current_cluster_idx] = NA;
                         rows_to_remove = c(rows_to_remove, current_cluster_idx);
                         current_cluster_idx = current_cluster_idx + 1L;
                         next;
                     } else {
-                        message(sprintf("Cluster #%d %s on hemi %s with %d vertices has %d NA stat data values which will be ignored.\n", current_cluster_idx, cluster_name, hemi, cluster_num_vertices, num_na));
+                        message(sprintf(" - Cluster #%d %s on hemi %s with %d vertices has %d NA stat data values which will be ignored.\n", current_cluster_idx, cluster_name, hemi, cluster_num_vertices, num_na));
                         cluster_min_statvalue = min(clusterinfo$statmap[[hemi]][cluster_vertices], na.rm = TRUE);
                         cluster_max_statvalue = max(clusterinfo$statmap[[hemi]][cluster_vertices], na.rm = TRUE);
                     }
@@ -131,7 +136,7 @@ cluster_extrema <- function(clusterinfo, type = "extreme", silent = getOption("b
                 all_cluster_extreme_value[current_cluster_idx] = cluster_extreme_value;
                 all_cluster_extreme_vertex[current_cluster_idx] = cluster_vertex_with_extreme_value;
                 if(! silent) {
-                    cat(sprintf("Hemi %s cluster '%s' has size %d vertices and %s stat value %f at vertex %d.\n", hemi, cluster_name, cluster_num_vertices, type, cluster_extreme_value, cluster_vertex_with_extreme_value));
+                    cat(sprintf(" - Hemi %s cluster '%s' has size %d vertices and %s stat value %f at vertex %d.\n", hemi, cluster_name, cluster_num_vertices, type, cluster_extreme_value, cluster_vertex_with_extreme_value));
                 }
                 current_cluster_idx = current_cluster_idx + 1L;
             }
@@ -140,7 +145,9 @@ cluster_extrema <- function(clusterinfo, type = "extreme", silent = getOption("b
 
     # Remove rows of clusters with NA values.
     df = data.frame("cluster"=all_cluster_names, "hemi"=all_cluster_hemis, "num_vertices"=all_cluster_num_vertices, "extremum_value"=all_cluster_extreme_value, "extremum_vertex"=all_cluster_extreme_vertex, stringsAsFactors = FALSE);
-    df = df[-rows_to_remove, ];
+    if(! is.null(rows_to_remove)) {
+        df = df[-rows_to_remove, ];
+    }
     return(df);
 }
 
@@ -200,9 +207,28 @@ clusterinfo <- function(lh_overlay, rh_overlay, lh_statmap, rh_statmap, template
     if(is.character(rh_statmap)) {
         rh_statmap = freesurferformats::read.fs.morph(rh_statmap);
     }
+
+    # Some sanity checks.
+    if(length(lh_overlay) != length(lh_statmap)) {
+        stop(sprintf("Data invalid: left hemisphere overlay and statmap must have identical lengths, but have %d versus %d.\n", length(lh_overlay), length(lh_statmap)));
+    }
+    if(length(rh_overlay) != length(rh_statmap)) {
+        stop(sprintf("Data invalid: right hemisphere overlay and statmap must have identical lengths, but have %d versus %d.\n", length(rh_overlay), length(rh_statmap)));
+    }
+
     res = list("overlay"=list("lh"=lh_overlay, "rh"=rh_overlay), "statmap"=list("lh"=lh_statmap, "rh"=rh_statmap), "metadata"=list("template_subject"=template_subject, "brainparc"=NULL));
     if(dir.exists(file.path(subjects_dir, template_subject))) { # Load surfaces and atlas if possible.
         res$brainparc = brainparc_fs(subjects_dir, template_subject);
+        # This allows us to do more sanity checks.
+        # Some sanity checks.
+        lh_surface_numverts = nrow(res$brainparc$surfaces[[1]]$lh$vertices);
+        if(length(lh_overlay) != lh_surface_numverts) {
+            stop(sprintf("Data invalid: left hemisphere overlay size must match surface vertex count, but they differ: %d versus %d.\n", length(lh_overlay), lh_surface_numverts));
+        }
+        rh_surface_numverts = nrow(res$brainparc$surfaces[[1]]$rh$vertices);
+        if(length(rh_overlay) != rh_surface_numverts) {
+            stop(sprintf("Data invalid: right hemisphere overlay size must match surface vertex count, but they differ: %d versus %d.\n", length(rh_overlay), rh_surface_numverts));
+        }
     } else {
         message(sprintf("Could not load brainparc for template subject '%s': directory '%s' not found.\n", template_subject, file.path(subjects_dir, template_subject)));
     }
@@ -230,7 +256,12 @@ strvec2int <- function(input) { as.integer(as.factor(input)); }
 #'
 #' @return a new version of the input data.frame, with additional columns appended.
 get_cluster_location_details <- function(clusters, silent = getOption("brainloc.silent", default = FALSE)) {
+
     extrema = brainloc:::cluster_extrema(clusters);
+
+    if(! silent) {
+        cat(sprintf("Computing location details for cluster extrema.\n"));
+    }
 
     if(is.null(clusters$brainparc)) {
         warning("Cannot compute cluster location details, clusterinfo in parameter 'clusters' does not contain a valid 'brainparc'.");
@@ -262,7 +293,7 @@ get_cluster_location_details <- function(clusters, silent = getOption("brainloc.
         all_Tal_A[cluster_idx] = coord_info$talairach[2];
         all_Tal_S[cluster_idx] = coord_info$talairach[3];
         if(! silent) {
-            cat(sprintf("Cluster %s extremum vertex %d has MNI152 coords (%f %f %f) and Talairach coords (%f %f %f).\n", extrema$cluster[cluster_idx], query_vertex, coord_info$mni152[1], coord_info$mni152[2], coord_info$mni152[3], coord_info$talairach[1], coord_info$talairach[2], coord_info$talairach[3]));
+            cat(sprintf(" - Cluster %s on hemi %s extremum vertex %d has MNI152 coords (%f %f %f) and Talairach coords (%f %f %f).\n", extrema$cluster[cluster_idx], hemi, query_vertex, coord_info$mni152[1], coord_info$mni152[2], coord_info$mni152[3], coord_info$talairach[1], coord_info$talairach[2], coord_info$talairach[3]));
         }
     }
 
