@@ -35,7 +35,7 @@ Here is an example for fsaverage vertex 145029:
 
 ### Closest brain atlas regions
 
-The package also computes the closest brain regions and the distance to them, based on an atlas. Given a cluster (or more generally, a set of vertices), it can also compute all atlas regions a cluster overlaps with and the percentage as well as absolute number of cluster vertices in the respective atlas regions.
+For a vertex, the package also computes the closest brain regions and the distances to them, based on an atlas. Given a cluster (or more generally, a set of vertices), it can also compute all atlas regions a cluster overlaps with and the percentage as well as absolute number of cluster vertices in the respective atlas regions.
 
 You can use any atlas you like, the three default ones that [come with FreeSurfer](https://surfer.nmr.mgh.harvard.edu/fswiki/CorticalParcellation) are:
 
