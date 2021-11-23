@@ -4,10 +4,15 @@
 \alias{get_cluster_location_details}
 \title{Get details on cluster location, required brainparc.}
 \usage{
-get_cluster_location_details(clusters)
+get_cluster_location_details(
+  clusters,
+  silent = getOption("brainloc.silent", default = FALSE)
+)
 }
 \arguments{
-\item{clusters}{a clusterinfo instance, see the \code{clusterinfo} function on how to get one.}
+\item{clusters}{a clusterinfo instance, see the \code{clusterinfo} function on how to get one. Must contain a valid \code{brainparc} in field 'brainparc'.}
+
+\item{silent}{logical, whether to suppress console messages.}
 }
 \value{
 a new version of the input data.frame, with additional columns appended.

@@ -203,11 +203,19 @@ strvec2int <- function(input) { as.integer(as.factor(input)); }
 
 #' @title Get details on cluster location, required brainparc.
 #'
-#' @param clusters a clusterinfo instance, see the \code{clusterinfo} function on how to get one.
+#' @param clusters a clusterinfo instance, see the \code{clusterinfo} function on how to get one. Must contain a valid \code{brainparc} in field 'brainparc'.
+#'
+#' @param silent logical, whether to suppress console messages.
 #'
 #' @return a new version of the input data.frame, with additional columns appended.
-get_cluster_location_details <- function(clusters) {
+get_cluster_location_details <- function(clusters, silent = getOption("brainloc.silent", default = FALSE)) {
     extrema = cluster_extrema(clusters);
+
+    if(is.null(clusters$brainparc)) {
+        warning("Cannot compute cluster location details, clusterinfo in parameter 'clusters' does not contain a valid 'brainparc'.");
+        return(extrema);
+    }
+
     nc = nrow(extrema); # number of clusters
 
     # results, to be filled.
@@ -232,7 +240,9 @@ get_cluster_location_details <- function(clusters) {
         all_Tal_R[cluster_idx] = coord_info$talairach[1];
         all_Tal_A[cluster_idx] = coord_info$talairach[2];
         all_Tal_S[cluster_idx] = coord_info$talairach[3];
-        cat(sprintf("Cluster %s extremum vertex %d has MNI152 coords (%f %f %f) and Talairach coords (%f %f %f).\n", extrema$cluster[cluster_idx], query_vertex, coord_info$mni152[1], coord_info$mni152[2], coord_info$mni152[3], coord_info$talairach[1], coord_info$talairach[2], coord_info$talairach[3]));
+        if(! silent) {
+            cat(sprintf("Cluster %s extremum vertex %d has MNI152 coords (%f %f %f) and Talairach coords (%f %f %f).\n", extrema$cluster[cluster_idx], query_vertex, coord_info$mni152[1], coord_info$mni152[2], coord_info$mni152[3], coord_info$talairach[1], coord_info$talairach[2], coord_info$talairach[3]));
+        }
     }
 
     extrema$mni152_r = all_mni152_R;
