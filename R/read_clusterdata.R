@@ -223,16 +223,16 @@ get_cluster_location_details <- function(clusters) {
         surface = clusters$brainparc$surfaces$white[[hemi]];
         query_vertex = extrema$extremum_vertex[cluster_idx];
         vertex_coords_MNI305 = surface$vertices[query_vertex, ];
+
         coord_info = coord_MNI305_info(vertex_coords_MNI305);
-        mni152_coord_vec = coord_info$mni152;
-        talairach_coord_vec = coord_info$talairach;
-        all_mni152_R[cluster_idx] = mni152_coord_vec[1];
-        all_mni152_A[cluster_idx] = mni152_coord_vec[2];
-        all_mni152_S[cluster_idx] = mni152_coord_vec[3];
-        all_Tal_R[cluster_idx] = talairach_coord_vec[1];
-        all_Tal_A[cluster_idx] = talairach_coord_vec[2];
-        all_Tal_S[cluster_idx] = talairach_coord_vec[3];
-        cat(sprintf("Cluster %s extremum vertex %d has MNI152 coords: %f %f %f.\n", extrema$cluster[cluster_idx], query_vertex, mni152_coord_vec[1], mni152_coord_vec[2], mni152_coord_vec[3]));
+
+        all_mni152_R[cluster_idx] = coord_info$mni152[1];
+        all_mni152_A[cluster_idx] = coord_info$mni152[2];
+        all_mni152_S[cluster_idx] = coord_info$mni152[3];
+        all_Tal_R[cluster_idx] = coord_info$talairach[1];
+        all_Tal_A[cluster_idx] = coord_info$talairach[2];
+        all_Tal_S[cluster_idx] = coord_info$talairach[3];
+        cat(sprintf("Cluster %s extremum vertex %d has MNI152 coords (%f %f %f) and Talairach coords (%f %f %f).\n", extrema$cluster[cluster_idx], query_vertex, coord_info$mni152[1], coord_info$mni152[2], coord_info$mni152[3], coord_info$talairach[1], coord_info$talairach[2], coord_info$talairach[3]));
     }
 
     extrema$mni152_r = all_mni152_R;
