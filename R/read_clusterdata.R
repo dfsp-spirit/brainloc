@@ -138,6 +138,15 @@ cluster_extrema <- function(clusterinfo, type = "extreme", silent = getOption("b
                 if(! silent) {
                     cat(sprintf(" - Hemi %s cluster '%s' has size %d vertices and %s stat value %f at vertex %d.\n", hemi, cluster_name, cluster_num_vertices, type, cluster_extreme_value, cluster_vertex_with_extreme_value));
                 }
+
+                overlap_df = get_overlapping_regions(annots[[hemi]]$label_names, cluster_vertices);
+                if(! silent) {
+                    cat(sprintf(" - Hemi %s cluster '%s' overlaps with %d regions:\n", hemi, cluster_name, nrow(overlap_df)));
+                    for(row_idx in seq.int(nrow(overlap_df))) {
+                        cat(sprintf("   * Region %s: %d of %d cluster vertices in region (%f percent).\n", overlap_df$region[row_idx], overlap_df$num_shared_vertices[row_idx], cluster_num_vertices, overlap_df$percent_shared_vertices[row_idx]));
+                    }
+                }
+
                 current_cluster_idx = current_cluster_idx + 1L;
             }
         }
@@ -319,4 +328,48 @@ test_clusters_to_annot <- function(sjd = "~/software/freesurfer/subjects", sj="f
     #cluster_annots = clusteroverlay_to_annot(clusters$overlay);
     #fsbrain::vis.colortable.legend(cluster_annots$lh);
     extrema_details = brainloc:::get_cluster_location_details(clusters);
+}
+
+
+#' @title Given vertex indices defining a cluster, find all atlas regions the cluster overlaps with.
+#'
+#' @param annot_min a full \code{fs.annot} instance, or a minimal annot, i.e., only the label_names field of the annot. Only a single one, not a hemilist.
+#'
+#' @param cluster_vertices integer vector, the vertices defining the cluster (technically they do not need to form a cluster or be connected). Must not be empty.
+#'
+#' @return data.frame with columns 'region': the region name, 'num_shared_vertices': the number of cluster vertices which are in the region, and 'percent_shared_vertices': the percent of cluster vertices which are in the region.
+#'
+#' @keywords internal
+get_overlapping_regions <- function(annot_min, cluster_vertices) {
+    if(freesurferformats::is.fs.annot(annot_min)) {
+        annot_min = annot_min$label_names;
+    }
+
+    cluster_size = length(cluster_vertices);
+    if(cluster_size < 1L) {
+        stop("Parameter 'cluster_vertices' must not be empty.");
+    }
+
+    # Sanity checks.
+    if(any(cluster_vertices > length(annot_min))) {
+        stop(sprintf("Annotation has length %d, but maximal vertex index is %d.\n", length(annot_min), max(cluster_vertices)));
+    }
+    if(any(cluster_vertices < 0L)) {
+        stop("All vertex indices in parameter 'cluster_vertices' must be positive integers.");
+    }
+
+
+    overlapping_region_names = unique(annot_min[cluster_vertices]);
+    nr = length(overlapping_region_names); # num overlapping regions
+    overlapping_region_num_vertex_overlap = rep(0L, nr);
+    overlapping_region_percent_overlap = rep(0.0, nr);
+
+    region_idx = 0L;
+    for(region_name in overlapping_region_names) {
+        region_idx = region_idx + 1L;
+        region_vertex_indices = which(annot_min == region_name);
+        overlapping_region_num_vertex_overlap[region_idx] = length(which(annot_min[cluster_vertices] == region_name));
+        overlapping_region_percent_overlap[region_idx] = overlapping_region_num_vertex_overlap[region_idx] / cluster_size * 100.0;
+    }
+    return(data.frame("region"=overlapping_region_names, "num_shared_vertices"=overlapping_region_num_vertex_overlap, "percent_shared_vertices"=overlapping_region_percent_overlap));
 }
