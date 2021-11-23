@@ -52,8 +52,5 @@ The following methods are available to compute the distance of a point on a brai
 
 * Euclidean distance: point to mean value of region coordinates
 * Euclidean distance: point to closest vertex of region
-
-The following methods are work in progress:
-
 * Geodesic distance to closest vertex of region
 
