@@ -12,7 +12,7 @@ cluster_overlapping_regions(annot_min, cluster_vertices)
 \item{cluster_vertices}{integer vector, the vertices defining the cluster (technically they do not need to form a cluster or be connected). Must not be empty.}
 }
 \value{
-data.frame with columns 'region': the region name, 'num_shared_vertices': the number of cluster vertices which are in the region, and 'percent_shared_vertices': the percent of cluster vertices which are in the region. The data.frame rows are ordered descending by 'percent_shared_vertices'.
+data.frame with columns 'region': the region name, 'num_shared_vertices': the number of cluster vertices which are in the region, and 'percent_shared_vertices': the percent of cluster vertices which are in the region, 'cluster_percent_of_region': how much of the region area is filled by the cluster vertices, in percent. The data.frame rows are ordered descending by 'percent_shared_vertices'.
 }
 \description{
 Given vertex indices defining a cluster, find all atlas regions the cluster overlaps with.

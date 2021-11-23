@@ -147,7 +147,7 @@ cluster_extrema <- function(clusterinfo, type = "extreme", silent = getOption("b
                         if(! silent) {
                             cat(sprintf("   - Hemi %s cluster '%s' overlaps with %d regions of atlas '%s':\n", hemi, cluster_name, nrow(overlap_df), atlas));
                             for(row_idx in seq.int(nrow(overlap_df))) {
-                                cat(sprintf("     * Region %s: %d of %d cluster vertices in region (%f percent).\n", overlap_df$region[row_idx], overlap_df$num_shared_vertices[row_idx], cluster_num_vertices, overlap_df$percent_shared_vertices[row_idx]));
+                                cat(sprintf("     * Region %s: %d of %d cluster vertices in region (%.2f percent). Cluster covers %.2f percent of the region.\n", overlap_df$region[row_idx], overlap_df$num_shared_vertices[row_idx], cluster_num_vertices, overlap_df$percent_shared_vertices[row_idx], overlap_df$cluster_percent_of_region[row_idx]));
                             }
                         }
                     }
@@ -345,7 +345,7 @@ test_clusters_to_annot <- function(sjd = "~/software/freesurfer/subjects", sj="f
 #'
 #' @param cluster_vertices integer vector, the vertices defining the cluster (technically they do not need to form a cluster or be connected). Must not be empty.
 #'
-#' @return data.frame with columns 'region': the region name, 'num_shared_vertices': the number of cluster vertices which are in the region, and 'percent_shared_vertices': the percent of cluster vertices which are in the region. The data.frame rows are ordered descending by 'percent_shared_vertices'.
+#' @return data.frame with columns 'region': the region name, 'num_shared_vertices': the number of cluster vertices which are in the region, and 'percent_shared_vertices': the percent of cluster vertices which are in the region, 'cluster_percent_of_region': how much of the region area is filled by the cluster vertices, in percent. The data.frame rows are ordered descending by 'percent_shared_vertices'.
 #'
 #' @keywords internal
 cluster_overlapping_regions <- function(annot_min, cluster_vertices) {
@@ -371,6 +371,7 @@ cluster_overlapping_regions <- function(annot_min, cluster_vertices) {
     nr = length(overlapping_region_names); # num overlapping regions
     overlapping_region_num_vertex_overlap = rep(0L, nr);
     overlapping_region_percent_overlap = rep(0.0, nr);
+    cluster_size_percent_of_region = rep(0.0, nr);
 
     region_idx = 0L;
     for(region_name in overlapping_region_names) {
@@ -378,7 +379,8 @@ cluster_overlapping_regions <- function(annot_min, cluster_vertices) {
         region_vertex_indices = which(annot_min == region_name);
         overlapping_region_num_vertex_overlap[region_idx] = length(which(annot_min[cluster_vertices] == region_name));
         overlapping_region_percent_overlap[region_idx] = overlapping_region_num_vertex_overlap[region_idx] / cluster_size * 100.0;
+        cluster_size_percent_of_region[region_idx] = overlapping_region_num_vertex_overlap[region_idx] / length(region_vertex_indices) * 100.0;
     }
-    df = data.frame("region"=overlapping_region_names, "num_shared_vertices"=overlapping_region_num_vertex_overlap, "percent_shared_vertices"=overlapping_region_percent_overlap);
+    df = data.frame("region"=overlapping_region_names, "num_shared_vertices"=overlapping_region_num_vertex_overlap, "percent_shared_vertices"=overlapping_region_percent_overlap, "cluster_percent_of_region"=cluster_size_percent_of_region);
     return(df[order(df$percent_shared_vertices),]);
 }
