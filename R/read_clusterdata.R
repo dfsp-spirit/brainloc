@@ -80,6 +80,7 @@ cluster_extrema <- function(clusterinfo, type = "extreme", silent = getOption("b
 
 
     current_cluster_idx = 1L;
+    rows_to_remove = c();
     for (hemi in c("lh", "rh")) {
         for(cluster_name in unique(annots[[hemi]]$label_names)) {
             if(! (cluster_name %in% c("", "unknown"))) {
@@ -89,8 +90,24 @@ cluster_extrema <- function(clusterinfo, type = "extreme", silent = getOption("b
                 all_cluster_hemis[current_cluster_idx] = hemi;
                 all_cluster_num_vertices[current_cluster_idx] = cluster_num_vertices;
                 cluster_min_statvalue = min(clusterinfo$statmap[[hemi]][cluster_vertices]);
-                cluster_vertex_with_min_statvalue = cluster_vertices[which.min(clusterinfo$statmap[[hemi]][cluster_vertices])];
                 cluster_max_statvalue = max(clusterinfo$statmap[[hemi]][cluster_vertices]);
+                if(is.na(cluster_min_statvalue) | is.na(cluster_max_statvalue)) {
+                    num_na = sum(is.na(clusterinfo$statmap[[hemi]][cluster_vertices]));
+                    if(num_na == cluster_num_vertices) {
+                        warning(sprintf("Cluster #%d %s on hemi %s with %d vertices has %d NA stat data values: min = %s, max = %s. Skipping. Vertex indices are in range %d - %d (%d unique).\n", current_cluster_idx, cluster_name, hemi, cluster_num_vertices, num_na, cluster_min_statvalue, cluster_max_statvalue, min(cluster_vertices), max(cluster_vertices), length(unique(cluster_vertices))));
+                        all_cluster_extreme_value[current_cluster_idx] = NA;
+                        all_cluster_extreme_vertex[current_cluster_idx] = NA;
+                        rows_to_remove = c(rows_to_remove, current_cluster_idx);
+                        current_cluster_idx = current_cluster_idx + 1L;
+                        next;
+                    } else {
+                        message(sprintf("Cluster #%d %s on hemi %s with %d vertices has %d NA stat data values which will be ignored.\n", current_cluster_idx, cluster_name, hemi, cluster_num_vertices, num_na));
+                        cluster_min_statvalue = min(clusterinfo$statmap[[hemi]][cluster_vertices], na.rm = TRUE);
+                        cluster_max_statvalue = max(clusterinfo$statmap[[hemi]][cluster_vertices], na.rm = TRUE);
+                    }
+
+                }
+                cluster_vertex_with_min_statvalue = cluster_vertices[which.min(clusterinfo$statmap[[hemi]][cluster_vertices])];
                 cluster_vertex_with_max_statvalue = cluster_vertices[which.max(clusterinfo$statmap[[hemi]][cluster_vertices])];
 
                 if(type == "extreme") {
@@ -120,7 +137,11 @@ cluster_extrema <- function(clusterinfo, type = "extreme", silent = getOption("b
             }
         }
     }
-    return(data.frame("cluster"=all_cluster_names, "hemi"=all_cluster_hemis, "num_vertices"=all_cluster_num_vertices, "extremum_value"=all_cluster_extreme_value, "extremum_vertex"=all_cluster_extreme_vertex, stringsAsFactors = FALSE));
+
+    # Remove rows of clusters with NA values.
+    df = data.frame("cluster"=all_cluster_names, "hemi"=all_cluster_hemis, "num_vertices"=all_cluster_num_vertices, "extremum_value"=all_cluster_extreme_value, "extremum_vertex"=all_cluster_extreme_vertex, stringsAsFactors = FALSE);
+    df = df[-rows_to_remove, ];
+    return(df);
 }
 
 
@@ -209,7 +230,7 @@ strvec2int <- function(input) { as.integer(as.factor(input)); }
 #'
 #' @return a new version of the input data.frame, with additional columns appended.
 get_cluster_location_details <- function(clusters, silent = getOption("brainloc.silent", default = FALSE)) {
-    extrema = cluster_extrema(clusters);
+    extrema = brainloc:::cluster_extrema(clusters);
 
     if(is.null(clusters$brainparc)) {
         warning("Cannot compute cluster location details, clusterinfo in parameter 'clusters' does not contain a valid 'brainparc'.");
@@ -260,14 +281,11 @@ test_clusters_to_annot <- function(sjd = "~/software/freesurfer/subjects", sj="f
     options("brainloc.fs_home"="~/software/freesurfer/");
     lh_an = fsbrain::subject.annot(sjd, sj, hemi="lh", atlas="aparc"); # we abuse an atlas as a cluster overlay file in this example  because it works technically. It does not make any sense, I just did not have a Matlab surfstat output file at hand.
     rh_an = fsbrain::subject.annot(sjd, sj, hemi="rh", atlas="aparc");
-    clusteroverlay = list("lh"=strvec2int(lh_an$label_codes), "rh"=strvec2int(rh_an$label_codes));
+    clusteroverlay = list("lh" = brainloc:::strvec2int(lh_an$label_codes), "rh" = brainloc:::strvec2int(rh_an$label_codes));
     thickness = fsbrain::subject.morph.native(sjd, sj, "thickness", hemi="both", split_by_hemi = TRUE);
     tmap = list("lh"=thickness$lh * 2 - 2L, "rh"=thickness$lh * 2 - 2L);  # We abuse a cortical thickness map as a t-value map. Yes, that's really ugly.
     clusters = clusterinfo(clusteroverlay$lh, clusteroverlay$rh, tmap$lh, tmap$rh);
     #cluster_annots = clusteroverlay_to_annot(clusters$overlay);
     #fsbrain::vis.colortable.legend(cluster_annots$lh);
-    extrema = cluster_extrema(clusters);
-    if(! is.null(clusters$brainparc)) {
-        extrema = get_cluster_location_details(clusters);
-    }
+    extrema_details = brainloc:::get_cluster_location_details(clusters);
 }
