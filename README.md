@@ -3,6 +3,9 @@ Given a point on the human brain, identify standard space coordinates and find t
 
 This is currently intended to be used with FreeSurfer standard space templates (fsaverage, fsaverage6, ... fsaverage3).
 
+
+![Fig1](./web/brainloc.png?raw=true "Brainloc.")
+
 ## About
 
 This is an R package that takes as input a vertex index of a FreeSurfer brain mesh in MNI305 space (typically fsaverage) and identifies the location in different coordinate systems and with respect to different brain regions. We use this to report the exact locations of clusters or other differences we find. It can also be used to find the vertex in an fsaverage mesh that is closest to a given MNI305 coordinate.
@@ -23,13 +26,13 @@ If you want to double-check the results of the coordinate transformations, I rec
 
 Here is an example for fsaverage vertex 145029:
 
-![Fig1a](./web/fsaverage_vertex_lh_145029.png?raw=true "Vertex 145029 on the left fsaverage surface.")
+![Fig2a](./web/fsaverage_vertex_lh_145029.png?raw=true "Vertex 145029 on the left fsaverage surface.")
 
-**Fig. 1a** *Vertex 145029 on the left fsaverage surface (at pink marker). Screenshot from the FreeView application that comes with [FreeSurfer](https://freesurfer.net).* 
+**Fig. 2a** *Vertex 145029 on the left fsaverage surface (at pink marker). Screenshot from the FreeView application that comes with [FreeSurfer](https://freesurfer.net).* 
 
-![Fig1b](./web/fsaverage_vertex_lh_145029_MNI152_-39_-30_65.png?raw=true "Vertex 145029 on the left fsaverage surface.")
+![Fig2b](./web/fsaverage_vertex_lh_145029_MNI152_-39_-30_65.png?raw=true "Vertex 145029 on the left fsaverage surface.")
 
-**Fig. 1b** *Location of MNI coordinate 39 -30  65, the result of mapping fsaverage vertex 145029 to MNI152 space. Screenshot from the [MNI - Talairach Tool](https://bioimagesuiteweb.github.io/bisweb-manual/tools/mni2tal.html).*
+**Fig. 2b** *Location of MNI coordinate 39 -30  65, the result of mapping fsaverage vertex 145029 to MNI152 space. Screenshot from the [MNI - Talairach Tool](https://bioimagesuiteweb.github.io/bisweb-manual/tools/mni2tal.html).*
 
 
 
