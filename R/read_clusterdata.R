@@ -268,6 +268,8 @@ clusterinfo <- function(lh_overlay, rh_overlay, lh_statmap, rh_statmap, template
 #' @param clusterinfo a \code{clusterinfo} instance.
 #'
 #' @return named list, the keys are the cluster names, and the values are integer vectors defining the member vertices.
+#'
+#' @keywords internal
 get_clusters <- function(clusterinfo) {
     if(! is.clusterinfo(clusterinfo)) {
         stop("Parameter 'clusterinfo' must be a clusterinfo instance.");
@@ -374,6 +376,10 @@ get_cluster_location_details <- function(clusterinfo, silent = getOption("brainl
 }
 
 
+#' @title Internal test function, will be gone soon and converted into separate unit tests.
+#'
+#' @note This function is NOT part of the API, using it in client code is a programming error.
+#'
 #' @keywords internal
 test_clusters_to_annot <- function(sjd = "~/software/freesurfer/subjects", sj="fsaverage") {
     options("brainloc.fs_home"="~/software/freesurfer/");

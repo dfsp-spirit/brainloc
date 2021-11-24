@@ -15,3 +15,4 @@ named list, the keys are the cluster names, and the values are integer vectors d
 \description{
 Get the clusters from a clusterinfo instance.
 }
+\keyword{internal}
