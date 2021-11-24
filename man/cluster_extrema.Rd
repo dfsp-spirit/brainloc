@@ -7,7 +7,8 @@
 cluster_extrema(
   clusterinfo,
   type = "extreme",
-  silent = getOption("brainloc.silent", default = FALSE)
+  silent = getOption("brainloc.silent", default = FALSE),
+  ...
 )
 }
 \arguments{
@@ -16,6 +17,8 @@ cluster_extrema(
 \item{type}{character string, one of 'extreme', 'min' or 'max'. Which cluster value to report. The default of 'extreme' reports the absolutely larger one of the min and the max value and is for the typical use case of \code{t}-value maps.}
 
 \item{silent}{whether to suppress printing messages to stdout.}
+
+\item{...}{passed on to \code{\link{clusteroverlay_to_annot}}.}
 }
 \value{
 a \code{data.frame} with cluster information. The column names should be self-explanatory.

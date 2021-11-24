@@ -4,12 +4,12 @@
 \alias{clusteroverlay_to_annot}
 \title{Create a hemilist of fs.annot instances from the given cluster overlay.}
 \usage{
-clusteroverlay_to_annot(clusteroverlay, background_code = 1L, hemi = NULL)
+clusteroverlay_to_annot(clusteroverlay, background_code = 0L, hemi = NULL)
 }
 \arguments{
 \item{clusteroverlay}{hemilist of integer vectors or a single integer vector of cluster overlay data: a vector that assigns each vertex to an integer class, all vertices belonging to a cluster share the same integer assignment. Non-cluster vertices are assigned the background class, see parameter 'background_code'. One can also pass character strings, which will be interpreted as path to files that should be loaded with \code{freesurferformats::read.fs.morph} to get the clusteroverlay. One can also pass a \code{clusterinfo} instance, the 'overlay' field will be extracted and used in that case.}
 
-\item{background_code}{scalar integer, the code in the data that should be interpreted as background or 'not part of any cluster'.}
+\item{background_code}{scalar integer, the code in the overlayID data that should be interpreted as background or 'not part of any cluster'.}
 
 \item{hemi}{character string, ignore unless clusteroverlay is a vector. In that case, it must be 'lh' or 'rh'. Used as a prefix when naming the clusters.}
 }

@@ -4,14 +4,14 @@
 #'
 #' @param clusteroverlay hemilist of integer vectors or a single integer vector of cluster overlay data: a vector that assigns each vertex to an integer class, all vertices belonging to a cluster share the same integer assignment. Non-cluster vertices are assigned the background class, see parameter 'background_code'. One can also pass character strings, which will be interpreted as path to files that should be loaded with \code{freesurferformats::read.fs.morph} to get the clusteroverlay. One can also pass a \code{clusterinfo} instance, the 'overlay' field will be extracted and used in that case.
 #'
-#' @param background_code scalar integer, the code in the data that should be interpreted as background or 'not part of any cluster'.
+#' @param background_code scalar integer, the code in the overlayID data that should be interpreted as background or 'not part of any cluster'.
 #'
 #' @param hemi character string, ignore unless clusteroverlay is a vector. In that case, it must be 'lh' or 'rh'. Used as a prefix when naming the clusters.
 #'
 #' @return hemilist of \code{freesurferformats::fs.annot} instances, each one representing a brain surface parcellation for one hemisphere. Each label in the parcellation (with the exception of the unknown/background region) corresponds to a cluster.
 #'
 #' @keywords internal
-clusteroverlay_to_annot <- function(clusteroverlay, background_code=1L, hemi=NULL) {
+clusteroverlay_to_annot <- function(clusteroverlay, background_code=0L, hemi=NULL) {
 
     if(is.clusterinfo(clusteroverlay)) { # also accept clusterinfo instances.
         clusteroverlay = clusteroverlay$overlay;
@@ -35,19 +35,25 @@ clusteroverlay_to_annot <- function(clusteroverlay, background_code=1L, hemi=NUL
         label_vertices_by_region = list();
         region_int_codes = unique(clusteroverlay);
 
-        current_region_idx = 1L;
-        index_of_unknown_region = -1L;
-        for(region_code in region_int_codes) {
-            if(region_code == background_code) {
-                index_of_unknown_region = current_region_idx;
-            } else {
-                label_name = paste(hemi, "cluster", region_code, sep="_");
-                label_vertices_by_region[[label_name]] = which(clusteroverlay == region_code);
+        if(length(region_int_codes) > 1L) { # there are clusters, because there is more than 1 region. If not, its all background.
+
+            current_region_idx = 1L;
+            index_of_unknown_region = -1L;
+            for(region_code in region_int_codes) {
+                if(region_code == background_code) {
+                    index_of_unknown_region = current_region_idx;
+                } else {
+                    label_name = paste(hemi, "cluster", region_code, sep="_");
+                    label_vertices_by_region[[label_name]] = which(clusteroverlay == region_code);
+                }
+                current_region_idx = current_region_idx + 1L;
             }
-            current_region_idx = current_region_idx + 1L;
-        }
-        if(index_of_unknown_region < 0L) {
-            stop(sprintf("No vertex in annot has the background_code '%d', cannot define unknown region.\n", background_code));
+            if(index_of_unknown_region < 0L) {
+                stop(sprintf("No vertex in annot has the background_code '%d', cannot define unknown region.\n", background_code));
+            }
+        } else {
+            index_of_unknown_region = 1L;
+            message(sprintf("Only 1 region code in overlay for hemi '%s': no clusters.\n", hemi));
         }
 
         num_verts = length(clusteroverlay);
@@ -68,10 +74,12 @@ clusteroverlay_to_annot <- function(clusteroverlay, background_code=1L, hemi=NUL
 #'
 #' @param silent whether to suppress printing messages to stdout.
 #'
+#' @param ... passed on to \code{\link{clusteroverlay_to_annot}}.
+#'
 #' @return a \code{data.frame} with cluster information. The column names should be self-explanatory.
 #'
 #' @keywords internal
-cluster_extrema <- function(clusterinfo, type = "extreme", silent = getOption("brainloc.silent", default = FALSE)) {
+cluster_extrema <- function(clusterinfo, type = "extreme", silent = getOption("brainloc.silent", default = FALSE), ...) {
 
     if(! is.clusterinfo(clusterinfo)) {
         stop("Parameter 'clusterinfo' must be a clusterinfo instance.");
@@ -81,7 +89,7 @@ cluster_extrema <- function(clusterinfo, type = "extreme", silent = getOption("b
         cat(sprintf("Computing cluster extrema.\n"));
     }
 
-    cluster_annots = clusteroverlay_to_annot(clusterinfo$overlay);
+    cluster_annots = clusteroverlay_to_annot(clusterinfo$overlay, ...);
 
     num_clusters_total = num_clusters(cluster_annots)$total;
 
@@ -247,7 +255,7 @@ clusterinfo <- function(lh_overlay, rh_overlay, lh_statmap, rh_statmap, template
         stop(sprintf("Data invalid: right hemisphere overlay and statmap must have identical lengths, but have %d versus %d.\n", length(rh_overlay), length(rh_statmap)));
     }
 
-    res = list("overlay"=list("lh"=lh_overlay, "rh"=rh_overlay), "statmap"=list("lh"=lh_statmap, "rh"=rh_statmap), "metadata"=list("template_subject"=template_subject, "brainparc"=NULL));
+    res = list("overlay"=list("lh"=as.integer(lh_overlay), "rh"=as.integer(rh_overlay)), "statmap"=list("lh"=lh_statmap, "rh"=rh_statmap), "metadata"=list("template_subject"=template_subject, "brainparc"=NULL));
     if(dir.exists(file.path(subjects_dir, template_subject))) { # Load surfaces and atlas if possible.
         res$brainparc = brainparc_fs(subjects_dir, template_subject);
         # This allows us to do more sanity checks.
@@ -331,14 +339,16 @@ strvec2int <- function(input) { as.integer(as.factor(input)); }
 #'
 #' @param silent logical, whether to suppress console messages.
 #'
+#' @param ... passed on to \code{\link{cluster_extrema}}.
+#'
 #' @return a new version of the input data.frame, with additional columns appended.
-cluster_location_details <- function(clusterinfo, silent = getOption("brainloc.silent", default = FALSE)) {
+cluster_location_details <- function(clusterinfo, silent = getOption("brainloc.silent", default = FALSE), ...) {
 
     if(! is.clusterinfo(clusterinfo)) {
         stop("Parameter 'clusterinfo' must be a clusterinfo instance.");
     }
 
-    extrema = cluster_extrema(clusterinfo);
+    extrema = cluster_extrema(clusterinfo, ...);
 
     if(! silent) {
         cat(sprintf("Computing location details for cluster extrema.\n"));
@@ -456,7 +466,7 @@ test_clusters_to_annot <- function(sjd = "~/software/freesurfer/subjects", sj="f
     clinfo = clusterinfo(clusteroverlay$lh, clusteroverlay$rh, tmap$lh, tmap$rh, template_subject = sj, subjects_dir = sjd);
     #cluster_annots = clusteroverlay_to_annot(clinfo$overlay);
     #fsbrain::vis.colortable.legend(cluster_annots$lh);
-    extrema_details = brainloc:::cluster_location_details(clinfo);
+    extrema_details = brainloc:::cluster_location_details(clinfo,  background_code = 1L);
 }
 
 

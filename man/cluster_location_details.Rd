@@ -6,13 +6,16 @@
 \usage{
 cluster_location_details(
   clusterinfo,
-  silent = getOption("brainloc.silent", default = FALSE)
+  silent = getOption("brainloc.silent", default = FALSE),
+  ...
 )
 }
 \arguments{
 \item{clusterinfo}{a clusterinfo instance, see the \code{clusterinfo} function on how to get one. Must contain a valid \code{brainparc} in field 'brainparc'.}
 
 \item{silent}{logical, whether to suppress console messages.}
+
+\item{...}{passed on to \code{\link{cluster_extrema}}.}
 }
 \value{
 a new version of the input data.frame, with additional columns appended.
