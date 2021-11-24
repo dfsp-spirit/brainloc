@@ -2,17 +2,17 @@
 % Please edit documentation in R/read_clusterdata.R
 \name{num_clusters}
 \alias{num_clusters}
-\title{Compute number of clusters from cluster annots.}
+\title{Compute number of clusters from cluster annot or clusterinfo instance.}
 \usage{
 num_clusters(cluster_annots)
 }
 \arguments{
-\item{cluster_annots}{hemilist of cluster annots, see \code{clusteroverlay_to_annot}.}
+\item{cluster_annots}{hemilist of cluster annots, see \code{\link{clusteroverlay_to_annot}}.}
 }
 \value{
-named list with keys 'lh', 'rh' and 'total', each holdign a scalar integer. The cluster counts.
+named list with keys 'lh', 'rh' and 'total', each holding a scalar integer. The cluster counts.
 }
 \description{
-Compute number of clusters from cluster annots.
+Compute number of clusters from cluster annot or clusterinfo instance.
 }
 \keyword{internal}

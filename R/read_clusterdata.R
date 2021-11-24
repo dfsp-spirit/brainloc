@@ -177,14 +177,20 @@ cluster_extrema <- function(clusterinfo, type = "extreme", silent = getOption("b
 }
 
 
-#' @title Compute number of clusters from cluster annots.
+#' @title Compute number of clusters from cluster annot or clusterinfo instance.
 #'
-#' @param cluster_annots hemilist of cluster annots, see \code{clusteroverlay_to_annot}.
+#' @param cluster_annots hemilist of cluster annots, see \code{\link{clusteroverlay_to_annot}}.
 #'
-#' @return named list with keys 'lh', 'rh' and 'total', each holdign a scalar integer. The cluster counts.
+#' @return named list with keys 'lh', 'rh' and 'total', each holding a scalar integer. The cluster counts.
 #'
 #' @keywords internal
 num_clusters <- function(cluster_annots) {
+    if(! freesurferformats::is.fs.annot(cluster_annots$lh)) {
+        stop("The 'lh' field of the 'cluster_annots' parameter does not contain a valid fs.annot instance.");
+    }
+    if(! freesurferformats::is.fs.annot(cluster_annots$rh)) {
+        stop("The 'rh' field of the 'cluster_annots' parameter does not contain a valid fs.annot instance.");
+    }
     res = list("lh"=0L, "rh"=0L, "total"=0L);
     for (hemi in c("lh", "rh")) {
         for(cluster_name in unique(cluster_annots[[hemi]]$label_names)) {
@@ -388,10 +394,10 @@ test_clusters_to_annot <- function(sjd = "~/software/freesurfer/subjects", sj="f
     clusteroverlay = list("lh" = brainloc:::strvec2int(lh_an$label_codes), "rh" = brainloc:::strvec2int(rh_an$label_codes));
     thickness = fsbrain::subject.morph.native(sjd, sj, "thickness", hemi="both", split_by_hemi = TRUE);
     tmap = list("lh"=thickness$lh * 2 - 2L, "rh"=thickness$lh * 2 - 2L);  # We abuse a cortical thickness map as a t-value map. Yes, that's really ugly.
-    clusters = clusterinfo(clusteroverlay$lh, clusteroverlay$rh, tmap$lh, tmap$rh);
-    #cluster_annots = clusteroverlay_to_annot(clusters$overlay);
+    clinfo = clusterinfo(clusteroverlay$lh, clusteroverlay$rh, tmap$lh, tmap$rh);
+    #cluster_annots = clusteroverlay_to_annot(clinfo$overlay);
     #fsbrain::vis.colortable.legend(cluster_annots$lh);
-    extrema_details = brainloc:::get_cluster_location_details(clusters);
+    extrema_details = brainloc:::get_cluster_location_details(clinfo);
 }
 
 
