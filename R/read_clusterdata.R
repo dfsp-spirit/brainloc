@@ -460,10 +460,12 @@ test_clusters_to_annot <- function(sjd = "~/software/freesurfer/subjects", sj="f
 }
 
 
-test_real_clusters <- function() {
+test_real_clusters <- function(sjd = "~/software/freesurfer/subjects", sj="fsaverage") {
     lh_tmap_file = system.file("extdata", "lh.tmap.mgh", package = "brainloc", mustWork = TRUE);
     rh_tmap_file = system.file("extdata", "rh.tmap.mgh", package = "brainloc", mustWork = TRUE);
     lh_overlay_file = system.file("extdata", "lh.cluster.overlayID.mgh", package = "brainloc", mustWork = TRUE);
     rh_overlay_file = system.file("extdata", "rh.cluster.overlayID.mgh", package = "brainloc", mustWork = TRUE);
+    clinfo = clusterinfo(lh_overlay_file, rh_overlay_file, lh_tmap_file, rh_tmap_file, template_subject = sj, subjects_dir = sjd);
+    extrema_details = brainloc:::cluster_location_details(clinfo);
 }
 
