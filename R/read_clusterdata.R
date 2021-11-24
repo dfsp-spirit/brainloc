@@ -415,6 +415,10 @@ cluster_overlapping_regions <- function(annot_min, cluster_vertices) {
         annot_min = annot_min$label_names;
     }
 
+    if(! is.character(annot_min)) {
+        stop("Parameter 'annot_min' must be an fs.annot instance or a vector of character strings.");
+    }
+
     cluster_size = length(cluster_vertices);
     if(cluster_size < 1L) {
         stop("Parameter 'cluster_vertices' must not be empty.");
