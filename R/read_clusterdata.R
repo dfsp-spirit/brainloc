@@ -2,7 +2,7 @@
 
 #' @title Create a hemilist of fs.annot instances from the given cluster overlay.
 #'
-#' @param clusteroverlay hemilist of integer vectors or a single integer vector of cluster overlay data: a vector that assigns each vertex to an integer class, all vertices belonging to a cluster share the same integer assignment. Non-cluster vertices are assigned the background class, see parameter 'background_code'. One can also pass character strings, which will be interpreted as path to files that should be loaded with \code{freesurferformats::read.fs.morph} to get the clusteroverlay.
+#' @param clusteroverlay hemilist of integer vectors or a single integer vector of cluster overlay data: a vector that assigns each vertex to an integer class, all vertices belonging to a cluster share the same integer assignment. Non-cluster vertices are assigned the background class, see parameter 'background_code'. One can also pass character strings, which will be interpreted as path to files that should be loaded with \code{freesurferformats::read.fs.morph} to get the clusteroverlay. One can also pass a \code{clusterinfo} instance, the 'overlay' field will be extracted and used in that case.
 #'
 #' @param background_code scalar integer, the code in the data that should be interpreted as background or 'not part of any cluster'.
 #'
@@ -12,6 +12,10 @@
 #'
 #' @keywords internal
 clusteroverlay_to_annot <- function(clusteroverlay, background_code=1L, hemi=NULL) {
+
+    if(is.clusterinfo(clusteroverlay)) { # also accept clusterinfo instances.
+        clusteroverlay = clusteroverlay$overlay;
+    }
 
     if(is.list(clusteroverlay)) {
         if(is.character(clusteroverlay$lh)) { # It's a file path, read the file.
@@ -68,6 +72,10 @@ clusteroverlay_to_annot <- function(clusteroverlay, background_code=1L, hemi=NUL
 #'
 #' @keywords internal
 cluster_extrema <- function(clusterinfo, type = "extreme", silent = getOption("brainloc.silent", default = FALSE)) {
+
+    if(! is.clusterinfo(clusterinfo)) {
+        stop("Parameter 'clusterinfo' must be a clusterinfo instance.");
+    }
 
     if(! silent) {
         cat(sprintf("Computing cluster extrema.\n"));
@@ -255,6 +263,41 @@ clusterinfo <- function(lh_overlay, rh_overlay, lh_statmap, rh_statmap, template
 }
 
 
+#' @title Get the clusters from a clusterinfo instance.
+#'
+#' @param clusterinfo a \code{clusterinfo} instance.
+#'
+#' @return named list, the keys are the cluster names, and the values are integer vectors defining the member vertices.
+get_clusters <- function(clusterinfo) {
+    if(! is.clusterinfo(clusterinfo)) {
+        stop("Parameter 'clusterinfo' must be a clusterinfo instance.");
+    }
+    cluster_annots = clusteroverlay_to_annot(clusterinfo$overlay);
+
+    clusters = list();
+
+    for (hemi in c("lh", "rh")) {
+        for(cluster_name in unique(cluster_annots[[hemi]]$label_names)) {
+            if(! (cluster_name %in% c("", "unknown"))) {
+                cluster_vertices = which(cluster_annots[[hemi]]$label_names == cluster_name);
+                clusters[[cluster_name]] = cluster_vertices;
+            }
+        }
+    }
+    return(clusters);
+}
+
+
+#' @title Check whether x is a clusterinfo instance.
+#'
+#' @param x any R object
+#'
+#' @return logical, whether x is a clusterinfo instance.
+#'
+#' @export
+is.clusterinfo <- function(x) inherits(x, "clusterinfo")
+
+
 #' @title Convert vector of character strings to integer vector.
 #'
 #' @param input vector of character strings
@@ -267,21 +310,27 @@ strvec2int <- function(input) { as.integer(as.factor(input)); }
 
 #' @title Get details on cluster location, required brainparc.
 #'
-#' @param clusters a clusterinfo instance, see the \code{clusterinfo} function on how to get one. Must contain a valid \code{brainparc} in field 'brainparc'.
+#' @param clusterinfo a clusterinfo instance, see the \code{clusterinfo} function on how to get one. Must contain a valid \code{brainparc} in field 'brainparc'.
 #'
 #' @param silent logical, whether to suppress console messages.
 #'
+#' @param surface character string, the surface for which to report the coordinates. Must be contained in \code{clusterinfo$brainparc$surfaces}.
+#'
 #' @return a new version of the input data.frame, with additional columns appended.
-get_cluster_location_details <- function(clusters, silent = getOption("brainloc.silent", default = FALSE)) {
+get_cluster_location_details <- function(clusterinfo, silent = getOption("brainloc.silent", default = FALSE), surface = "white") {
 
-    extrema = brainloc:::cluster_extrema(clusters);
+    if(! is.clusterinfo(clusterinfo)) {
+        stop("Parameter 'clusterinfo' must be a clusterinfo instance.");
+    }
+
+    extrema = brainloc:::cluster_extrema(clusterinfo);
 
     if(! silent) {
         cat(sprintf("Computing location details for cluster extrema.\n"));
     }
 
-    if(is.null(clusters$brainparc)) {
-        warning("Cannot compute cluster location details, clusterinfo in parameter 'clusters' does not contain a valid 'brainparc'.");
+    if(is.null(clusterinfo$brainparc)) {
+        warning("Cannot compute cluster location details, clusterinfo in parameter 'clusterinfo' does not contain a valid 'brainparc'.");
         return(extrema);
     }
 
@@ -297,7 +346,7 @@ get_cluster_location_details <- function(clusters, silent = getOption("brainloc.
 
     for(cluster_idx in seq.int(nc)) {
         hemi = extrema$hemi[cluster_idx];
-        surface = clusters$brainparc$surfaces$white[[hemi]];
+        surface = clusterinfo$brainparc$surfaces[[surface]][[hemi]];
         query_vertex = extrema$extremum_vertex[cluster_idx];
         vertex_coords_MNI305 = surface$vertices[query_vertex, ];
 

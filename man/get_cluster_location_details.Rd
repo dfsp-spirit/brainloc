@@ -5,14 +5,17 @@
 \title{Get details on cluster location, required brainparc.}
 \usage{
 get_cluster_location_details(
-  clusters,
-  silent = getOption("brainloc.silent", default = FALSE)
+  clusterinfo,
+  silent = getOption("brainloc.silent", default = FALSE),
+  surface = "white"
 )
 }
 \arguments{
-\item{clusters}{a clusterinfo instance, see the \code{clusterinfo} function on how to get one. Must contain a valid \code{brainparc} in field 'brainparc'.}
+\item{clusterinfo}{a clusterinfo instance, see the \code{clusterinfo} function on how to get one. Must contain a valid \code{brainparc} in field 'brainparc'.}
 
 \item{silent}{logical, whether to suppress console messages.}
+
+\item{surface}{character string, the surface for which to report the coordinates. Must be contained in \code{clusterinfo$brainparc$surfaces}.}
 }
 \value{
 a new version of the input data.frame, with additional columns appended.
