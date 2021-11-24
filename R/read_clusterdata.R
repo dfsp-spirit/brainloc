@@ -389,13 +389,13 @@ test_clusters_to_annot <- function(sjd = "~/software/freesurfer/subjects", sj="f
     options("brainloc.fs_home"="~/software/freesurfer/");
     lh_an = fsbrain::subject.annot(sjd, sj, hemi="lh", atlas="aparc"); # we abuse an atlas as a cluster overlay file in this example  because it works technically. It does not make any sense, I just did not have a Matlab surfstat output file at hand.
     rh_an = fsbrain::subject.annot(sjd, sj, hemi="rh", atlas="aparc");
-    clusteroverlay = list("lh" = strvec2int(lh_an$label_codes), "rh" = strvec2int(rh_an$label_codes));
+    clusteroverlay = list("lh" = brainloc:::strvec2int(lh_an$label_codes), "rh" = brainloc:::strvec2int(rh_an$label_codes));
     thickness = fsbrain::subject.morph.native(sjd, sj, "thickness", hemi="both", split_by_hemi = TRUE);
     tmap = list("lh"=thickness$lh * 2 - 2L, "rh"=thickness$lh * 2 - 2L);  # We abuse a cortical thickness map as a t-value map. Yes, that's really ugly.
-    clinfo = clusterinfo(clusteroverlay$lh, clusteroverlay$rh, tmap$lh, tmap$rh);
+    clinfo = clusterinfo(clusteroverlay$lh, clusteroverlay$rh, tmap$lh, tmap$rh, subjects_dir = sjd);
     #cluster_annots = clusteroverlay_to_annot(clinfo$overlay);
     #fsbrain::vis.colortable.legend(cluster_annots$lh);
-    extrema_details = get_cluster_location_details(clinfo);
+    extrema_details = brainloc:::get_cluster_location_details(clinfo);
 }
 
 
