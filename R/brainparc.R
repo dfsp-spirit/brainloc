@@ -20,8 +20,18 @@ brainparc_fs <- function(subjects_dir, subject_id, surface="white", atlas=c("apa
     return(ret);
 }
 
+
+#' @title Extract the surface hemilist from a brainparc.
+#'
+#' @param brainparc a \code{brainparc} instance, see \code{\link{brainparc_fs}} to get one.
+#'
+#' @return hemilist of \code{fs.surface} instances.
+#'
 #' @keywords internal
 get_surface <- function(brainparc) {
+    if(! is.brainparc(brainparc)) {
+        stop("Parameter 'brainparc' must be a brainparc instance.");
+    }
     return(brainparc$surfaces[[1]]);
 }
 

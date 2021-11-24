@@ -317,7 +317,7 @@ strvec2int <- function(input) { as.integer(as.factor(input)); }
 #' @param surface character string, the surface for which to report the coordinates. Must be contained in \code{clusterinfo$brainparc$surfaces}.
 #'
 #' @return a new version of the input data.frame, with additional columns appended.
-get_cluster_location_details <- function(clusterinfo, silent = getOption("brainloc.silent", default = FALSE), surface = "white") {
+get_cluster_location_details <- function(clusterinfo, silent = getOption("brainloc.silent", default = FALSE)) {
 
     if(! is.clusterinfo(clusterinfo)) {
         stop("Parameter 'clusterinfo' must be a clusterinfo instance.");
@@ -346,7 +346,8 @@ get_cluster_location_details <- function(clusterinfo, silent = getOption("brainl
 
     for(cluster_idx in seq.int(nc)) {
         hemi = extrema$hemi[cluster_idx];
-        surface = clusterinfo$brainparc$surfaces[[surface]][[hemi]];
+        surface_hemilist = get_surface(clusterinfo$brainparc);
+        surface = surface_hemilist[[hemi]];
         query_vertex = extrema$extremum_vertex[cluster_idx];
         vertex_coords_MNI305 = surface$vertices[query_vertex, ];
 

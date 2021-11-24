@@ -6,8 +6,7 @@
 \usage{
 get_cluster_location_details(
   clusterinfo,
-  silent = getOption("brainloc.silent", default = FALSE),
-  surface = "white"
+  silent = getOption("brainloc.silent", default = FALSE)
 )
 }
 \arguments{
