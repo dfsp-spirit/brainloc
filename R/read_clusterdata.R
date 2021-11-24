@@ -273,21 +273,30 @@ clusterinfo <- function(lh_overlay, rh_overlay, lh_statmap, rh_statmap, template
 #'
 #' @param clusterinfo a \code{clusterinfo} instance.
 #'
+#' @param hemi character string, one of 'lh', 'rh' or 'both'. The hemisphere(s) for which to return the clusters.
+#'
 #' @return named list, the keys are the cluster names, and the values are integer vectors defining the member vertices.
 #'
 #' @keywords internal
-get_clusters <- function(clusterinfo) {
+get_clusters <- function(clusterinfo, hemi="both") {
     if(! is.clusterinfo(clusterinfo)) {
         stop("Parameter 'clusterinfo' must be a clusterinfo instance.");
+    }
+    if(!(hemi %in% c("lh", "rh", "both"))) {
+        stop("Parameter 'hemi' must be one of 'lh', 'rh' or 'both'.");
     }
     cluster_annots = clusteroverlay_to_annot(clusterinfo$overlay);
 
     clusters = list();
 
-    for (hemi in c("lh", "rh")) {
-        for(cluster_name in unique(cluster_annots[[hemi]]$label_names)) {
+    if(hemi == "both") {
+        hemi = c("lh", "rh");
+    }
+
+    for (hemisphere in hemi) {
+        for(cluster_name in unique(cluster_annots[[hemisphere]]$label_names)) {
             if(! (cluster_name %in% c("", "unknown"))) {
-                cluster_vertices = which(cluster_annots[[hemi]]$label_names == cluster_name);
+                cluster_vertices = which(cluster_annots[[hemisphere]]$label_names == cluster_name);
                 clusters[[cluster_name]] = cluster_vertices;
             }
         }
@@ -323,7 +332,7 @@ strvec2int <- function(input) { as.integer(as.factor(input)); }
 #' @param silent logical, whether to suppress console messages.
 #'
 #' @return a new version of the input data.frame, with additional columns appended.
-get_cluster_location_details <- function(clusterinfo, silent = getOption("brainloc.silent", default = FALSE)) {
+cluster_location_details <- function(clusterinfo, silent = getOption("brainloc.silent", default = FALSE)) {
 
     if(! is.clusterinfo(clusterinfo)) {
         stop("Parameter 'clusterinfo' must be a clusterinfo instance.");
@@ -380,24 +389,6 @@ get_cluster_location_details <- function(clusterinfo, silent = getOption("brainl
 }
 
 
-#' @title Internal test function, will be gone soon and converted into separate unit tests.
-#'
-#' @note This function is NOT part of the API, using it in client code is a programming error.
-#'
-#' @keywords internal
-test_clusters_to_annot <- function(sjd = "~/software/freesurfer/subjects", sj="fsaverage") {
-    options("brainloc.fs_home"="~/software/freesurfer/");
-    lh_an = fsbrain::subject.annot(sjd, sj, hemi="lh", atlas="aparc"); # we abuse an atlas as a cluster overlay file in this example  because it works technically. It does not make any sense, I just did not have a Matlab surfstat output file at hand.
-    rh_an = fsbrain::subject.annot(sjd, sj, hemi="rh", atlas="aparc");
-    clusteroverlay = list("lh" = brainloc:::strvec2int(lh_an$label_codes), "rh" = brainloc:::strvec2int(rh_an$label_codes));
-    thickness = fsbrain::subject.morph.native(sjd, sj, "thickness", hemi="both", split_by_hemi = TRUE);
-    tmap = list("lh"=thickness$lh * 2 - 2L, "rh"=thickness$lh * 2 - 2L);  # We abuse a cortical thickness map as a t-value map. Yes, that's really ugly.
-    clinfo = clusterinfo(clusteroverlay$lh, clusteroverlay$rh, tmap$lh, tmap$rh, template_subject = sj, subjects_dir = sjd);
-    #cluster_annots = clusteroverlay_to_annot(clinfo$overlay);
-    #fsbrain::vis.colortable.legend(cluster_annots$lh);
-    extrema_details = brainloc:::get_cluster_location_details(clinfo);
-}
-
 
 #' @title Given vertex indices defining a cluster, find all atlas regions the cluster overlaps with.
 #'
@@ -448,3 +439,24 @@ cluster_overlapping_regions <- function(annot_min, cluster_vertices) {
     df = data.frame("region"=overlapping_region_names, "num_shared_vertices"=overlapping_region_num_vertex_overlap, "percent_shared_vertices"=overlapping_region_percent_overlap, "cluster_percent_of_region"=cluster_size_percent_of_region);
     return(df[order(df$percent_shared_vertices),]);
 }
+
+
+#' @title Internal test function, will be gone soon and converted into separate unit tests.
+#'
+#' @note This function is NOT part of the API, using it in client code is a programming error.
+#'
+#' @keywords internal
+test_clusters_to_annot <- function(sjd = "~/software/freesurfer/subjects", sj="fsaverage") {
+    options("brainloc.fs_home"="~/software/freesurfer/");
+    lh_an = fsbrain::subject.annot(sjd, sj, hemi="lh", atlas="aparc"); # we abuse an atlas as a cluster overlay file in this example  because it works technically. It does not make any sense, I just did not have a Matlab surfstat output file at hand.
+    rh_an = fsbrain::subject.annot(sjd, sj, hemi="rh", atlas="aparc");
+    clusteroverlay = list("lh" = brainloc:::strvec2int(lh_an$label_codes), "rh" = brainloc:::strvec2int(rh_an$label_codes));
+    thickness = fsbrain::subject.morph.native(sjd, sj, "thickness", hemi="both", split_by_hemi = TRUE);
+    tmap = list("lh"=thickness$lh * 2 - 2L, "rh"=thickness$lh * 2 - 2L);  # We abuse a cortical thickness map as a t-value map. Yes, that's really ugly.
+    clinfo = clusterinfo(clusteroverlay$lh, clusteroverlay$rh, tmap$lh, tmap$rh, template_subject = sj, subjects_dir = sjd);
+    #cluster_annots = clusteroverlay_to_annot(clinfo$overlay);
+    #fsbrain::vis.colortable.legend(cluster_annots$lh);
+    extrema_details = brainloc:::cluster_location_details(clinfo);
+}
+
+

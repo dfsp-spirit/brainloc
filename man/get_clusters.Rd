@@ -4,10 +4,12 @@
 \alias{get_clusters}
 \title{Get the clusters from a clusterinfo instance.}
 \usage{
-get_clusters(clusterinfo)
+get_clusters(clusterinfo, hemi = "both")
 }
 \arguments{
 \item{clusterinfo}{a \code{clusterinfo} instance.}
+
+\item{hemi}{character string, one of 'lh', 'rh' or 'both'. The hemisphere(s) for which to return the clusters.}
 }
 \value{
 named list, the keys are the cluster names, and the values are integer vectors defining the member vertices.
