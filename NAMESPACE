@@ -3,6 +3,7 @@
 S3method(print,brainparc)
 export(brainparc_fs)
 export(clusterinfo)
+export(clusterinfo_from_thresholded_overlay)
 export(coord_MNI152_to_talairach)
 export(coord_MNI305_info)
 export(coord_MNI305_to_MNI152)

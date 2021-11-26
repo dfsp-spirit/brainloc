@@ -292,9 +292,9 @@ clusterinfo <- function(lh_overlay, rh_overlay, lh_statmap, rh_statmap, template
 #' @export
 clusterinfo_from_thresholded_overlay <- function(lh_threshmap, rh_threshmap, value_thresholded = 0.0, template_subject="fsaverage", subjects_dir=file.path(getOption("brainloc.fs_home", default = Sys.getenv("FREESURFER_HOME")), 'subjects')) {
     surfaces = subject.surface(subjects_dir, template_subject, surface = "white");
-    lh_maps = maps_from_threshmap(lh_threshmap, value_thresholded = value_thresholded, surface = surfaces$lh);
-    rh_maps = maps_from_threshmap(rh_threshmap, value_thresholded = value_thresholded, surface = surfaces$rh);
-    return(clusterinfo(lh_maps$overlay, rh_maps$overlay, lh_maps$statmap, rh_maps$statmap, template_subject = template_subject, subjects_dir = subjects_dir));
+    lh_overlay = clusteroverlay(lh_threshmap, value_thresholded = value_thresholded, surface = surfaces$lh);
+    rh_overlay = clusteroverlay(rh_threshmap, value_thresholded = value_thresholded, surface = surfaces$rh);
+    return(clusterinfo(lh_overlay, rh_overlay, lh_threshmap, rh_threshmap, template_subject = template_subject, subjects_dir = subjects_dir));
 }
 
 #' @title Compute separate statsmap and overlay from thresholded map.
@@ -305,11 +305,10 @@ clusterinfo_from_thresholded_overlay <- function(lh_threshmap, rh_threshmap, val
 #'
 #' @param surface a single fs.surface instance, used for neighborhood computation.
 #'
-#' @return named list with entries 'statmap' and 'overlay', which are double and integer vectors, respectively.
+#' @return integer vector, the clusterID overlay
 #'
 #' @keywords internal
-maps_from_threshmap <- function(threshmap, value_thresholded, surface) {
-    res = list("statmap"=threshmap, "overlay"=NULL);
+clusteroverlay_from_threshmap <- function(threshmap, value_thresholded, surface) {
     if(! freesurferformats::is.fs.surface(surface)) {
         stop("Parameter 'surface' must be an fs.surface instance.");
     }
@@ -323,27 +322,38 @@ maps_from_threshmap <- function(threshmap, value_thresholded, surface) {
     overlay_background_value = 0L;
     overlay = rep(overlay_background_value, num_vertices);
 
-    in_cluster = FALSE;
-    current_cluster_label_int = overlay_background_value;
+
     q = dequer::queue();
-    dequer::pushback(q, 1L); # Arbitrarily add first vertex.
+    start_vertex = 1L;
+    vertex_visited[start_vertex] = TRUE;
+    if(threshmap[start_vertex] != value_thresholded) {
+        in_cluster = TRUE;
+        current_cluster_label_int = 1L;
+        overlay[start_vertex] = current_cluster_label_int;
+    } else {
+        in_cluster = FALSE;
+        current_cluster_label_int = overlay_background_value;
+    }
+    dequer::pushback(q, start_vertex);
     while(length(q) > 0L) {
         v = dequer::pop(q);
-
-    }
-    for(vertex in seq.int(num_vertices)) {
-        if(vertex_visited[vertex]) {
-            next;
-        }
-        if(threshmap[vertex] != value_thresholded) {
-            if(! in_cluster) {
-                current_cluster_label_int = current_cluster_label_int + 1L;
+        for(v_neighbor in adj[v]) {
+            if(! vertex_visited[v_neighbor]) {
+                vertex_visited[v_neighbor] = TRUE;
+                if(threshmap[v_neighbor] != value_thresholded) {
+                    if(! in_cluster) {
+                        in_cluster = TRUE;
+                        current_cluster_label_int = current_cluster_label_int + 1L;
+                    }
+                    overlay[v_neighbor] = current_cluster_label_int;
+                } else {
+                    in_cluster = FALSE;
+                }
+                dequer::pushback(q, v_neighbor);
             }
-            overlay[vertex] = current_cluster_label_int;
-        } else {}
-        vertex_visited[vertex] = TRUE;
+        }
     }
-    return(res);
+    return(overlay);
 }
 
 
