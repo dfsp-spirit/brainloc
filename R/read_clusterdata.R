@@ -277,6 +277,76 @@ clusterinfo <- function(lh_overlay, rh_overlay, lh_statmap, rh_statmap, template
 }
 
 
+#' @title Create clusterinfo instance from thresholded per-vertex data overlays.
+#'
+#' @inheritParams clusterinfo
+#'
+#' @param lh_threshmap double vector, the stats map. Typically a thresholded t-value map. Must have one value per vertex. The value assigned to vertices that have been removed by the thresholding can be set with parameter 'value_thresholded'. If a character string, the parameter will be interpreted as file path and loaded with \code{freesurferformats::read.fs.morph}.
+#'
+#' @param rh_threshmap like \code{lh_threshmap}, but for the right hemisphere.
+#'
+#' @param value_thresholded scalar double, the data value of thresholded vertices in the \code{lh_threshmap} and \code{rh_threshmap}.
+#'
+#' @return a \code{clusterinfo} instance
+#'
+#' @export
+clusterinfo_from_thresholded_overlay <- function(lh_threshmap, rh_threshmap, value_thresholded = 0.0, template_subject="fsaverage", subjects_dir=file.path(getOption("brainloc.fs_home", default = Sys.getenv("FREESURFER_HOME")), 'subjects')) {
+    surfaces = subject.surface(subjects_dir, template_subject, surface = "white");
+    lh_maps = maps_from_threshmap(lh_threshmap, value_thresholded = value_thresholded, surface = surfaces$lh);
+    rh_maps = maps_from_threshmap(rh_threshmap, value_thresholded = value_thresholded, surface = surfaces$rh);
+    return(clusterinfo(lh_maps$overlay, rh_maps$overlay, lh_maps$statmap, rh_maps$statmap, template_subject = template_subject, subjects_dir = subjects_dir));
+}
+
+#' @title Compute separate statsmap and overlay from thresholded map.
+#'
+#' @inheritParams clusterinfo_from_thresholded_overlay
+#'
+#' @param theshmap double vector, the stats map. Typically a thresholded t-value map. Must have one value per vertex. The value assigned to vertices that have been removed by the thresholding can be set with parameter 'value_thresholded'.
+#'
+#' @param surface a single fs.surface instance, used for neighborhood computation.
+#'
+#' @return named list with entries 'statmap' and 'overlay', which are double and integer vectors, respectively.
+#'
+#' @keywords internal
+maps_from_threshmap <- function(threshmap, value_thresholded, surface) {
+    res = list("statmap"=threshmap, "overlay"=NULL);
+    if(! freesurferformats::is.fs.surface(surface)) {
+        stop("Parameter 'surface' must be an fs.surface instance.");
+    }
+
+    adj = Rvcg::vcgVertexNeighbors(fs.surface.to.tmesh3d(surface));
+    num_vertices = nrow(surface$vertices);
+    if(length(threshmap) != num_vertices) {
+        stop(sprintf("Thresholded map has %d values, but surface has %d vertices. Counts must match.\n", length(threshmap), num_vertices));
+    }
+    vertex_visited = rep(FALSE, num_vertices);
+    overlay_background_value = 0L;
+    overlay = rep(overlay_background_value, num_vertices);
+
+    in_cluster = FALSE;
+    current_cluster_label_int = overlay_background_value;
+    q = dequer::queue();
+    dequer::pushback(q, 1L); # Arbitrarily add first vertex.
+    while(length(q) > 0L) {
+        v = dequer::pop(q);
+
+    }
+    for(vertex in seq.int(num_vertices)) {
+        if(vertex_visited[vertex]) {
+            next;
+        }
+        if(threshmap[vertex] != value_thresholded) {
+            if(! in_cluster) {
+                current_cluster_label_int = current_cluster_label_int + 1L;
+            }
+            overlay[vertex] = current_cluster_label_int;
+        } else {}
+        vertex_visited[vertex] = TRUE;
+    }
+    return(res);
+}
+
+
 #' @title Get the clusters from a clusterinfo instance.
 #'
 #' @param clusterinfo a \code{clusterinfo} instance.

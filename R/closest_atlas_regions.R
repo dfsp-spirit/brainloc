@@ -1,6 +1,22 @@
 
-# tm = fsbrain::fs.surface.to.tmesh3d(bp$surfaces$white$lh);
-#
+
+#' @title Convert fs.surface to tmesh3d using freesurferformats of fsbrain.
+#'
+#' @param surface an fs.surface instance.
+#'
+#' @return \code{tmesh} instance, as used in the \code{rgl} package.
+#'
+#' @keywords internal
+fs.surface.to.tmesh3d <- function(surface) {
+    if(exists('fs.surface.to.tmesh3d', where=asNamespace('freesurferformats'), mode='function')) {
+        return(freesurferformats::fs.surface.to.tmesh3d(surface));
+    } else if (requireNamespace("fsbrain", quietly = TRUE)) {
+        return(fsbrain::fs.surface.to.tmesh3d(surface));
+    } else {
+        stop("This functionality requires a recent version of the 'freesurferformats' package or the optional dependency package 'fsbrain'. Please install one of them to use this.");
+    }
+}
+
 
 #' @title Find closest regions to vertex using Euclidean or geodesic distance.
 #'
@@ -69,13 +85,8 @@ vertex_closest_regions <- function(brainparc, vertices, hemis, linkage = "single
         if(linkage == "single") {
             vdists = NULL;
             if(distance == "geodesic") {
-                if(exists('fs.surface.to.tmesh3d', where=asNamespace('freesurferformats'), mode='function')) {
-                    vdists = Rvcg::vcgDijkstra(freesurferformats::fs.surface.to.tmesh3d(surface), vertex_surface_idx);
-                } else if (requireNamespace("fsbrain", quietly = TRUE)) {
-                    vdists = Rvcg::vcgDijkstra(fsbrain::fs.surface.to.tmesh3d(surface), vertex_surface_idx);
-                } else {
-                    stop("Using linkage = 'geodesic' requires a recent version of the 'freesurferformats' package or the optional dependency package 'fsbrain'. Please install one of them to use this.");
-                }
+                tmesh = fs.surface.to.tmesh3d(surface);
+                vdists = Rvcg::vcgDijkstra(tmesh, vertex_surface_idx);
             } else if (distance == "euclidean") {
                 vdists = freesurferformats::vertexdists.to.point(surface, vertex_coords);
             } else {
