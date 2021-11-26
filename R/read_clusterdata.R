@@ -255,7 +255,7 @@ clusterinfo <- function(lh_overlay, rh_overlay, lh_statmap, rh_statmap, template
         stop(sprintf("Data invalid: right hemisphere overlay and statmap must have identical lengths, but have %d versus %d.\n", length(rh_overlay), length(rh_statmap)));
     }
 
-    res = list("overlay"=list("lh"=as.integer(lh_overlay), "rh"=as.integer(rh_overlay)), "statmap"=list("lh"=lh_statmap, "rh"=rh_statmap), "metadata"=list("template_subject"=template_subject, "brainparc"=NULL));
+    res = list("overlay"=list("lh"=as.integer(lh_overlay), "rh"=as.integer(rh_overlay)), "statmap"=list("lh"=lh_statmap, "rh"=rh_statmap), "metadata"=list("template_subject"=template_subject));
     if(dir.exists(file.path(subjects_dir, template_subject))) { # Load surfaces and atlas if possible.
         res$brainparc = brainparc_fs(subjects_dir, template_subject);
         # This allows us to do more sanity checks.
@@ -287,13 +287,15 @@ clusterinfo <- function(lh_overlay, rh_overlay, lh_statmap, rh_statmap, template
 #'
 #' @param value_thresholded scalar double, the data value of thresholded vertices in the \code{lh_threshmap} and \code{rh_threshmap}.
 #'
+#' @note This can only work if there are no clusters which touch each other. I think this can never happen, but we should double-check.
+#'
 #' @return a \code{clusterinfo} instance
 #'
 #' @export
 clusterinfo_from_thresholded_overlay <- function(lh_threshmap, rh_threshmap, value_thresholded = 0.0, template_subject="fsaverage", subjects_dir=file.path(getOption("brainloc.fs_home", default = Sys.getenv("FREESURFER_HOME")), 'subjects')) {
     surfaces = subject.surface(subjects_dir, template_subject, surface = "white");
-    lh_overlay = clusteroverlay(lh_threshmap, value_thresholded = value_thresholded, surface = surfaces$lh);
-    rh_overlay = clusteroverlay(rh_threshmap, value_thresholded = value_thresholded, surface = surfaces$rh);
+    lh_overlay = clusteroverlay_from_threshmap(lh_threshmap, value_thresholded = value_thresholded, surface = surfaces$lh);
+    rh_overlay = clusteroverlay_from_threshmap(rh_threshmap, value_thresholded = value_thresholded, surface = surfaces$rh);
     return(clusterinfo(lh_overlay, rh_overlay, lh_threshmap, rh_threshmap, template_subject = template_subject, subjects_dir = subjects_dir));
 }
 
@@ -325,29 +327,24 @@ clusteroverlay_from_threshmap <- function(threshmap, value_thresholded, surface)
 
     q = dequer::queue();
     start_vertex = 1L;
+    current_cluster_label_int = overlay_background_value;
     vertex_visited[start_vertex] = TRUE;
     if(threshmap[start_vertex] != value_thresholded) {
-        in_cluster = TRUE;
-        current_cluster_label_int = 1L;
+        current_cluster_label_int = current_cluster_label_int + 1L;
         overlay[start_vertex] = current_cluster_label_int;
-    } else {
-        in_cluster = FALSE;
-        current_cluster_label_int = overlay_background_value;
     }
     dequer::pushback(q, start_vertex);
     while(length(q) > 0L) {
         v = dequer::pop(q);
-        for(v_neighbor in adj[v]) {
+        for(v_neighbor in adj[[v]]) {
             if(! vertex_visited[v_neighbor]) {
                 vertex_visited[v_neighbor] = TRUE;
                 if(threshmap[v_neighbor] != value_thresholded) {
-                    if(! in_cluster) {
-                        in_cluster = TRUE;
+                    if(!(any(overlay[adj[[v]]] != overlay_background_value))) {
+                        # no direct neighbor belongs to a cluster, so we need to create a new cluster.
                         current_cluster_label_int = current_cluster_label_int + 1L;
                     }
                     overlay[v_neighbor] = current_cluster_label_int;
-                } else {
-                    in_cluster = FALSE;
                 }
                 dequer::pushback(q, v_neighbor);
             }
@@ -556,6 +553,29 @@ test_real_clusters <- function(sjd = "~/software/freesurfer/subjects", sj="fsave
     lh_overlay_file = system.file("extdata", "lh.cluster.overlayID.mgh", package = "brainloc", mustWork = TRUE);
     rh_overlay_file = system.file("extdata", "rh.cluster.overlayID.mgh", package = "brainloc", mustWork = TRUE);
     clinfo = clusterinfo(lh_overlay_file, rh_overlay_file, lh_tmap_file, rh_tmap_file, template_subject = sj, subjects_dir = sjd);
+    extrema_details = brainloc:::cluster_location_details(clinfo);
+}
+
+test_real_clusters_from_thrsholded_maps <- function(sjd = "~/software/freesurfer/subjects", sj="fsaverage") {
+    lh_tmap_file = system.file("extdata", "lh.tmap.mgh", package = "brainloc", mustWork = TRUE);
+    rh_tmap_file = system.file("extdata", "rh.tmap.mgh", package = "brainloc", mustWork = TRUE);
+    lh_overlay_file = system.file("extdata", "lh.cluster.overlayID.mgh", package = "brainloc", mustWork = TRUE);
+    rh_overlay_file = system.file("extdata", "rh.cluster.overlayID.mgh", package = "brainloc", mustWork = TRUE);
+
+    # We construct the tresholded t-map from full data for this example, which one would not do for real data of course.
+    # It is way simpler and faster to call 'clusterinfo()' directly if you have both the maps and an overlay.
+    lh_tmap = freesurferformats::read.fs.morph(lh_tmap_file);
+    rh_tmap = freesurferformats::read.fs.morph(rh_tmap_file);
+    lh_overlay = as.integer(freesurferformats::read.fs.morph(lh_overlay_file));
+    rh_overlay = as.integer(freesurferformats::read.fs.morph(rh_overlay_file));
+
+    # Construct thresholded map: set the t-map values of all vertices which are not in any cluster to 0.
+    lh_threshmap = lh_tmap;
+    rh_threshmap = rh_tmap;
+    lh_threshmap[lh_overlay==0] = 0.0;
+    rh_threshmap[rh_overlay==0] = 0.0;
+
+    clinfo = clusterinfo_from_thresholded_overlay(lh_threshmap, rh_threshmap, template_subject = sj, subjects_dir = sjd);
     extrema_details = brainloc:::cluster_location_details(clinfo);
 }
 

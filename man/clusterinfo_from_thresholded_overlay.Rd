@@ -30,3 +30,6 @@ a \code{clusterinfo} instance
 \description{
 Create clusterinfo instance from thresholded per-vertex data overlays.
 }
+\note{
+This can only work if there are no clusters which touch each other. I think this can never happen, but we should double-check.
+}
