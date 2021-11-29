@@ -25,7 +25,6 @@ cluster_extrema <- function(clusterinfo, type = "extreme", silent = getOption("b
     }
 
     cluster_annots = clusteroverlay_to_annot(clusterinfo$overlay, ...);
-
     num_clusters_total = num_clusters(cluster_annots)$total;
 
     all_cluster_names = rep("?", num_clusters_total);
@@ -38,76 +37,76 @@ cluster_extrema <- function(clusterinfo, type = "extreme", silent = getOption("b
     current_cluster_idx = 1L;
     rows_to_remove = c();
     for (hemi in c("lh", "rh")) {
-        for(cluster_name in unique(cluster_annots[[hemi]]$label_names)) {
-            if(! (cluster_name %in% c("", "unknown"))) {
-                cluster_vertices = which(cluster_annots[[hemi]]$label_names == cluster_name);
-                cluster_num_vertices = length(cluster_vertices);
-                all_cluster_names[current_cluster_idx] = cluster_name;
-                all_cluster_hemis[current_cluster_idx] = hemi;
-                all_cluster_num_vertices[current_cluster_idx] = cluster_num_vertices;
-                cluster_min_statvalue = min(clusterinfo$statmap[[hemi]][cluster_vertices]);
-                cluster_max_statvalue = max(clusterinfo$statmap[[hemi]][cluster_vertices]);
-                if(is.na(cluster_min_statvalue) | is.na(cluster_max_statvalue)) {
-                    num_na = sum(is.na(clusterinfo$statmap[[hemi]][cluster_vertices]));
-                    if(num_na == cluster_num_vertices) {
-                        warning(sprintf(" - Cluster #%d %s on hemi %s with %d vertices has %d NA stat data values: min = %s, max = %s. Skipping. Vertex indices are in range %d - %d (%d unique).\n", current_cluster_idx, cluster_name, hemi, cluster_num_vertices, num_na, cluster_min_statvalue, cluster_max_statvalue, min(cluster_vertices), max(cluster_vertices), length(unique(cluster_vertices))));
-                        all_cluster_extreme_value[current_cluster_idx] = NA;
-                        all_cluster_extreme_vertex[current_cluster_idx] = NA;
-                        rows_to_remove = c(rows_to_remove, current_cluster_idx);
-                        current_cluster_idx = current_cluster_idx + 1L;
-                        next;
-                    } else {
-                        message(sprintf(" - Cluster #%d %s on hemi %s with %d vertices has %d NA stat data values which will be ignored.\n", current_cluster_idx, cluster_name, hemi, cluster_num_vertices, num_na));
-                        cluster_min_statvalue = min(clusterinfo$statmap[[hemi]][cluster_vertices], na.rm = TRUE);
-                        cluster_max_statvalue = max(clusterinfo$statmap[[hemi]][cluster_vertices], na.rm = TRUE);
-                    }
-
+        clusters = get_clusters(clusterinfo, hemi = hemi);
+        for(cluster_name in names(clusters)) {
+            cluster_vertices = clusters[[cluster_name]];
+            cluster_num_vertices = length(cluster_vertices);
+            all_cluster_names[current_cluster_idx] = cluster_name;
+            all_cluster_hemis[current_cluster_idx] = hemi;
+            all_cluster_num_vertices[current_cluster_idx] = cluster_num_vertices;
+            cluster_min_statvalue = min(clusterinfo$statmap[[hemi]][cluster_vertices]);
+            cluster_max_statvalue = max(clusterinfo$statmap[[hemi]][cluster_vertices]);
+            if(is.na(cluster_min_statvalue) | is.na(cluster_max_statvalue)) {
+                num_na = sum(is.na(clusterinfo$statmap[[hemi]][cluster_vertices]));
+                if(num_na == cluster_num_vertices) {
+                    warning(sprintf(" - Cluster #%d %s on hemi %s with %d vertices has %d NA stat data values: min = %s, max = %s. Skipping. Vertex indices are in range %d - %d (%d unique).\n", current_cluster_idx, cluster_name, hemi, cluster_num_vertices, num_na, cluster_min_statvalue, cluster_max_statvalue, min(cluster_vertices), max(cluster_vertices), length(unique(cluster_vertices))));
+                    all_cluster_extreme_value[current_cluster_idx] = NA;
+                    all_cluster_extreme_vertex[current_cluster_idx] = NA;
+                    rows_to_remove = c(rows_to_remove, current_cluster_idx);
+                    current_cluster_idx = current_cluster_idx + 1L;
+                    next;
+                } else {
+                    message(sprintf(" - Cluster #%d %s on hemi %s with %d vertices has %d NA stat data values which will be ignored.\n", current_cluster_idx, cluster_name, hemi, cluster_num_vertices, num_na));
+                    cluster_min_statvalue = min(clusterinfo$statmap[[hemi]][cluster_vertices], na.rm = TRUE);
+                    cluster_max_statvalue = max(clusterinfo$statmap[[hemi]][cluster_vertices], na.rm = TRUE);
                 }
-                cluster_vertex_with_min_statvalue = cluster_vertices[which.min(clusterinfo$statmap[[hemi]][cluster_vertices])];
-                cluster_vertex_with_max_statvalue = cluster_vertices[which.max(clusterinfo$statmap[[hemi]][cluster_vertices])];
 
-                if(type == "extreme") {
-                    is_pos_greater = abs(cluster_max_statvalue) > abs(cluster_min_statvalue);
-                    if(is_pos_greater) {
-                        cluster_extreme_value = cluster_max_statvalue;
-                        cluster_vertex_with_extreme_value = cluster_vertex_with_max_statvalue;
-                    } else {
-                        cluster_extreme_value = cluster_min_statvalue;
-                        cluster_vertex_with_extreme_value = cluster_vertex_with_min_statvalue;
-                    }
-                } else if(type == "min") {
-                    cluster_extreme_value = cluster_min_statvalue;
-                    cluster_vertex_with_extreme_value = cluster_vertex_with_min_statvalue;
-                } else if (type == "max") {
+            }
+            cluster_vertex_with_min_statvalue = cluster_vertices[which.min(clusterinfo$statmap[[hemi]][cluster_vertices])];
+            cluster_vertex_with_max_statvalue = cluster_vertices[which.max(clusterinfo$statmap[[hemi]][cluster_vertices])];
+
+            if(type == "extreme") {
+                is_pos_greater = abs(cluster_max_statvalue) > abs(cluster_min_statvalue);
+                if(is_pos_greater) {
                     cluster_extreme_value = cluster_max_statvalue;
                     cluster_vertex_with_extreme_value = cluster_vertex_with_max_statvalue;
                 } else {
-                    stop("Invalid 'type' argument. Must be one of 'min', 'max', 'extreme'");
+                    cluster_extreme_value = cluster_min_statvalue;
+                    cluster_vertex_with_extreme_value = cluster_vertex_with_min_statvalue;
                 }
-                all_cluster_extreme_value[current_cluster_idx] = cluster_extreme_value;
-                all_cluster_extreme_vertex[current_cluster_idx] = cluster_vertex_with_extreme_value;
-                if(! silent) {
-                    cat(sprintf(" - Hemi %s cluster '%s' has size %d vertices and %s stat value %f at vertex %d.\n", hemi, cluster_name, cluster_num_vertices, type, cluster_extreme_value, cluster_vertex_with_extreme_value));
-                }
+            } else if(type == "min") {
+                cluster_extreme_value = cluster_min_statvalue;
+                cluster_vertex_with_extreme_value = cluster_vertex_with_min_statvalue;
+            } else if (type == "max") {
+                cluster_extreme_value = cluster_max_statvalue;
+                cluster_vertex_with_extreme_value = cluster_vertex_with_max_statvalue;
+            } else {
+                stop("Invalid 'type' argument. Must be one of 'min', 'max', 'extreme'");
+            }
+            all_cluster_extreme_value[current_cluster_idx] = cluster_extreme_value;
+            all_cluster_extreme_vertex[current_cluster_idx] = cluster_vertex_with_extreme_value;
+            if(! silent) {
+                cat(sprintf(" - Hemi %s cluster '%s' has size %d vertices and %s stat value %f at vertex %d.\n", hemi, cluster_name, cluster_num_vertices, type, cluster_extreme_value, cluster_vertex_with_extreme_value));
+            }
 
 
-                if(! is.null(clusterinfo$brainparc)) {
-                    for(atlas in names(clusterinfo$brainparc$annots)) {
-                        atlas_annot_min = clusterinfo$brainparc$annots[[atlas]][[hemi]];
-                        overlap_df = cluster_overlapping_regions(atlas_annot_min, cluster_vertices);
-                        if(! silent) {
-                            cat(sprintf("   - Hemi %s cluster '%s' overlaps with %d regions of atlas '%s':\n", hemi, cluster_name, nrow(overlap_df), atlas));
-                            for(row_idx in seq.int(nrow(overlap_df))) {
-                                cat(sprintf("     * Region %s: %d of %d cluster vertices in region (%.2f percent). Cluster covers %.2f percent of the region.\n", overlap_df$region[row_idx], overlap_df$num_shared_vertices[row_idx], cluster_num_vertices, overlap_df$percent_shared_vertices[row_idx], overlap_df$cluster_percent_of_region[row_idx]));
-                            }
+            if(! is.null(clusterinfo$brainparc)) {
+                for(atlas in names(clusterinfo$brainparc$annots)) {
+                    atlas_annot_min = clusterinfo$brainparc$annots[[atlas]][[hemi]];
+                    overlap_df = cluster_overlapping_regions(atlas_annot_min, cluster_vertices);
+                    if(! silent) {
+                        cat(sprintf("   - Hemi %s cluster '%s' overlaps with %d regions of atlas '%s':\n", hemi, cluster_name, nrow(overlap_df), atlas));
+                        for(row_idx in seq.int(nrow(overlap_df))) {
+                            cat(sprintf("     * Region %s: %d of %d cluster vertices in region (%.2f percent). Cluster covers %.2f percent of the region.\n", overlap_df$region[row_idx], overlap_df$num_shared_vertices[row_idx], cluster_num_vertices, overlap_df$percent_shared_vertices[row_idx], overlap_df$cluster_percent_of_region[row_idx]));
                         }
                     }
                 }
-
-
-                current_cluster_idx = current_cluster_idx + 1L;
             }
+
+
+            current_cluster_idx = current_cluster_idx + 1L;
         }
+
     }
 
     # Remove rows of clusters with NA values.

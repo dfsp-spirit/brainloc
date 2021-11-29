@@ -1,4 +1,4 @@
-
+# Functions to compute the atlas regions closest to a point/vertex coordinate on the surface.
 
 #' @title Convert fs.surface to tmesh3d using freesurferformats of fsbrain.
 #'
