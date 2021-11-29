@@ -108,29 +108,29 @@ clusteroverlay_from_threshmap <- function(threshmap, value_thresholded, surface)
     overlay_background_value = 0L;
     overlay = rep(overlay_background_value, num_vertices);
 
-
-    q = dequer::queue();
-    start_vertex = 1L;
+    vertex_visited[threshmap == value_thresholded] = TRUE;
     current_cluster_label_int = overlay_background_value;
-    vertex_visited[start_vertex] = TRUE;
-    if(threshmap[start_vertex] != value_thresholded) {
+    for(start_vertex in seq.int(num_vertices)) {
+        if(vertex_visited[start_vertex]) {
+            next;
+        }
+        q = dequer::queue();
+        cat(sprintf("Starting check from start vertex %d, new cluster label will be %d.\n" , start_vertex, current_cluster_label_int));
+        vertex_visited[start_vertex] = TRUE;
         current_cluster_label_int = current_cluster_label_int + 1L;
         overlay[start_vertex] = current_cluster_label_int;
-    }
-    dequer::pushback(q, start_vertex);
-    while(length(q) > 0L) {
-        v = dequer::pop(q);
-        for(v_neighbor in adj[[v]]) {
-            if(! vertex_visited[v_neighbor]) {
-                vertex_visited[v_neighbor] = TRUE;
-                if(threshmap[v_neighbor] != value_thresholded) {
-                    if(!(any(overlay[adj[[v]]] != overlay_background_value))) {
-                        # no direct neighbor belongs to a cluster, so we need to create a new cluster.
-                        current_cluster_label_int = current_cluster_label_int + 1L;
-                    }
-                    overlay[v_neighbor] = current_cluster_label_int;
+        dequer::pushback(q, start_vertex);
+        while(length(q) > 0L) {
+            v = dequer::pop(q);
+            cat(sprintf(" - length(q) is %d, current vertex v=%d has %d neighbors.\n" , length(q), v, length(adj[[v]])));
+            vertex_visited[v] = TRUE;
+            if(threshmap[v] != value_thresholded) {
+                overlay[v] = current_cluster_label_int;
+            }
+            for(v_neighbor in adj[[v]]) {
+                if(! vertex_visited[v_neighbor]) {
+                    dequer::pushback(q, v_neighbor);
                 }
-                dequer::pushback(q, v_neighbor);
             }
         }
     }
