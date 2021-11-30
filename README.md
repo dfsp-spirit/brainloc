@@ -6,61 +6,31 @@ This is currently intended to be used with FreeSurfer standard space templates (
 
 ![Fig1](./web/brainloc.png?raw=true "Brainloc.")
 
-## About
+## Features
 
-This is an R package that takes as input a vertex index of a FreeSurfer brain mesh in MNI305 space (typically fsaverage) and identifies the location in different coordinate systems and with respect to different brain regions. We use this to report the exact locations of clusters or other differences we find. It can also be used to find the vertex in an fsaverage mesh that is closest to a given MNI305 coordinate.
+This is an R package that takes as input a vertex index of a FreeSurfer brain mesh in MNI305 space (typically fsaverage) and identifies the location in different coordinate systems and with respect to different brain regions. We use this to report the exact locations of clusters or other differences we find. It can also be used to find the vertex in a brain mesh that is closest to a given coordinate.
+
+
+1) Given a coordinate in MNI305 space:
+ - find the closest vertex in a mesh that is MNI305 space (e.g., fsaverage, fsaverage6, etc).
+2) Given a vertex on a mesh in MNI305 space:
+ - find its MNI305 coordinate (trivial)
+ - find its MNI152 coordinate
+   - using the FreeSurfer 4x4 matrix or
+   - using the more accurate [regfusionr](https://github.com/dfsp-spirit/regfusionr) method
+ - find its Talairach coordinates (using Matthew Brett's non-linear transform from MNI152)
+ - find the region the vertex is assigned to in a brain atlas parcellation like the Desikan atlas that comes with FreeSurfer (trivial)
+ - find the distances to all other atlas regions, with different distance methods (Euclidean, geodesic along the mesh) and different linkages (defining the reference point when measuring the distance to a region, e.g., closest vertex in region, or center vertex)
+3) Given a cluster as a set of vertices on any brain surface mesh:
+ - read such cluster information from a statistical map (e.g., t-value map for all mesh vertices) and an overlay map assigning a cluster identifier to each vertex.
+ - read such cluster information only from a thresholded statistical map, using BFS on the mesh to identify the clusters.
+ - find the extremum value of each cluster
+ - find all peaks of each cluster
+ - given a brain parcellation, find all regions the cluster overlaps with and compute the percentage overlap for both the cluster and the regions
+ 
+
 
 ## Installation
 
 Not yet, this is work-in-progress. Come back another day.
-
-## Details on the Features
-
-
-### Coordinate transformation
-
-Supported coordinate systems include:
-
-* MNI305 space RAS coordinates (simply the coordinate of the input vertex index).
-* MNI152 space coordinates computed from MNI305 coordinates, with 2 different methods available:
-  - using the linear transformation method with the 4x4 FreeSurfer matrix ([section 8 here](https://surfer.nmr.mgh.harvard.edu/fswiki/CoordinateSystems)), or 
-  - the more accurate [regfusionr](https://github.com/dfsp-spirit/regfusionr) method.
-* Talairach coordinates using [Matthew Brett's transform](http://brainmap.org/training/BrettTransform.html) from MNI152.
-
-#### Validation
-
-If you want to double-check the results of the coordinate transformations, I recommend to use Freeview (comes with FreeSurfer) in combination with the [MNI to Talairach Tool](https://bioimagesuiteweb.github.io/bisweb-manual/tools/mni2tal.html) from Bioimagesuite, which uses the mapping described in Lacadie *et al.*, Neuroimage. 2008 Aug 15; 42(2): 717–725. 
-
-Here is an example for fsaverage vertex 145029:
-
-![Fig2a](./web/fsaverage_vertex_lh_145029.png?raw=true "Vertex 145029 on the left fsaverage surface.")
-
-**Fig. 2a** *Vertex 145029 on the left fsaverage surface (at pink marker). Screenshot from the FreeView application that comes with [FreeSurfer](https://freesurfer.net).* 
-
-![Fig2b](./web/fsaverage_vertex_lh_145029_MNI152_-39_-30_65.png?raw=true "Vertex 145029 on the left fsaverage surface.")
-
-**Fig. 2b** *Location of MNI coordinate 39 -30  65, the result of mapping fsaverage vertex 145029 to MNI152 space. Screenshot from the [MNI - Talairach Tool](https://bioimagesuiteweb.github.io/bisweb-manual/tools/mni2tal.html).*
-
-
-
-### Closest brain atlas regions
-
-For a vertex, the package also computes the closest brain regions and the distances to them, based on an atlas. Given a cluster (or more generally, a set of vertices), it can also compute all atlas regions a cluster overlaps with and the percentage as well as absolute number of cluster vertices in the respective atlas regions.
-
-You can use any atlas you like, the three default ones that [come with FreeSurfer](https://surfer.nmr.mgh.harvard.edu/fswiki/CorticalParcellation) are:
-
-* The Desikan-Killiany atlas (Desikan *et al.*, 2006. Neuroimage, 31(3):968-80).
-* The Destrieux atlas (Destrieux *et al.*, 2010. Neuroimage, 53(1):1-15).
-* The DKT40 altas from the [Mindboggle data set](https://mindboggle.info/data.html).
-
-To use a different or custom atlas, just drop the respective annot files for the two hemispheres into the `/label/` directory of your template subject. See [the FreeSurfer documentation on Cortical Parcellations](https://surfer.nmr.mgh.harvard.edu/fswiki/CorticalParcellation) for details on FreeSurfer brain atlases.
-
-
-### Atlas distances
-
-The following methods are available to compute the distance of a point on a brain surface to a brain atlas region:
-
-* Euclidean distance: point to mean value of region coordinates
-* Euclidean distance: point to closest vertex of region
-* Geodesic distance to closest vertex of region
 
