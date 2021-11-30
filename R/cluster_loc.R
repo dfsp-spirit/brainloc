@@ -3,6 +3,8 @@
 
 #' @title Print information on cluster extreme values.
 #'
+#' @description A cluster extreme value is the most extreme value of a cluster. One can choose whether the minimum, maximum, or absolute maximum is requested. Each cluster has exactly one extreme value (though it may occur at several vertices in rare cases).
+#'
 #' @param clusterinfo a clusterinfo instance, see the \code{clusterinfo} function to get one.
 #'
 #' @param type character string, one of 'extreme', 'min' or 'max'. Which cluster value to report. The default of 'extreme' reports the absolutely larger one of the min and the max value and is for the typical use case of \code{t}-value maps.
@@ -11,7 +13,9 @@
 #'
 #' @param ... passed on to \code{\link{clusteroverlay_to_annot}}.
 #'
-#' @return a \code{data.frame} with cluster information. The column names should be self-explanatory.
+#' @return a \code{data.frame} with cluster extrema information. The column names should be self-explanatory.
+#'
+#' @note If the extreme value occurs at several vertices of a cluster, which of these vertices will be reported is undefined.
 #'
 #' @keywords internal
 cluster_extrema <- function(clusterinfo, type = "extreme", silent = getOption("brainloc.silent", default = FALSE), ...) {
@@ -20,12 +24,11 @@ cluster_extrema <- function(clusterinfo, type = "extreme", silent = getOption("b
         stop("Parameter 'clusterinfo' must be a clusterinfo instance.");
     }
 
-    if(! silent) {
-        cat(sprintf("Computing cluster extrema.\n"));
-    }
-
     cluster_annots = clusteroverlay_to_annot(clusterinfo$overlay, ...);
     num_clusters_total = num_clusters(cluster_annots)$total;
+    if(! silent) {
+        cat(sprintf("Computing cluster extrema for %d clusters.\n", num_clusters_total));
+    }
 
     all_cluster_names = rep("?", num_clusters_total);
     all_cluster_hemis = rep("?", num_clusters_total);
@@ -119,9 +122,85 @@ cluster_extrema <- function(clusterinfo, type = "extreme", silent = getOption("b
 }
 
 
+#' @title Compute cluster peaks.
+#'
+#' @description A peak is a position in a cluster (a vertex) which is assigned the maximum statsmap value over its neighborhood. The neighborhood definition used by this function is the 1-ring neighborhood on the mesh.
+#'
+#' @inheritParams cluster_extrema
+#'
+#' @return a \code{data.frame} with cluster peak information. The column names should be self-explanatory.
+#'
+#' @keywords internal
+cluster_peaks <- function(clusterinfo, silent = getOption("brainloc.silent", default = FALSE), ...) {
+
+    if(! is.clusterinfo(clusterinfo)) {
+        stop("Parameter 'clusterinfo' must be a clusterinfo instance.");
+    }
+
+    cluster_annots = clusteroverlay_to_annot(clusterinfo$overlay, ...);
+    num_clusters_total = num_clusters(cluster_annots)$total;
+
+    if(! silent) {
+        cat(sprintf("Computing cluster extrema for %d clusters.\n", num_clusters_total));
+    }
+
+    all_cluster_names = c();
+    all_cluster_hemis = c();
+    all_clusters_peak_vertex = c();
+    all_clusters_peak_value = c();
+
+
+    current_cluster_idx = 1L;
+    for (hemi in c("lh", "rh")) {
+        clusters = get_clusters(clusterinfo, hemi = hemi);
+        surface =
+        for(cluster_name in names(clusters)) {
+            cluster_vertices = clusters[[cluster_name]];
+            cluster_num_vertices = length(cluster_vertices);
+            cl_peaks = single_cluster_peaks(cluster_vertices, clusterinfo$statmap[[hemi]], surface);
+            num_peaks = length(cl_peaks$vertex); # Could also use cl_peaks$value, the length is identical.
+            if(is.null(all_cluster_names)) {
+                all_cluster_names = rep(cluster_name, num_peaks);
+                all_cluster_hemis = rep(hemi, num_peaks);
+                all_clusters_peak_vertex = cl_peaks$vertex;
+                all_clusters_peak_value = cl_peaks$value;
+            } else {
+                all_cluster_names = c(all_cluster_names, rep(cluster_name, num_peaks));
+                all_cluster_hemis = c(all_cluster_hemis, rep(hemi, num_peaks));
+                all_clusters_peak_vertex = c(all_clusters_peak_vertex, cl_peaks$vertex);
+                all_clusters_peak_value = c(all_clusters_peak_value, cl_peaks$value);
+            }
+        }
+    }
+    return(data.frame("cluster"=all_cluster_names, "hemi"=all_cluster_hemis, "peak_vertex"=all_clusters_peak_vertex, "peak_value"=all_clusters_peak_value));
+}
 
 
 
+#' @title Compute peaks of a single cluster.
+#'
+#' @param cluster_vertices integer vector, the vertex indices of the cluster.
+#'
+#' @param statmap double vector, the full stat map for the surface. Only the values of the cluster_vertices are used.
+#'
+#' @param surface a single \code{fs.surface} instance. Used to compute the neighborhood of the cluster vertices.
+#'
+#' @return named list with entries 'vertex' and 'value', they contain an integer vector and a double vector, respectively.
+#'
+#' @keywords internal
+single_cluster_peaks <- function(cluster_vertices, statmap, surface) {
+    if(! freesurferformats::is.fs.surface(surface)) {
+        stop("Parameter 'surface' must be an fs.surface instance.");
+    }
+    if(! (is.vector(cluster_vertices) & is.integer(cluster_vertices))) {
+        stop("Parameter 'cluster_vertices' must be an integer vector.");
+    }
+    if(! (is.vector(statmap) & is.numeric(statmap))) {
+        stop("Parameter 'statmap' must be an numeric vector.");
+    }
+    adj = Rvcg::vcgVertexNeighbors(fs.surface.to.tmesh3d(surface));
+
+}
 
 
 #' @title Get the clusters from a clusterinfo instance.
@@ -161,7 +240,7 @@ get_clusters <- function(clusterinfo, hemi="both") {
 
 
 
-#' @title Get details on cluster location, required brainparc.
+#' @title Get details on cluster locations.
 #'
 #' @param clusterinfo a clusterinfo instance, see the \code{clusterinfo} function on how to get one. Must contain a valid \code{brainparc} in field 'brainparc'.
 #'
@@ -170,6 +249,8 @@ get_clusters <- function(clusterinfo, hemi="both") {
 #' @param ... passed on to \code{\link{cluster_extrema}}.
 #'
 #' @return a new version of the input data.frame, with additional columns appended.
+#'
+#' @export
 cluster_location_details <- function(clusterinfo, silent = getOption("brainloc.silent", default = FALSE), ...) {
 
     if(! is.clusterinfo(clusterinfo)) {
