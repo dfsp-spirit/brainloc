@@ -8,7 +8,9 @@ coord_closest_regions(
   brainparc,
   coordinate,
   linkage = "single",
-  distance = "euclidean"
+  distance = "euclidean",
+  silent = getOption("brainloc.silent", default = FALSE),
+  num_regions_to_report = 5L
 )
 }
 \arguments{
@@ -19,6 +21,10 @@ coord_closest_regions(
 \item{linkage}{character string, one of \code{"single"} or \code{"centroid"}. Defines how the distance from a vertex to a region of vertices is computed. \code{"single"}: Euclidean distance from query vertex to the closest vertex of the atlas region. \code{"centroid"}: Euclidean distance from query vertex to the mean of the vertex coordinates of the atlas region.}
 
 \item{distance}{character string, one of \code{"euclidean"} or \code{"geodesic"}. The latter is only supported with \code{linkage = 'single'}.}
+
+\item{silent}{logical, whether to suppress console messages.}
+
+\item{num_regions_to_report}{scalar integer, the number of closest regions to report (in increasing order, by distance).}
 }
 \description{
 Finds the closest atlas regions according to the brain surface parcellation 'brainparc' for the given query vertex coordinates. The coordinates must be in the surface space of the surface included in the 'brainparc'.

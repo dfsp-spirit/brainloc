@@ -17,7 +17,9 @@
 #'
 #' @param silent logical, whether to suppress console messages.
 #'
-#' @return not decided yet, WIP. Currently called for the side effect of text output to console.
+#' @param num_regions_to_report scalar integer, the number of closest regions to report (in increasing order, by distance).
+#'
+#' @return a data.frame, the column names should be obvious.
 #'
 #' @examples
 #' \dontrun{
@@ -28,7 +30,7 @@
 #' @seealso \code{\link{coord_closest_regions}} if you have a coordinate (on or near the surface) instead of a vertex.
 #'
 #' @export
-vertex_closest_regions <- function(brainparc, vertices, hemis, linkage = "single", distance = "euclidean", silent = getOption("brainloc.silent", default = FALSE)) {
+vertex_closest_regions <- function(brainparc, vertices, hemis, linkage = "single", distance = "euclidean", silent = getOption("brainloc.silent", default = FALSE), num_regions_to_report = 5L) {
     if(! (linkage %in% c('single', 'centroid'))) {
         stop("Parameter 'linkage' must be one of c('single', 'centroid').");
     }
@@ -49,13 +51,8 @@ vertex_closest_regions <- function(brainparc, vertices, hemis, linkage = "single
         }
     }
 
-    num_regions_to_report = 3L;
-
-    nv = length(vertices); # nv = number of vertices.
-    coords_x = rep(0.0, nv);
-    coords_y = rep(0.0, nv);
-    coords_z = rep(0.0, nv);
-    region = rep("?", nv);
+    # Will be turned into data.frame later.
+    res = list("vertex"=NULL, "hemi"=NULL, "linkage"=NULL, "distance"=NULL, "atlas"=NULL, "vertex_region_direct"=NULL, "vertex_region_nth"=NULL, "vertex_region_n_name"=NULL, "vertex_region_n_distance"=NULL, "vertex_region_n_point_x"=NULL, "vertex_region_n_point_y"=NULL, "vertex_region_n_point_z"=NULL);
 
 
     for (vertex_local_idx in seq_along(vertices)) {
@@ -105,9 +102,28 @@ vertex_closest_regions <- function(brainparc, vertices, hemis, linkage = "single
                 num_indices = min(length(sorted_regions), num_regions_to_report);
                 if(! silent) {
                     cat(sprintf("  Vertex %s on hemi %s at (%f %f %f) belongs to atlas %s region '%s'. Closest region vertices with %s distance are:\n", vertex_surface_idx, hemi, vertex_coords[1], vertex_coords[2], vertex_coords[3], atlas_name, vertex_region, distance));
-                    for(i in seq.int(num_indices)) {
+                }
+                for(i in seq.int(num_indices)) {
+                    if(! silent) {
                         cat(sprintf("  - Region #%d %s with vertex %d in %s distance '%f'.\n", i, region_names[sorted_region_sort_indices][i], regions_closest_vertex_to_query_vertex[sorted_region_sort_indices][i], distance, regions_closest_distance_query_vertex[sorted_region_sort_indices][i]));
                     }
+
+                    # Collect results.
+                    res$vertex = vappend(res$vertex, vertex_surface_idx);
+                    res$hemi = vappend(res$hemi, hemi);
+                    res$linkage = vappend(res$linkage, linkage);
+                    res$distance = vappend(res$distance, distance);
+                    res$atlas = vappend(res$atlas, atlas_name);
+                    res$vertex_region_direct = vappend(res$vertex_region_direct, vertex_region);
+                    res$vertex_region_nth = vappend(res$vertex_region_nth, i);
+                    res$vertex_region_n_name = vappend(res$vertex_region_n_name, region_names[sorted_region_sort_indices][i]);
+                    res$vertex_region_n_distance = vappend(res$vertex_region_n_distance, regions_closest_distance_query_vertex[sorted_region_sort_indices][i]);
+
+                    region_measure_vertex = regions_closest_vertex_to_query_vertex[sorted_region_sort_indices][i];
+
+                    res$vertex_region_n_point_x = vappend(res$vertex_region_n_point_x, surface$vertices[region_measure_vertex, 1]);
+                    res$vertex_region_n_point_y = vappend(res$vertex_region_n_point_y, surface$vertices[region_measure_vertex, 2]);
+                    res$vertex_region_n_point_z = vappend(res$vertex_region_n_point_z, surface$vertices[region_measure_vertex, 3]);
                 }
             }
         } else if (linkage == "centroid") {
@@ -134,16 +150,52 @@ vertex_closest_regions <- function(brainparc, vertices, hemis, linkage = "single
                 num_indices = min(length(sorted_region_indices), num_regions_to_report);
                 if(! silent) {
                     cat(sprintf("  Vertex %s on hemi %s at (%f %f %f) belongs to region '%s'. Closest region centers are:\n", vertex_surface_idx, hemi, vertex_coords[1], vertex_coords[2], vertex_coords[3], vertex_region));
-                    for(i in seq.int(num_indices)) {
+                }
+                for(i in seq.int(num_indices)) {
+                    if(! silent) {
                         cat(sprintf("  - Region #%d %s with center at (%f, %f, %f) in distance '%f'.\n", i, region_names[sorted_region_indices[i]], region_centers_xyz[sorted_region_indices[i], 1], region_centers_xyz[sorted_region_indices[i],2], region_centers_xyz[sorted_region_indices[i],3], vertex_dist_to_region_centers_xyz[sorted_region_indices[i]]));
                     }
+
+                    # Collect results.
+                    res$vertex = vappend(res$vertex, vertex_surface_idx);
+                    res$hemi = vappend(res$hemi, hemi);
+                    res$linkage = vappend(res$linkage, linkage);
+                    res$distance = vappend(res$distance, distance);
+                    res$atlas = vappend(res$atlas, atlas_name);
+                    res$vertex_region_direct = vappend(res$vertex_region_direct, vertex_region);
+                    res$vertex_region_nth = vappend(res$vertex_region_nth, i);
+                    res$vertex_region_n_name = vappend(res$vertex_region_n_name, region_names[sorted_region_indices[i]]);
+                    res$vertex_region_n_distance = vappend(res$vertex_region_n_distance, vertex_dist_to_region_centers_xyz[sorted_region_indices[i]]);
+                    res$vertex_region_n_point_x = vappend(res$vertex_region_n_point_x, region_centers_xyz[sorted_region_indices[i], 1]);
+                    res$vertex_region_n_point_y = vappend(res$vertex_region_n_point_y, region_centers_xyz[sorted_region_indices[i], 2]);
+                    res$vertex_region_n_point_z = vappend(res$vertex_region_n_point_z, region_centers_xyz[sorted_region_indices[i], 3]);
                 }
+
             }
         } else {
             stop("Invalid value for 'linkage' parameter.");
         }
     }
-    return(vdists);
+    return(data.frame(res));
+}
+
+
+#' @title Append to vector or NULL.
+#'
+#' @param vec an existing vector or NULL
+#'
+#' @param val the value to append.
+#'
+#' @return the value itself if vec is \code{NULL}, the vec with the appended val otherwise.
+#'
+#' @note There almost certainly is a better way to do this, please open an issue and let me know how if you know it.
+#'
+#' @keywords internal
+vappend <- function(vec, val) {
+    if(is.null(vec)) {
+        return(val);
+    }
+    return(c(vec, val));
 }
 
 
@@ -167,9 +219,9 @@ vertex_closest_regions <- function(brainparc, vertices, hemis, linkage = "single
 #' @seealso \code{\link{vertex_closest_regions}} is faster if you have a vertex index for the surface in 'brainparc' instead of a coordinate.
 #'
 #' @export
-coord_closest_regions <- function(brainparc, coordinate, linkage = "single", distance = "euclidean", silent = getOption("brainloc.silent", default = FALSE)) {
+coord_closest_regions <- function(brainparc, coordinate, linkage = "single", distance = "euclidean", silent = getOption("brainloc.silent", default = FALSE), num_regions_to_report = 5L) {
     closest_vertex_info = coord_closest_vertex(coordinate, get_surface(brainparc));
-    return(vertex_closest_regions(brainparc, closest_vertex_info$both_closest_vertex, closest_vertex_info$both_hemi, linkage = linkage, distance = distance, silent = silent));
+    return(vertex_closest_regions(brainparc, closest_vertex_info$both_closest_vertex, closest_vertex_info$both_hemi, linkage = linkage, distance = distance, silent = silent, num_regions_to_report = num_regions_to_report));
 }
 
 

@@ -10,7 +10,8 @@ vertex_closest_regions(
   hemis,
   linkage = "single",
   distance = "euclidean",
-  silent = getOption("brainloc.silent", default = FALSE)
+  silent = getOption("brainloc.silent", default = FALSE),
+  num_regions_to_report = 5L
 )
 }
 \arguments{
@@ -25,9 +26,11 @@ vertex_closest_regions(
 \item{distance}{character string, one of \code{"euclidean"} or \code{"geodesic"}. The latter is only supported with \code{linkage = 'single'}.}
 
 \item{silent}{logical, whether to suppress console messages.}
+
+\item{num_regions_to_report}{scalar integer, the number of closest regions to report (in increasing order, by distance).}
 }
 \value{
-not decided yet, WIP. Currently called for the side effect of text output to console.
+a data.frame, the column names should be obvious.
 }
 \description{
 Finds the closest atlas regions according to the brain surface parcellation 'brainparc' for the given query vertices.
