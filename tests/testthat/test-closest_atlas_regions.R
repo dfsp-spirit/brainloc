@@ -16,6 +16,24 @@ test_that("We can compute the atlas regions closest to a vertex using Euclidean 
 })
 
 
+test_that("We can compute the atlas regions closest to a coordinate using Euclidean distance and single linkage.", {
+    fs_info = brainloc:::find.freesurferhome();
+    if(! fs_info$found) {
+        testthat::skip("No FreeSurfer installation found on system, but the FreeSurfer fsaverage subject is required for this test.");
+    }
+    sjd = file.path(fs_info$found_at, "subjects");
+    sj = "fsaverage";
+
+    options("brainloc.silent" = TRUE);
+
+    bp = brainparc_fs(sjd, sj);
+    res = coord_closest_regions(bp, get_surface(bp)$lh$vertices[1:3,]); # We pass the coords of the first 3 vertices of the left hemisphere. Of course, you would use 'vertex_closest_regions()' if you knew the vertex index of the coordinates since it is faster.
+
+    testthat::expect_equal(1L, 1L);
+})
+
+
+
 
 test_that("We can compute the vertex closest to the given coordinates.", {
     fs_info = brainloc:::find.freesurferhome();

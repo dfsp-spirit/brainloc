@@ -167,9 +167,9 @@ vertex_closest_regions <- function(brainparc, vertices, hemis, linkage = "single
 #' @seealso \code{\link{vertex_closest_regions}} is faster if you have a vertex index for the surface in 'brainparc' instead of a coordinate.
 #'
 #' @export
-coord_closest_regions <- function(brainparc, coordinate, linkage = "single", distance = "euclidean") {
+coord_closest_regions <- function(brainparc, coordinate, linkage = "single", distance = "euclidean", silent = getOption("brainloc.silent", default = FALSE)) {
     closest_vertex_info = coord_closest_vertex(coordinate, get_surface(brainparc));
-    return(vertex_closest_regions(brainparc, closest_vertex_info$both_closest_vertex, closest_vertex_info$both_hemi, linkage = linkage, distance = distance));
+    return(vertex_closest_regions(brainparc, closest_vertex_info$both_closest_vertex, closest_vertex_info$both_hemi, linkage = linkage, distance = distance, silent = silent));
 }
 
 
