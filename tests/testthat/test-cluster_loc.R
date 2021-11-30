@@ -24,3 +24,15 @@ test_that("We can compute cluster peaks from a clusterinfo instance.", {
     testthat::expect_equal(nrow(peaks), 769L);
 })
 
+
+test_that("We can compute cluster overlap with brain atlas regions", {
+
+    options("brainloc.silent" = TRUE);
+    clinfo = get_test_clusterinfo();
+    testthat::expect_true(is.clusterinfo(clinfo));
+
+    overlap = cluster_region_overlap(clinfo);
+
+    testthat::expect_true(is.data.frame(overlap));
+})
+

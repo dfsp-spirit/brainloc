@@ -92,21 +92,6 @@ cluster_extrema <- function(clusterinfo, type = "extreme", silent = getOption("b
                 cat(sprintf(" - Hemi %s cluster '%s' has size %d vertices and %s stat value %f at vertex %d.\n", hemi, cluster_name, cluster_num_vertices, type, cluster_extreme_value, cluster_vertex_with_extreme_value));
             }
 
-
-            if(! is.null(clusterinfo$brainparc)) {
-                for(atlas in names(clusterinfo$brainparc$annots)) {
-                    atlas_annot_min = clusterinfo$brainparc$annots[[atlas]][[hemi]];
-                    overlap_df = cluster_overlapping_regions(atlas_annot_min, cluster_vertices);
-                    if(! silent) {
-                        cat(sprintf("   - Hemi %s cluster '%s' overlaps with %d regions of atlas '%s':\n", hemi, cluster_name, nrow(overlap_df), atlas));
-                        for(row_idx in seq.int(nrow(overlap_df))) {
-                            cat(sprintf("     * Region %s: %d of %d cluster vertices in region (%.2f percent). Cluster covers %.2f percent of the region.\n", overlap_df$region[row_idx], overlap_df$num_shared_vertices[row_idx], cluster_num_vertices, overlap_df$percent_shared_vertices[row_idx], overlap_df$cluster_percent_of_region[row_idx]));
-                        }
-                    }
-                }
-            }
-
-
             current_cluster_idx = current_cluster_idx + 1L;
         }
 
@@ -119,6 +104,35 @@ cluster_extrema <- function(clusterinfo, type = "extreme", silent = getOption("b
     }
 
     return(df);
+}
+
+
+#' @title Compute overlapping atlas regions for clusters.
+#'
+#' @inheritParams cluster_extrema
+#'
+#' @export
+cluster_region_overlap <- function(clusterinfo, silent = getOption("brainloc.silent", default = FALSE)) {
+    if(! is.clusterinfo(clusterinfo)) {
+        stop("Parameter 'clusterinfo' must be a clusterinfo instance.");
+    }
+    if(is.null(clusterinfo$brainparc)) {
+        stop("The clusterinfo instance must contain a valid brainparc for this function to be able to work.");
+    }
+
+    for(atlas in names(clusterinfo$brainparc$annots)) {
+        atlas_annot_min = clusterinfo$brainparc$annots[[atlas]][[hemi]];
+        overlap_df = cluster_overlapping_regions(atlas_annot_min, cluster_vertices);
+        if(! silent) {
+            cat(sprintf("   - Hemi %s cluster '%s' overlaps with %d regions of atlas '%s':\n", hemi, cluster_name, nrow(overlap_df), atlas));
+            for(row_idx in seq.int(nrow(overlap_df))) {
+                cat(sprintf("     * Region %s: %d of %d cluster vertices in region (%.2f percent). Cluster covers %.2f percent of the region.\n", overlap_df$region[row_idx], overlap_df$num_shared_vertices[row_idx], cluster_num_vertices, overlap_df$percent_shared_vertices[row_idx], overlap_df$cluster_percent_of_region[row_idx]));
+            }
+        }
+    }
+    stop("THIS FUNCTION IS WIP");
+
+
 }
 
 

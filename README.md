@@ -13,21 +13,22 @@ This is an R package that takes as input a vertex index of a FreeSurfer brain me
 ### Full list of features and functions implementing them
 
 - Given a coordinate in MNI305 space:
-  - find the closest vertex in a mesh that is MNI305 space (e.g., fsaverage, fsaverage6, etc).
+  - `coord_closest_vertex()`: find the closest vertex in a mesh that is MNI305 space (e.g., fsaverage, fsaverage6, etc).
 - Given a vertex or coordinate on a mesh in MNI305 space:
   - `coord_MNI305_info()`: find its MNI305 coordinate (trivial): see function `coord_MNI305_info()`
-  - `coord_MNI305_info()`: find its MNI152 coordinate
+  - `coord_MNI305_info()`: find its MNI152 coordinate...
     - using the FreeSurfer 4x4 matrix or
     - using the more accurate [regfusionr](https://github.com/dfsp-spirit/regfusionr) method `coord_MNI305_info()`
   - `coord_MNI305_info()`: find its Talairach coordinates (using Matthew Brett's non-linear transform from MNI152) `coord_MNI305_info()`
-  - find the region the vertex is assigned to in a brain atlas parcellation like the Desikan atlas that comes with FreeSurfer (trivial)
-  - find the distances to all other atlas regions, with different distance methods (Euclidean, geodesic along the mesh) and different linkages (defining the reference point when measuring the distance to a region, e.g., closest vertex in region, or center vertex)
+  - `vertex_closest_regions()`: find the region the vertex is assigned to in a brain atlas parcellation like the Desikan atlas that comes with FreeSurfer (trivial)
+  - `vertex_closest_regions()`: find the distances to all other atlas regions, with different distance methods (Euclidean, geodesic along the mesh) and different linkages (defining the reference point when measuring the distance to a region, e.g., closest vertex in region, or center vertex)
+  - `coord_closest_regions()`: do the same for a coordinate instead of a vertex index.
 - Given a cluster as a set of vertices on any brain surface mesh:
-  - read such cluster information from a statistical map (e.g., t-value map for all mesh vertices) and an overlay map assigning a cluster identifier to each vertex.
-  - read such cluster information only from a thresholded statistical map, using BFS on the mesh to identify the clusters.
-  - find the extremum value of each cluster
-  - find all peaks of each cluster
-  - given an additional brain parcellation, find all regions the cluster overlaps with and compute the percentage overlap for both the cluster and the regions
+  - `clusterinfo()`: read such cluster information from a statistical map (e.g., t-value map for all mesh vertices) and an overlay map assigning a cluster identifier to each vertex.
+  - `clusterinfo_from_thresholded_overlay()`: read such cluster information only from a thresholded statistical map, using BFS on the mesh to identify the clusters.
+  - `cluster_location_details()`: find the extremum value of each cluster
+  - `cluster_peaks()`: find all peaks of each cluster
+  - given an additional brain parcellation, find all regions the cluster overlaps with and compute the percentage overlap for both the cluster and the regions.
  
 
 
