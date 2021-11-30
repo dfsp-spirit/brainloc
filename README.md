@@ -10,16 +10,16 @@ This is currently intended to be used with FreeSurfer standard space templates (
 
 This is an R package that takes as input a vertex index of a FreeSurfer brain mesh in MNI305 space (typically fsaverage) and identifies the location in different coordinate systems and with respect to different brain regions. We use this to report the exact locations of clusters or other differences we find. It can also be used to find the vertex in a brain mesh that is closest to a given coordinate.
 
-### Full list of features
+### Full list of features and functions implementing them
 
 - Given a coordinate in MNI305 space:
   - find the closest vertex in a mesh that is MNI305 space (e.g., fsaverage, fsaverage6, etc).
-- Given a vertex on a mesh in MNI305 space:
-  - find its MNI305 coordinate (trivial)
-  - find its MNI152 coordinate
+- Given a vertex or coordinate on a mesh in MNI305 space:
+  - `coord_MNI305_info()`: find its MNI305 coordinate (trivial): see function `coord_MNI305_info()`
+  - `coord_MNI305_info()`: find its MNI152 coordinate
     - using the FreeSurfer 4x4 matrix or
-    - using the more accurate [regfusionr](https://github.com/dfsp-spirit/regfusionr) method
-  - find its Talairach coordinates (using Matthew Brett's non-linear transform from MNI152)
+    - using the more accurate [regfusionr](https://github.com/dfsp-spirit/regfusionr) method `coord_MNI305_info()`
+  - `coord_MNI305_info()`: find its Talairach coordinates (using Matthew Brett's non-linear transform from MNI152) `coord_MNI305_info()`
   - find the region the vertex is assigned to in a brain atlas parcellation like the Desikan atlas that comes with FreeSurfer (trivial)
   - find the distances to all other atlas regions, with different distance methods (Euclidean, geodesic along the mesh) and different linkages (defining the reference point when measuring the distance to a region, e.g., closest vertex in region, or center vertex)
 - Given a cluster as a set of vertices on any brain surface mesh:
