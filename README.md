@@ -26,9 +26,9 @@ This is an R package that takes as input a vertex index of a FreeSurfer brain me
 - Given a cluster as a set of vertices on any brain surface mesh:
   - `clusterinfo()`: read such cluster information from a statistical map (e.g., t-value map for all mesh vertices) and an overlay map assigning a cluster identifier to each vertex.
   - `clusterinfo_from_thresholded_overlay()`: read such cluster information only from a thresholded statistical map, using BFS on the mesh to identify the clusters.
-  - `cluster_location_details()`: find the extremum value of each cluster
+  - `cluster_location_details()`: find the extremum value and vertex of each cluster
   - `cluster_peaks()`: find all peaks of each cluster
-  - given an additional brain parcellation, find all regions the cluster overlaps with and compute the percentage overlap for both the cluster and the regions.
+  - `cluster_region_overlap()`: given an additional brain parcellation, find all regions the cluster overlaps with and compute the percentage overlap for both the cluster and the regions.
  
 
 
