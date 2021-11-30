@@ -14,6 +14,9 @@ cluster_region_overlap(
 
 \item{silent}{whether to suppress printing messages to stdout.}
 }
+\value{
+a data.frame with cluster overlap information.
+}
 \description{
 Compute overlapping atlas regions for clusters.
 }

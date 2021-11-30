@@ -111,6 +111,8 @@ cluster_extrema <- function(clusterinfo, type = "extreme", silent = getOption("b
 #'
 #' @inheritParams cluster_extrema
 #'
+#' @return a data.frame with cluster overlap information.
+#'
 #' @export
 cluster_region_overlap <- function(clusterinfo, silent = getOption("brainloc.silent", default = FALSE)) {
     if(! is.clusterinfo(clusterinfo)) {
@@ -120,6 +122,8 @@ cluster_region_overlap <- function(clusterinfo, silent = getOption("brainloc.sil
         stop("The clusterinfo instance must contain a valid brainparc for this function to be able to work.");
     }
 
+    full_df = NULL;
+
     for (hemi in c("lh", "rh")) {
         clusters = get_clusters(clusterinfo, hemi = hemi);
         for(cluster_name in names(clusters)) {
@@ -128,16 +132,25 @@ cluster_region_overlap <- function(clusterinfo, silent = getOption("brainloc.sil
             for(atlas in names(clusterinfo$brainparc$annots)) {
                 atlas_annot_min = clusterinfo$brainparc$annots[[atlas]][[hemi]];
                 overlap_df = cluster_overlapping_regions(atlas_annot_min, cluster_vertices);
+                num_overlapping_regions = nrow(overlap_df);
+                overlap_df$hemi = rep(hemi, num_overlapping_regions);
+                overlap_df$cluster = rep(cluster_name, num_overlapping_regions);
+                overlap_df$atlas = rep(atlas, num_overlapping_regions);
                 if(! silent) {
                     cat(sprintf("   - Hemi %s cluster '%s' overlaps with %d regions of atlas '%s':\n", hemi, cluster_name, nrow(overlap_df), atlas));
                     for(row_idx in seq.int(nrow(overlap_df))) {
                         cat(sprintf("     * Region %s: %d of %d cluster vertices in region (%.2f percent). Cluster covers %.2f percent of the region.\n", overlap_df$region[row_idx], overlap_df$num_shared_vertices[row_idx], cluster_num_vertices, overlap_df$percent_shared_vertices[row_idx], overlap_df$cluster_percent_of_region[row_idx]));
                     }
                 }
+                if(is.null(full_df)) {
+                    full_df = overlap_df;
+                } else {
+                    full_df = rbind(full_df, overlap_df);
+                }
             }
         }
     }
-    stop("THIS FUNCTION IS WIP");
+    return(full_df);
 }
 
 

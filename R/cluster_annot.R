@@ -142,5 +142,5 @@ cluster_overlapping_regions <- function(annot_min, cluster_vertices) {
         cluster_size_percent_of_region[region_idx] = overlapping_region_num_vertex_overlap[region_idx] / length(region_vertex_indices) * 100.0;
     }
     df = data.frame("region"=overlapping_region_names, "num_shared_vertices"=overlapping_region_num_vertex_overlap, "percent_shared_vertices"=overlapping_region_percent_overlap, "cluster_percent_of_region"=cluster_size_percent_of_region);
-    return(df[order(df$percent_shared_vertices),]);
+    return(df[order(df$percent_shared_vertices, decreasing = TRUE),]);
 }
