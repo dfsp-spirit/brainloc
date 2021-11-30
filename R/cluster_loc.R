@@ -153,7 +153,7 @@ cluster_peaks <- function(clusterinfo, type = "extreme", silent = getOption("bra
     current_cluster_idx = 1L;
     for (hemi in c("lh", "rh")) {
         clusters = get_clusters(clusterinfo, hemi = hemi);
-        surface =
+        surface = get_surface(clusterinfo$brainparc)[[hemi]];
         for(cluster_name in names(clusters)) {
             cluster_vertices = clusters[[cluster_name]];
             cluster_num_vertices = length(cluster_vertices);
@@ -198,6 +198,9 @@ cluster_peaks <- function(clusterinfo, type = "extreme", silent = getOption("bra
 single_cluster_peaks <- function(cluster_vertices, statmap, surface, type = "extreme") {
     if(! freesurferformats::is.fs.surface(surface)) {
         stop("Parameter 'surface' must be an fs.surface instance.");
+    }
+    if(nrow(surface$vertices) != length(statmap)) {
+        stop(sprintf("Number of surface vertices is %d and does not match length of stat map %d. Lengths must match.\n", nrow(surface$vertices), length(statmap)));
     }
     if(! (is.vector(cluster_vertices) & is.integer(cluster_vertices))) {
         stop("Parameter 'cluster_vertices' must be an integer vector.");

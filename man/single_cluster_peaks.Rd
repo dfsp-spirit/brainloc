@@ -21,4 +21,7 @@ named list with entries 'vertex' and 'value', they contain an integer vector and
 \description{
 Compute peaks of a single cluster.
 }
+\note{
+Called by \code{cluster_peaks}, use that instead.
+}
 \keyword{internal}
