@@ -16,7 +16,7 @@ coord_MNI305_to_MNI152(
 
 \item{method}{character string, the method to use to map from MNI305 to MNI152 along the way. One of "best_available", "regfusionr", and "linear".}
 
-\item{surface}{optional character string or hemilist of surfaces, the surface to use to find a surface vertex close to the given query coordinates. Only used if 'method' results in \code{regfusionr} being used. Passed on to \code{regfusionrregfusionr::mni305_coords_to_mni152_coords}.}
+\item{surface}{optional character string or \code{\link{hemilist}} of surfaces, the surface to use to find a surface vertex close to the given query coordinates. Only used if 'method' results in \code{regfusionr} being used. Passed on to \code{regfusionrregfusionr::mni305_coords_to_mni152_coords}.}
 
 \item{fs_home}{optional character string, the path to the FREESURFER_HOME directory from which to load the surfaces from the 'surface' parameter. Only used if 'method' results in \code{regfusionr} being used. Passed on to \code{regfusionrregfusionr::mni305_coords_to_mni152_coords}.}
 }

@@ -7,7 +7,7 @@
 cluster_overlapping_regions(annot_min, cluster_vertices)
 }
 \arguments{
-\item{annot_min}{a full \code{fs.annot} instance, or a minimal annot, i.e., only the 'label_names' field of the annot. Only a single one, not a hemilist.}
+\item{annot_min}{a full \code{fs.annot} instance, or a minimal annot, i.e., only the 'label_names' field of the annot. Only a single one, not a \code{\link{hemilist}}.}
 
 \item{cluster_vertices}{integer vector, the vertices defining the cluster (technically they do not need to form a cluster or be connected). Must not be empty.}
 }

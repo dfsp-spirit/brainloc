@@ -11,13 +11,17 @@ hemilist.wrap(data, hemi, hemilist = NULL)
 
 \item{hemi}{character string, one of 'lh' or 'rh'. The name to use for the data in the returned list.}
 
-\item{hemilist}{optional hemilist, an existing hemilist to add the entry to. If left at the default value `NULL`, a new list will be created.}
+\item{hemilist}{optional \code{\link{hemilist}}, an existing hemilist to add the entry to. If left at the default value `NULL`, a new list will be created.}
 }
 \value{
-a hemilist: a named list, with the 'data' in the name given by parameter 'hemi'
+a \code{\link{hemilist}}: a named list, with the 'data' in the name given by parameter 'hemi'
 }
 \description{
 Wrap data into a named hemi list.
+}
+\seealso{
+Other hemilist functions: 
+\code{\link{hemilist}()}
 }
 \concept{hemilist functions}
 \keyword{internal}

@@ -28,7 +28,7 @@ clusterinfo(
 \item{subjects_dir}{character string, file system path to a directory containing the recon-all data for the template_subject. Used to load surfaces and annotations to identify cluster coordinates and atlas regions.}
 }
 \value{
-named list with entries 'overlay', 'statmap', and 'metadata': a clusterinfo data structure. Each of the 'overlay' and 'statmap' keys holds a hemilist of numerical vectors.
+named list with entries 'overlay', 'statmap', and 'metadata': a clusterinfo data structure. Each of the 'overlay' and 'statmap' keys holds a \code{\link{hemilist}} of numerical vectors.
 }
 \description{
 Create clusterinfo data structure from files or pre-loaded data.

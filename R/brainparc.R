@@ -25,7 +25,7 @@ brainparc_fs <- function(subjects_dir, subject_id, surface="white", atlas=c("apa
 #'
 #' @param brainparc a \code{brainparc} instance, see \code{\link{brainparc_fs}} to get one.
 #'
-#' @return hemilist of \code{fs.surface} instances.
+#' @return \code{\link{hemilist}} of \code{fs.surface} instances.
 #'
 #' @keywords internal
 get_surface <- function(brainparc) {
@@ -133,7 +133,7 @@ merge.hemi.annots <- function(lh_annot, rh_annot) {
 #'
 #' @param hemi string, one of 'lh', 'rh', or 'both'. The hemisphere name. Used to construct the names of the surface file to be loaded. For 'both', see the information on the return value.
 #'
-#' @param force_hemilist logical, whether to return a hemilist even if the 'hemi' parameter is not set to 'both'
+#' @param force_hemilist logical, whether to return a \code{\link{hemilist}} even if the 'hemi' parameter is not set to 'both'
 #'
 #' @return the `fs.surface` instance, as returned by \code{\link[freesurferformats]{read.fs.surface}}. If parameter `hemi` is set to `both`, a named list with entries `lh` and `rh` is returned, and the values of are the respective surfaces. The mesh data structure used in `fs.surface` is a *face index set*.
 #'
@@ -206,9 +206,9 @@ print.brainparc <- function(x, ...) { # nocov start
 #'
 #' @param hemi character string, one of 'lh' or 'rh'. The name to use for the data in the returned list.
 #'
-#' @param hemilist optional hemilist, an existing hemilist to add the entry to. If left at the default value `NULL`, a new list will be created.
+#' @param hemilist optional \code{\link{hemilist}}, an existing hemilist to add the entry to. If left at the default value `NULL`, a new list will be created.
 #'
-#' @return a hemilist: a named list, with the 'data' in the name given by parameter 'hemi'
+#' @return a \code{\link{hemilist}}: a named list, with the 'data' in the name given by parameter 'hemi'
 #'
 #' @family hemilist functions
 #'

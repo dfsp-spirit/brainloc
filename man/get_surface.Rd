@@ -10,7 +10,7 @@ get_surface(brainparc)
 \item{brainparc}{a \code{brainparc} instance, see \code{\link{brainparc_fs}} to get one.}
 }
 \value{
-hemilist of \code{fs.surface} instances.
+\code{\link{hemilist}} of \code{fs.surface} instances.
 }
 \description{
 Extract the surface hemilist from a brainparc.

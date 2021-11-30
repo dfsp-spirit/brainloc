@@ -14,7 +14,7 @@ clusteroverlay_to_annot(clusteroverlay, background_code = 0L, hemi = NULL)
 \item{hemi}{character string, ignore unless clusteroverlay is a vector. In that case, it must be 'lh' or 'rh'. Used as a prefix when naming the clusters.}
 }
 \value{
-hemilist of \code{freesurferformats::fs.annot} instances, each one representing a brain surface parcellation for one hemisphere. Each label in the parcellation (with the exception of the unknown/background region) corresponds to a cluster.
+\code{\link{hemilist}} of \code{freesurferformats::fs.annot} instances, each one representing a brain surface parcellation for one hemisphere. Each label in the parcellation (with the exception of the unknown/background region) corresponds to a cluster.
 }
 \description{
 Create a hemilist of fs.annot instances from the given cluster overlay.

@@ -7,7 +7,7 @@
 num_clusters(cluster_annots)
 }
 \arguments{
-\item{cluster_annots}{hemilist of cluster annots, see \code{\link{clusteroverlay_to_annot}}.}
+\item{cluster_annots}{\code{\link{hemilist}} of cluster annots, see \code{\link{clusteroverlay_to_annot}}.}
 }
 \value{
 named list with keys 'lh', 'rh' and 'total', each holding a scalar integer. The cluster counts.

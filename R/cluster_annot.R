@@ -6,7 +6,7 @@
 #'
 #' @param hemi character string, ignore unless clusteroverlay is a vector. In that case, it must be 'lh' or 'rh'. Used as a prefix when naming the clusters.
 #'
-#' @return hemilist of \code{freesurferformats::fs.annot} instances, each one representing a brain surface parcellation for one hemisphere. Each label in the parcellation (with the exception of the unknown/background region) corresponds to a cluster.
+#' @return \code{\link{hemilist}} of \code{freesurferformats::fs.annot} instances, each one representing a brain surface parcellation for one hemisphere. Each label in the parcellation (with the exception of the unknown/background region) corresponds to a cluster.
 #'
 #' @keywords internal
 clusteroverlay_to_annot <- function(clusteroverlay, background_code=0L, hemi=NULL) {
@@ -66,7 +66,7 @@ clusteroverlay_to_annot <- function(clusteroverlay, background_code=0L, hemi=NUL
 
 #' @title Compute number of clusters from cluster annot or clusterinfo instance.
 #'
-#' @param cluster_annots hemilist of cluster annots, see \code{\link{clusteroverlay_to_annot}}.
+#' @param cluster_annots \code{\link{hemilist}} of cluster annots, see \code{\link{clusteroverlay_to_annot}}.
 #'
 #' @return named list with keys 'lh', 'rh' and 'total', each holding a scalar integer. The cluster counts.
 #'
@@ -97,7 +97,7 @@ num_clusters <- function(cluster_annots) {
 
 #' @title Given vertex indices defining a cluster, find all atlas regions the cluster overlaps with.
 #'
-#' @param annot_min a full \code{fs.annot} instance, or a minimal annot, i.e., only the 'label_names' field of the annot. Only a single one, not a hemilist.
+#' @param annot_min a full \code{fs.annot} instance, or a minimal annot, i.e., only the 'label_names' field of the annot. Only a single one, not a \code{\link{hemilist}}.
 #'
 #' @param cluster_vertices integer vector, the vertices defining the cluster (technically they do not need to form a cluster or be connected). Must not be empty.
 #'

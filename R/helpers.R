@@ -91,3 +91,24 @@ find.freesurferhome <- function(mustWork=FALSE) {
 
     return(ret);
 }
+
+
+#' @title Create hemilist.
+#'
+#' @description A hemilist is a named list which has at least one of the following fields: \code{lh} and \code{rh}. The fields can store arbitrary values.
+#'
+#' @param lh any R object, the lh value.
+#'
+#' @param rh any R object, the rh value.
+#'
+#' @return a hemilist
+#'
+#' @note This function is trivial and mainly exists to document what a hemilist is (so this explanation can be linked to from the documentation of other functions which use the concept).
+#'
+#' @family hemilist functions
+#'
+#' @export
+hemilist <- function(lh_data=NULL, rh_data=NULL) {
+    return(list('lh' = lh_data, 'rh' = rh_data));
+}
+

@@ -21,7 +21,7 @@ subject.surface(
 
 \item{hemi}{string, one of 'lh', 'rh', or 'both'. The hemisphere name. Used to construct the names of the surface file to be loaded. For 'both', see the information on the return value.}
 
-\item{force_hemilist}{logical, whether to return a hemilist even if the 'hemi' parameter is not set to 'both'}
+\item{force_hemilist}{logical, whether to return a \code{\link{hemilist}} even if the 'hemi' parameter is not set to 'both'}
 }
 \value{
 the `fs.surface` instance, as returned by \code{\link[freesurferformats]{read.fs.surface}}. If parameter `hemi` is set to `both`, a named list with entries `lh` and `rh` is returned, and the values of are the respective surfaces. The mesh data structure used in `fs.surface` is a *face index set*.

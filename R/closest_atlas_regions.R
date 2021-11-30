@@ -180,7 +180,7 @@ euclidian.dist <- function(x1, x2) sqrt(sum((x1 - x2) ^ 2))
 #'
 #' @param coordinate \code{nx3} numerical matrix or vector of length 3, the query point coordinates.
 #'
-#' @param surfaces hemilist of \code{fs.surface} instances
+#' @param surfaces \code{\link{hemilist}} of \code{fs.surface} instances
 #'
 #' @return a data.frame with columns named 'query_x', 'query_y', 'query_z', 'lh_closest_vertex', 'lh_distance', 'rh_closest_vertex', 'rh_distance', 'both_closest_vertex', 'both_distance', 'both_hemi'.
 #'
