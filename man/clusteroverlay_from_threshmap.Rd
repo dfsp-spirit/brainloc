@@ -2,21 +2,24 @@
 % Please edit documentation in R/clusterinfo.R
 \name{clusteroverlay_from_threshmap}
 \alias{clusteroverlay_from_threshmap}
-\title{Compute separate statsmap and overlay from thresholded map.}
+\title{Compute overlayID map from thresholded statmap (clustermap).}
 \usage{
 clusteroverlay_from_threshmap(threshmap, value_thresholded, surface)
 }
 \arguments{
 \item{value_thresholded}{scalar double, the data value of thresholded vertices in the \code{lh_threshmap} and \code{rh_threshmap}.}
 
-\item{surface}{a single fs.surface instance, used for neighborhood computation.}
+\item{surface}{a single \code{fs.surface} instance, used for neighborhood computation.}
 
-\item{theshmap}{double vector, the stats map. Typically a thresholded t-value map. Must have one value per vertex. The value assigned to vertices that have been removed by the thresholding can be set with parameter 'value_thresholded'.}
+\item{theshmap}{double vector, the stats map. Typically a thresholded t-value map (cluster map). Must have one value per vertex. The value assigned to vertices that have been removed by the thresholding can be set with parameter 'value_thresholded'.}
 }
 \value{
-integer vector, the clusterID overlay
+integer vector, the clusterID overlay.
 }
 \description{
-Compute separate statsmap and overlay from thresholded map.
+This uses breadth-first search on the graph of the mesh to identify all connected cluster values and identify the separate clusters. Different clusters must not touch for this to work (if they do, there is no reliable way to obtain the clusters from the thresholded map). Clusters can have holes.
+}
+\note{
+This visits every node and edge in the mesh/graph exactly once.
 }
 \keyword{internal}

@@ -131,7 +131,7 @@ cluster_extrema <- function(clusterinfo, type = "extreme", silent = getOption("b
 #' @return a \code{data.frame} with cluster peak information. The column names should be self-explanatory.
 #'
 #' @keywords internal
-cluster_peaks <- function(clusterinfo, silent = getOption("brainloc.silent", default = FALSE), ...) {
+cluster_peaks <- function(clusterinfo, type = "extreme", silent = getOption("brainloc.silent", default = FALSE), ...) {
 
     if(! is.clusterinfo(clusterinfo)) {
         stop("Parameter 'clusterinfo' must be a clusterinfo instance.");
@@ -157,7 +157,7 @@ cluster_peaks <- function(clusterinfo, silent = getOption("brainloc.silent", def
         for(cluster_name in names(clusters)) {
             cluster_vertices = clusters[[cluster_name]];
             cluster_num_vertices = length(cluster_vertices);
-            cl_peaks = single_cluster_peaks(cluster_vertices, clusterinfo$statmap[[hemi]], surface);
+            cl_peaks = single_cluster_peaks(cluster_vertices, clusterinfo$statmap[[hemi]], surface, type = type);
             num_peaks = length(cl_peaks$vertex); # Could also use cl_peaks$value, the length is identical.
             if(is.null(all_cluster_names)) {
                 all_cluster_names = rep(cluster_name, num_peaks);
@@ -179,6 +179,8 @@ cluster_peaks <- function(clusterinfo, silent = getOption("brainloc.silent", def
 
 #' @title Compute peaks of a single cluster.
 #'
+#' @inheritParams cluster_extrema
+#'
 #' @param cluster_vertices integer vector, the vertex indices of the cluster.
 #'
 #' @param statmap double vector, the full stat map for the surface. Only the values of the cluster_vertices are used.
@@ -188,7 +190,7 @@ cluster_peaks <- function(clusterinfo, silent = getOption("brainloc.silent", def
 #' @return named list with entries 'vertex' and 'value', they contain an integer vector and a double vector, respectively.
 #'
 #' @keywords internal
-single_cluster_peaks <- function(cluster_vertices, statmap, surface) {
+single_cluster_peaks <- function(cluster_vertices, statmap, surface, type = "extreme") {
     if(! freesurferformats::is.fs.surface(surface)) {
         stop("Parameter 'surface' must be an fs.surface instance.");
     }
@@ -198,8 +200,43 @@ single_cluster_peaks <- function(cluster_vertices, statmap, surface) {
     if(! (is.vector(statmap) & is.numeric(statmap))) {
         stop("Parameter 'statmap' must be an numeric vector.");
     }
-    adj = Rvcg::vcgVertexNeighbors(fs.surface.to.tmesh3d(surface));
 
+    peak_vertices = c();
+    peak_values = c();
+
+    adj = Rvcg::vcgVertexNeighbors(fs.surface.to.tmesh3d(surface));
+    for(cl_vertex in cluster_vertices) {
+        neigh = adj[[cl_vertex]];
+        neigh_within_cluster = neigh[neigh %in% cluster_vertices];
+        neigh_stat_values = statmap[c(neigh_within_cluster, cl_vertex)];
+        cluster_neigh_max_statvalue = max(neigh_stat_values, na.rm = TRUE);
+        cluster_neigh_min_statvalue = min(neigh_stat_values, na.rm = TRUE);
+        if(type == "extreme") {
+            is_pos_greater = abs(cluster_neigh_max_statvalue) > abs(cluster_neigh_min_statvalue);
+            if(is_pos_greater) {
+                cluster_neigh_extreme_value = cluster_neigh_max_statvalue;
+            } else {
+                cluster_neigh_extreme_value = cluster_neigh_min_statvalue;
+            }
+        } else if(type == "min") {
+            cluster_neigh_extreme_value = cluster_neigh_min_statvalue;
+        } else if (type == "max") {
+            cluster_neigh_extreme_value = cluster_neigh_max_statvalue;
+        } else {
+            stop("Invalid 'type' argument. Must be one of 'min', 'max', 'extreme'");
+        }
+
+        if(cluster_neigh_extreme_value == statmap[cl_vertex]) { # The vertex is a peak.
+            if(is.null(peak_vertices)) {
+                peak_vertices = cl_vertex;
+                peak_values = statmap[cl_vertex];
+            } else {
+                peak_vertices = c(peak_vertices, cl_vertex);
+                peak_values = c(peak_values, statmap[cl_vertex]);
+            }
+        }
+    }
+    return(list("vertex"=peak_vertices, "value"=peak_values));
 }
 
 

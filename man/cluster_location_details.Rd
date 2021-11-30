@@ -2,7 +2,7 @@
 % Please edit documentation in R/cluster_loc.R
 \name{cluster_location_details}
 \alias{cluster_location_details}
-\title{Get details on cluster location, required brainparc.}
+\title{Get details on cluster locations.}
 \usage{
 cluster_location_details(
   clusterinfo,
@@ -21,5 +21,5 @@ cluster_location_details(
 a new version of the input data.frame, with additional columns appended.
 }
 \description{
-Get details on cluster location, required brainparc.
+Get details on cluster locations.
 }
