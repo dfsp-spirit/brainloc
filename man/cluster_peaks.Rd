@@ -26,4 +26,3 @@ a \code{data.frame} with cluster peak information. The column names should be se
 \description{
 A peak is a position in a cluster (a vertex) which is assigned the maximum statsmap value over its neighborhood. The neighborhood definition used by this function is the 1-ring neighborhood on the mesh.
 }
-\keyword{internal}

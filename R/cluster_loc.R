@@ -130,7 +130,7 @@ cluster_extrema <- function(clusterinfo, type = "extreme", silent = getOption("b
 #'
 #' @return a \code{data.frame} with cluster peak information. The column names should be self-explanatory.
 #'
-#' @keywords internal
+#' @export
 cluster_peaks <- function(clusterinfo, type = "extreme", silent = getOption("brainloc.silent", default = FALSE), ...) {
 
     if(! is.clusterinfo(clusterinfo)) {
@@ -141,7 +141,7 @@ cluster_peaks <- function(clusterinfo, type = "extreme", silent = getOption("bra
     num_clusters_total = num_clusters(cluster_annots)$total;
 
     if(! silent) {
-        cat(sprintf("Computing cluster extrema for %d clusters.\n", num_clusters_total));
+        cat(sprintf("Computing cluster peaks for %d clusters.\n", num_clusters_total));
     }
 
     all_cluster_names = c();
@@ -159,6 +159,9 @@ cluster_peaks <- function(clusterinfo, type = "extreme", silent = getOption("bra
             cluster_num_vertices = length(cluster_vertices);
             cl_peaks = single_cluster_peaks(cluster_vertices, clusterinfo$statmap[[hemi]], surface, type = type);
             num_peaks = length(cl_peaks$vertex); # Could also use cl_peaks$value, the length is identical.
+            if(! silent) {
+                cat(sprintf("Cluster %s on hemi %s has %d vertices and %d peaks.\n", cluster_name, hemi, length(cluster_vertices), num_peaks));
+            }
             if(is.null(all_cluster_names)) {
                 all_cluster_names = rep(cluster_name, num_peaks);
                 all_cluster_hemis = rep(hemi, num_peaks);
@@ -188,6 +191,8 @@ cluster_peaks <- function(clusterinfo, type = "extreme", silent = getOption("bra
 #' @param surface a single \code{fs.surface} instance. Used to compute the neighborhood of the cluster vertices.
 #'
 #' @return named list with entries 'vertex' and 'value', they contain an integer vector and a double vector, respectively.
+#'
+#' @note Called by \code{cluster_peaks}, use that instead.
 #'
 #' @keywords internal
 single_cluster_peaks <- function(cluster_vertices, statmap, surface, type = "extreme") {
@@ -373,8 +378,9 @@ test_real_clusters <- function(sjd = "~/software/freesurfer/subjects", sj="fsave
     lh_overlay_file = system.file("extdata", "lh.cluster.overlayID.mgh", package = "brainloc", mustWork = TRUE);
     rh_overlay_file = system.file("extdata", "rh.cluster.overlayID.mgh", package = "brainloc", mustWork = TRUE);
     clinfo = clusterinfo(lh_overlay_file, rh_overlay_file, lh_tmap_file, rh_tmap_file, template_subject = sj, subjects_dir = sjd);
-    extrema_details = brainloc:::cluster_location_details(clinfo);
+    extrema_details = cluster_location_details(clinfo);
 }
+
 
 test_real_clusters_from_thrsholded_maps <- function(sjd = "~/software/freesurfer/subjects", sj="fsaverage") {
     lh_tmap_file = system.file("extdata", "lh.tmap.mgh", package = "brainloc", mustWork = TRUE);
@@ -392,10 +398,11 @@ test_real_clusters_from_thrsholded_maps <- function(sjd = "~/software/freesurfer
     # Construct thresholded map: set the t-map values of all vertices which are not in any cluster to 0.
     lh_threshmap = lh_tmap;
     rh_threshmap = rh_tmap;
-    lh_threshmap[lh_overlay==0] = 0.0;
-    rh_threshmap[rh_overlay==0] = 0.0;
+    lh_threshmap[lh_overlay == 0] = 0.0;
+    rh_threshmap[rh_overlay == 0] = 0.0;
 
     clinfo = clusterinfo_from_thresholded_overlay(lh_threshmap, rh_threshmap, template_subject = sj, subjects_dir = sjd);
-    extrema_details = brainloc:::cluster_location_details(clinfo);
+    extrema_details = cluster_location_details(clinfo);
+    peaks = cluster_peaks(clinfo);
 }
 
