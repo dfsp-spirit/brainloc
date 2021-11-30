@@ -25,11 +25,14 @@ clusterinfo_from_thresholded_overlay(
 \item{subjects_dir}{character string, file system path to a directory containing the recon-all data for the template_subject. Used to load surfaces and annotations to identify cluster coordinates and atlas regions.}
 }
 \value{
-a \code{clusterinfo} instance
+a \code{clusterinfo} instance.
 }
 \description{
 Create clusterinfo instance from thresholded per-vertex data overlays.
 }
 \note{
 This can only work if there are no clusters which touch each other. I think this can never happen, but we should double-check.
+}
+\seealso{
+\code{\link{clusterinfo}} If you do have a separate t-map and a cluster overlay map instead of only a thresholded t-map.
 }

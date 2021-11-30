@@ -256,7 +256,7 @@ single_cluster_peaks <- function(cluster_vertices, statmap, surface, type = "ext
 #'
 #' @return named list, the keys are the cluster names, and the values are integer vectors defining the member vertices.
 #'
-#' @keywords internal
+#' @export
 get_clusters <- function(clusterinfo, hemi="both") {
     if(! is.clusterinfo(clusterinfo)) {
         stop("Parameter 'clusterinfo' must be a clusterinfo instance.");
@@ -350,62 +350,5 @@ cluster_location_details <- function(clusterinfo, silent = getOption("brainloc.s
     extrema$talairach_a = all_Tal_A;
     extrema$talairach_s = all_Tal_S;
     return(extrema);
-}
-
-
-
-
-
-#' @title Internal test function, will be gone soon and converted into separate unit tests.
-#'
-#' @note This function is NOT part of the API, using it in client code is a programming error.
-#'
-#' @keywords internal
-test_clusters_to_annot <- function(sjd = "~/software/freesurfer/subjects", sj="fsaverage") {
-    options("brainloc.fs_home"="~/software/freesurfer/");
-    lh_an = fsbrain::subject.annot(sjd, sj, hemi="lh", atlas="aparc"); # we abuse an atlas as a cluster overlay file in this example  because it works technically. It does not make any sense, I just did not have a Matlab surfstat output file at hand.
-    rh_an = fsbrain::subject.annot(sjd, sj, hemi="rh", atlas="aparc");
-    clusteroverlay = list("lh" = brainloc:::strvec2int(lh_an$label_codes), "rh" = brainloc:::strvec2int(rh_an$label_codes));
-    thickness = fsbrain::subject.morph.native(sjd, sj, "thickness", hemi="both", split_by_hemi = TRUE);
-    tmap = list("lh"=thickness$lh * 2 - 2L, "rh"=thickness$lh * 2 - 2L);  # We abuse a cortical thickness map as a t-value map. Yes, that's really ugly.
-    clinfo = clusterinfo(clusteroverlay$lh, clusteroverlay$rh, tmap$lh, tmap$rh, template_subject = sj, subjects_dir = sjd);
-    #cluster_annots = clusteroverlay_to_annot(clinfo$overlay);
-    #fsbrain::vis.colortable.legend(cluster_annots$lh);
-    extrema_details = brainloc:::cluster_location_details(clinfo,  background_code = 1L);
-}
-
-
-test_real_clusters <- function(sjd = "~/software/freesurfer/subjects", sj="fsaverage") {
-    lh_tmap_file = system.file("extdata", "lh.tmap.mgh", package = "brainloc", mustWork = TRUE);
-    rh_tmap_file = system.file("extdata", "rh.tmap.mgh", package = "brainloc", mustWork = TRUE);
-    lh_overlay_file = system.file("extdata", "lh.cluster.overlayID.mgh", package = "brainloc", mustWork = TRUE);
-    rh_overlay_file = system.file("extdata", "rh.cluster.overlayID.mgh", package = "brainloc", mustWork = TRUE);
-    clinfo = clusterinfo(lh_overlay_file, rh_overlay_file, lh_tmap_file, rh_tmap_file, template_subject = sj, subjects_dir = sjd);
-    extrema_details = cluster_location_details(clinfo);
-}
-
-
-test_real_clusters_from_thrsholded_maps <- function(sjd = "~/software/freesurfer/subjects", sj="fsaverage") {
-    lh_tmap_file = system.file("extdata", "lh.tmap.mgh", package = "brainloc", mustWork = TRUE);
-    rh_tmap_file = system.file("extdata", "rh.tmap.mgh", package = "brainloc", mustWork = TRUE);
-    lh_overlay_file = system.file("extdata", "lh.cluster.overlayID.mgh", package = "brainloc", mustWork = TRUE);
-    rh_overlay_file = system.file("extdata", "rh.cluster.overlayID.mgh", package = "brainloc", mustWork = TRUE);
-
-    # We construct the tresholded t-map from full data for this example, which one would not do for real data of course.
-    # It is way simpler and faster to call 'clusterinfo()' directly if you have both the maps and an overlay.
-    lh_tmap = freesurferformats::read.fs.morph(lh_tmap_file);
-    rh_tmap = freesurferformats::read.fs.morph(rh_tmap_file);
-    lh_overlay = as.integer(freesurferformats::read.fs.morph(lh_overlay_file));
-    rh_overlay = as.integer(freesurferformats::read.fs.morph(rh_overlay_file));
-
-    # Construct thresholded map: set the t-map values of all vertices which are not in any cluster to 0.
-    lh_threshmap = lh_tmap;
-    rh_threshmap = rh_tmap;
-    lh_threshmap[lh_overlay == 0] = 0.0;
-    rh_threshmap[rh_overlay == 0] = 0.0;
-
-    clinfo = clusterinfo_from_thresholded_overlay(lh_threshmap, rh_threshmap, template_subject = sj, subjects_dir = sjd);
-    extrema_details = cluster_location_details(clinfo);
-    peaks = cluster_peaks(clinfo);
 }
 

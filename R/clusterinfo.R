@@ -16,6 +16,8 @@
 #'
 #' @return named list with entries 'overlay', 'statmap', and 'metadata': a clusterinfo data structure. Each of the 'overlay' and 'statmap' keys holds a \code{\link{hemilist}} of numerical vectors.
 #'
+#' @seealso \code{\link{clusterinfo_from_thresholded_overlay}} If you do have a thresholded t-map instead of one t-map and one cluster overlay map.
+#'
 #' @export
 clusterinfo <- function(lh_overlay, rh_overlay, lh_statmap, rh_statmap, template_subject="fsaverage", subjects_dir=file.path(getOption("brainloc.fs_home", default = Sys.getenv("FREESURFER_HOME")), 'subjects')) {
     if(is.character(lh_overlay)) {
@@ -73,7 +75,9 @@ clusterinfo <- function(lh_overlay, rh_overlay, lh_statmap, rh_statmap, template
 #'
 #' @note This can only work if there are no clusters which touch each other. I think this can never happen, but we should double-check.
 #'
-#' @return a \code{clusterinfo} instance
+#' @return a \code{clusterinfo} instance.
+#'
+#' @seealso \code{\link{clusterinfo}} If you do have a separate t-map and a cluster overlay map instead of only a thresholded t-map.
 #'
 #' @export
 clusterinfo_from_thresholded_overlay <- function(lh_threshmap, rh_threshmap, value_thresholded = 0.0, template_subject="fsaverage", subjects_dir=file.path(getOption("brainloc.fs_home", default = Sys.getenv("FREESURFER_HOME")), 'subjects')) {

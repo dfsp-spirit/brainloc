@@ -7,9 +7,9 @@
 hemilist(lh_data = NULL, rh_data = NULL)
 }
 \arguments{
-\item{lh}{any R object, the lh value.}
+\item{lh_data}{any R object, the lh value.}
 
-\item{rh}{any R object, the rh value.}
+\item{rh_data}{any R object, the rh value.}
 }
 \value{
 a hemilist

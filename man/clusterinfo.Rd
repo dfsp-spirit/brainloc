@@ -33,3 +33,6 @@ named list with entries 'overlay', 'statmap', and 'metadata': a clusterinfo data
 \description{
 Create clusterinfo data structure from files or pre-loaded data.
 }
+\seealso{
+\code{\link{clusterinfo_from_thresholded_overlay}} If you do have a thresholded t-map instead of one t-map and one cluster overlay map.
+}
