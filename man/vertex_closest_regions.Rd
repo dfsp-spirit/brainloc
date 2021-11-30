@@ -9,7 +9,8 @@ vertex_closest_regions(
   vertices,
   hemis,
   linkage = "single",
-  distance = "euclidean"
+  distance = "euclidean",
+  silent = getOption("brainloc.silent", default = FALSE)
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ vertex_closest_regions(
 \item{linkage}{character string, one of \code{"single"} or \code{"centroid"}. Defines how the distance from a vertex to a region of vertices is computed. \code{"single"}: Euclidean distance from query vertex to the closest vertex of the atlas region. \code{"centroid"}: Euclidean distance from query vertex to the mean of the vertex coordinates of the atlas region.}
 
 \item{distance}{character string, one of \code{"euclidean"} or \code{"geodesic"}. The latter is only supported with \code{linkage = 'single'}.}
+
+\item{silent}{logical, whether to suppress console messages.}
 }
 \value{
 not decided yet, WIP. Currently called for the side effect of text output to console.

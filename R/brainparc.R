@@ -27,7 +27,7 @@ brainparc_fs <- function(subjects_dir, subject_id, surface="white", atlas=c("apa
 #'
 #' @return \code{\link{hemilist}} of \code{fs.surface} instances.
 #'
-#' @keywords internal
+#' @export
 get_surface <- function(brainparc) {
     if(! is.brainparc(brainparc)) {
         stop("Parameter 'brainparc' must be a brainparc instance.");

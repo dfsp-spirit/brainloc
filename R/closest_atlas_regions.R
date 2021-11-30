@@ -15,6 +15,8 @@
 #'
 #' @param distance character string, one of \code{"euclidean"} or \code{"geodesic"}. The latter is only supported with \code{linkage = 'single'}.
 #'
+#' @param silent logical, whether to suppress console messages.
+#'
 #' @return not decided yet, WIP. Currently called for the side effect of text output to console.
 #'
 #' @examples
@@ -26,7 +28,7 @@
 #' @seealso \code{\link{coord_closest_regions}} if you have a coordinate (on or near the surface) instead of a vertex.
 #'
 #' @export
-vertex_closest_regions <- function(brainparc, vertices, hemis, linkage = "single", distance = "euclidean") {
+vertex_closest_regions <- function(brainparc, vertices, hemis, linkage = "single", distance = "euclidean", silent = getOption("brainloc.silent", default = FALSE)) {
     if(! (linkage %in% c('single', 'centroid'))) {
         stop("Parameter 'linkage' must be one of c('single', 'centroid').");
     }
@@ -63,7 +65,9 @@ vertex_closest_regions <- function(brainparc, vertices, hemis, linkage = "single
         vertex_surface_idx = vertices[vertex_local_idx];
         vertex_coords = surface$vertices[vertex_surface_idx, ]; # 1x3, xyz
 
-        cat(sprintf("Handling vertex %d on hemi %s using %s distance and %s linkage.\n", vertex_surface_idx, hemi, distance, linkage));
+        if(! silent) {
+            cat(sprintf("Handling vertex %d on hemi %s using %s distance and %s linkage.\n", vertex_surface_idx, hemi, distance, linkage));
+        }
 
         if(linkage == "single") {
             vdists = NULL;
@@ -76,7 +80,9 @@ vertex_closest_regions <- function(brainparc, vertices, hemis, linkage = "single
                 stop("Invalid 'distance' parameter.")
             }
             for(atlas_name in names(brainparc$annots)) {
-                cat(sprintf(" -Handling atlas %s.\n", atlas_name));
+                if(! silent) {
+                    cat(sprintf(" -Handling atlas %s.\n", atlas_name));
+                }
                 annot_min = brainparc$annots[[atlas_name]][[hemi]];
                 region_names = unique(annot_min);
                 vertex_region = annot_min[vertex_surface_idx];
@@ -89,7 +95,6 @@ vertex_closest_regions <- function(brainparc, vertices, hemis, linkage = "single
                     region_idx = region_idx + 1L;
                     region_vertex_indices = which(annot_min == region_name);
                     region_vertex_dists_to_query_vertex = vdists[region_vertex_indices];
-                    #sorted_region_dist_indices = sort(region_vertex_dists_to_query_vertex, index.return = TRUE)$ix;
                     local_regions_closest_vertex_to_query_vertex = which.min(region_vertex_dists_to_query_vertex);
                     closest_vertex_in_region_to_query_vertex = region_vertex_indices[local_regions_closest_vertex_to_query_vertex];
                     regions_closest_vertex_to_query_vertex[region_idx] = closest_vertex_in_region_to_query_vertex;
@@ -98,14 +103,18 @@ vertex_closest_regions <- function(brainparc, vertices, hemis, linkage = "single
                 sorted_region_sort_indices = sort(regions_closest_distance_query_vertex, index.return = TRUE)$ix;
                 sorted_regions = region_names[sorted_region_sort_indices];
                 num_indices = min(length(sorted_regions), num_regions_to_report);
-                cat(sprintf("  Vertex %s on hemi %s at (%f %f %f) belongs to atlas %s region '%s'. Closest region vertices with %s distance are:\n", vertex_surface_idx, hemi, vertex_coords[1], vertex_coords[2], vertex_coords[3], atlas_name, vertex_region, distance));
-                for(i in seq.int(num_indices)) {
-                    cat(sprintf("  - Region #%d %s with vertex %d in %s distance '%f'.\n", i, region_names[sorted_region_sort_indices][i], regions_closest_vertex_to_query_vertex[sorted_region_sort_indices][i], distance, regions_closest_distance_query_vertex[sorted_region_sort_indices][i]));
+                if(! silent) {
+                    cat(sprintf("  Vertex %s on hemi %s at (%f %f %f) belongs to atlas %s region '%s'. Closest region vertices with %s distance are:\n", vertex_surface_idx, hemi, vertex_coords[1], vertex_coords[2], vertex_coords[3], atlas_name, vertex_region, distance));
+                    for(i in seq.int(num_indices)) {
+                        cat(sprintf("  - Region #%d %s with vertex %d in %s distance '%f'.\n", i, region_names[sorted_region_sort_indices][i], regions_closest_vertex_to_query_vertex[sorted_region_sort_indices][i], distance, regions_closest_distance_query_vertex[sorted_region_sort_indices][i]));
+                    }
                 }
             }
         } else if (linkage == "centroid") {
             for(atlas_name in names(brainparc$annots)) {
-                cat(sprintf(" -Handling atlas %s.\n", atlas_name));
+                if(! silent) {
+                    cat(sprintf(" -Handling atlas %s.\n", atlas_name));
+                }
                 annot_min = brainparc$annots[[atlas_name]][[hemi]];
                 region_names = unique(annot_min);
                 vertex_region = annot_min[vertex_surface_idx];
@@ -120,13 +129,14 @@ vertex_closest_regions <- function(brainparc, vertices, hemis, linkage = "single
                     region_center = colMeans(region_vertex_coords);
                     region_centers_xyz[region_idx, ] = region_center;
                     vertex_dist_to_region_centers_xyz[region_idx] = euclidian.dist(vertex_coords, region_center);
-                    #cat(sprintf(" - Center of atlas '%s' hemi '%s' region #%d '%s' is: %f %f %f.\n", atlas_name, hemi, region_idx, region_name, region_center[1], region_center[2], region_center[3]));
                 }
                 sorted_region_indices = sort(vertex_dist_to_region_centers_xyz, index.return = TRUE)$ix;
                 num_indices = min(length(sorted_region_indices), num_regions_to_report);
-                cat(sprintf("  Vertex %s on hemi %s at (%f %f %f) belongs to region '%s'. Closest region centers are:\n", vertex_surface_idx, hemi, vertex_coords[1], vertex_coords[2], vertex_coords[3], vertex_region));
-                for(i in seq.int(num_indices)) {
-                    cat(sprintf("  - Region #%d %s with center at (%f, %f, %f) in distance '%f'.\n", i, region_names[sorted_region_indices[i]], region_centers_xyz[sorted_region_indices[i], 1], region_centers_xyz[sorted_region_indices[i],2], region_centers_xyz[sorted_region_indices[i],3], vertex_dist_to_region_centers_xyz[sorted_region_indices[i]]));
+                if(! silent) {
+                    cat(sprintf("  Vertex %s on hemi %s at (%f %f %f) belongs to region '%s'. Closest region centers are:\n", vertex_surface_idx, hemi, vertex_coords[1], vertex_coords[2], vertex_coords[3], vertex_region));
+                    for(i in seq.int(num_indices)) {
+                        cat(sprintf("  - Region #%d %s with center at (%f, %f, %f) in distance '%f'.\n", i, region_names[sorted_region_indices[i]], region_centers_xyz[sorted_region_indices[i], 1], region_centers_xyz[sorted_region_indices[i],2], region_centers_xyz[sorted_region_indices[i],3], vertex_dist_to_region_centers_xyz[sorted_region_indices[i]]));
+                    }
                 }
             }
         } else {

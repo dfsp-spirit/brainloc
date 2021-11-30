@@ -15,4 +15,3 @@ get_surface(brainparc)
 \description{
 Extract the surface hemilist from a brainparc.
 }
-\keyword{internal}
