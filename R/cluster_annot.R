@@ -51,7 +51,7 @@ clusteroverlay_to_annot <- function(clusteroverlay, background_code=0L, hemi=NUL
             }
         } else {
             index_of_unknown_region = 1L;
-            message(sprintf("Only 1 region code in overlay for hemi '%s': no clusters.\n", hemi));
+            #message(sprintf("Only 1 region code in overlay for hemi '%s': no clusters.\n", hemi));
         }
 
         num_verts = length(clusteroverlay);

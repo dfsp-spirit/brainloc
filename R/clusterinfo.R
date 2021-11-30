@@ -83,15 +83,20 @@ clusterinfo_from_thresholded_overlay <- function(lh_threshmap, rh_threshmap, val
     return(clusterinfo(lh_overlay, rh_overlay, lh_threshmap, rh_threshmap, template_subject = template_subject, subjects_dir = subjects_dir));
 }
 
-#' @title Compute separate statsmap and overlay from thresholded map.
+
+#' @title Compute overlayID map from thresholded statmap (clustermap).
+#'
+#' @description This uses breadth-first search on the graph of the mesh to identify all connected cluster values and identify the separate clusters. Different clusters must not touch for this to work (if they do, there is no reliable way to obtain the clusters from the thresholded map). Clusters can have holes.
 #'
 #' @inheritParams clusterinfo_from_thresholded_overlay
 #'
-#' @param theshmap double vector, the stats map. Typically a thresholded t-value map. Must have one value per vertex. The value assigned to vertices that have been removed by the thresholding can be set with parameter 'value_thresholded'.
+#' @param theshmap double vector, the stats map. Typically a thresholded t-value map (cluster map). Must have one value per vertex. The value assigned to vertices that have been removed by the thresholding can be set with parameter 'value_thresholded'.
 #'
-#' @param surface a single fs.surface instance, used for neighborhood computation.
+#' @param surface a single \code{fs.surface} instance, used for neighborhood computation.
 #'
-#' @return integer vector, the clusterID overlay
+#' @return integer vector, the clusterID overlay.
+#'
+#' @note This visits every node and edge in the mesh/graph exactly once.
 #'
 #' @keywords internal
 clusteroverlay_from_threshmap <- function(threshmap, value_thresholded, surface) {
@@ -106,29 +111,28 @@ clusteroverlay_from_threshmap <- function(threshmap, value_thresholded, surface)
     }
     vertex_visited = rep(FALSE, num_vertices);
     overlay_background_value = 0L;
-    overlay = rep(overlay_background_value, num_vertices);
+    overlay_unset_value = -1L; # not known yet.
+    overlay = rep(overlay_unset_value, num_vertices);
 
     vertex_visited[threshmap == value_thresholded] = TRUE;
+    overlay[threshmap == value_thresholded] = overlay_background_value;
     current_cluster_label_int = overlay_background_value;
     for(start_vertex in seq.int(num_vertices)) {
-        if(vertex_visited[start_vertex]) {
+        if(vertex_visited[start_vertex]) {    # Start BFS at every foreground/cluster vertex and mark all neighbors that can be reached without crossing background vertices.
             next;
         }
+        current_cluster_label_int = current_cluster_label_int + 1L;   # Start a new cluster: when we get here this vertex was not reachable from the previous one.
         q = dequer::queue();
-        cat(sprintf("Starting check from start vertex %d, new cluster label will be %d.\n" , start_vertex, current_cluster_label_int));
-        vertex_visited[start_vertex] = TRUE;
-        current_cluster_label_int = current_cluster_label_int + 1L;
-        overlay[start_vertex] = current_cluster_label_int;
         dequer::pushback(q, start_vertex);
         while(length(q) > 0L) {
             v = dequer::pop(q);
-            cat(sprintf(" - length(q) is %d, current vertex v=%d has %d neighbors.\n" , length(q), v, length(adj[[v]])));
             vertex_visited[v] = TRUE;
             if(threshmap[v] != value_thresholded) {
                 overlay[v] = current_cluster_label_int;
             }
             for(v_neighbor in adj[[v]]) {
                 if(! vertex_visited[v_neighbor]) {
+                    vertex_visited[v_neighbor] = TRUE;
                     dequer::pushback(q, v_neighbor);
                 }
             }

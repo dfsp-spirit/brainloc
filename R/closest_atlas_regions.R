@@ -1,22 +1,5 @@
 # Functions to compute the atlas regions closest to a point/vertex coordinate on the surface.
 
-#' @title Convert fs.surface to tmesh3d using freesurferformats of fsbrain.
-#'
-#' @param surface an fs.surface instance.
-#'
-#' @return \code{tmesh} instance, as used in the \code{rgl} package.
-#'
-#' @keywords internal
-fs.surface.to.tmesh3d <- function(surface) {
-    if(exists('fs.surface.to.tmesh3d', where=asNamespace('freesurferformats'), mode='function')) {
-        return(freesurferformats::fs.surface.to.tmesh3d(surface));
-    } else if (requireNamespace("fsbrain", quietly = TRUE)) {
-        return(fsbrain::fs.surface.to.tmesh3d(surface));
-    } else {
-        stop("This functionality requires a recent version of the 'freesurferformats' package or the optional dependency package 'fsbrain'. Please install one of them to use this.");
-    }
-}
-
 
 #' @title Find closest regions to vertex using Euclidean or geodesic distance.
 #'

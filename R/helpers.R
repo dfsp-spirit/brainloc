@@ -1,4 +1,25 @@
 
+
+
+#' @title Convert fs.surface to tmesh3d using freesurferformats of fsbrain.
+#'
+#' @param surface an fs.surface instance.
+#'
+#' @return \code{tmesh} instance, as used in the \code{rgl} package.
+#'
+#' @keywords internal
+fs.surface.to.tmesh3d <- function(surface) {
+    if( ! freesurferformats::is.fs.surface(surface)) {
+        stop("Parameter 'surface' must be an instance of freesurferformats::fs.surface.");
+    }
+    tmesh = list("material"=list(), "normals"=NULL, "texcoords"=NULL, "meshColor"="vertices");
+    class(tmesh) = c("mesh3d", "shape3d");
+    tmesh$vb = t(cbind(surface$vertices, 1L)); # Transform vertex coords to homogeneous and swap rows/columns
+    tmesh$it = t(surface$faces); # swap only
+    return(tmesh);
+}
+
+
 #' @title Return FreeSurfer path.
 #'
 #' @return the FreeSurfer path, typically what the environment variable `FREESURFER_HOME` points to.
