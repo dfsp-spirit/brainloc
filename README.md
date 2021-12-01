@@ -14,6 +14,7 @@ This is an R package that takes as input a vertex index of a FreeSurfer brain me
 
 - Given a coordinate in MNI305 space:
   - `coord_closest_vertex()`: find the closest vertex in a mesh that is MNI305 space (e.g., fsaverage, fsaverage6, etc).
+  - Note: This actually works for any brain mesh and a coordinate in its surface space, including native space meshes and any surface (white, pial, ...).
 - Given a vertex or coordinate on a mesh in MNI305 space:
   - `coord_MNI305_info()`: find its MNI305 coordinate (trivial): see function `coord_MNI305_info()`
   - `coord_MNI305_info()`: find its MNI152 coordinate...
