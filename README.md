@@ -42,5 +42,5 @@ options(repos = c(
     dfspspirit = 'https://dfsp-spirit.r-universe.dev',
     CRAN = 'https://cloud.r-project.org'))
 
-install.packages('regfusionr')
+install.packages('brainloc')
 ```
