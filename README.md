@@ -17,9 +17,9 @@ This is an R package that takes as input a vertex index of a FreeSurfer brain me
   - Note: This actually works for any brain mesh and a coordinate in its surface space, including native space meshes and any surface (white, pial, ...).
 - Given a vertex or coordinate on a mesh in MNI305 space:
   - `coord_MNI305_info()`: find its MNI305 coordinate (trivial): see function `coord_MNI305_info()`
-  - `coord_MNI305_info()`: find its MNI152 coordinate...
-    - using the FreeSurfer 4x4 matrix or
-    - using the more accurate [regfusionr](https://github.com/dfsp-spirit/regfusionr) method `coord_MNI305_info()`
+  - `coord_MNI305_info()`: find its MNI152 coordinate using one of the following two methods:
+    - with the FreeSurfer 4x4 matrix or
+    - with the more accurate [regfusionr](https://github.com/dfsp-spirit/regfusionr) method (requires optional regfusionr package).
   - `coord_MNI305_info()`: find its Talairach coordinates (using Matthew Brett's non-linear transform from MNI152) `coord_MNI305_info()`
   - `vertex_closest_regions()`: find the region the vertex is assigned to in a brain atlas parcellation like the Desikan atlas that comes with FreeSurfer (trivial)
   - `vertex_closest_regions()`: find the distances to all other atlas regions, with different distance methods (Euclidean, geodesic along the mesh) and different linkages (defining the reference point when measuring the distance to a region, e.g., closest vertex in region, or center vertex)
