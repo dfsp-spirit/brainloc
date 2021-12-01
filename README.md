@@ -35,5 +35,12 @@ This is an R package that takes as input a vertex index of a FreeSurfer brain me
 
 ## Installation
 
-Not yet, this is work-in-progress. Come back another day.
+It's still a bit early, but if you want to try the current version, run the following commands from an `R` session:
 
+```R
+options(repos = c(
+    dfspspirit = 'https://dfsp-spirit.r-universe.dev',
+    CRAN = 'https://cloud.r-project.org'))
+
+install.packages('regfusionr')
+```
