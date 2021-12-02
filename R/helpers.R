@@ -32,6 +32,32 @@ fs.home <- function() {
 }
 
 
+#' @title Find subjects_dir or stop.
+#'
+#' @description Try a number of ways to find the subjects dir, using environment variables and knowledge on common installation paths of FreeSurfer.
+#'
+#' @return character string, the subjects directory.
+#'
+#' @export
+subjects_dir <- function() {
+    env_subjects_dir=Sys.getenv("SUBJECTS_DIR");
+    if(nchar(env_subjects_dir) > 0) {
+        guessed_path = file.path(env_subjects_dir);
+        if(dir.exists(guessed_path)) {
+            return(guessed_path);
+        }
+    }
+
+    # If not found, try based on fs home.
+    fs_home = fs.home();
+    guessed_path = file.path(fs_home, 'subjects');
+    if(dir.exists(guessed_path)) {
+        return(guessed_path);
+    }
+    stop("Could not find subjects_dir, please set environment variable SUBJECTS_DIR.");
+}
+
+
 #' @title Find the FREESURFER_HOME directory on disk.
 #'
 #' @description Try to find directory containing the FreeSurfer installation, based on environment variables and *educated guessing*.
