@@ -18,13 +18,23 @@ The brainloc package serves to describe a location on a brain surface mesh that 
 
 Statistical results are often presented as significant clusters of activation on a brain surface mesh (sets of connected vertices). Typical use cases for working with clusters are:
 
-* Finding the extreme value of a cluster (min, max, or absolute max).
+* Finding the extreme value of a cluster (min, max, or absolute max) and the vertex at which it occurs.
 * Finding the peaks within a cluster.
 * Finding the brain regions that overlap with the cluster (including the degree of overlap).
 
 This vignette describes how to perform these tasks with the brainloc package.
 
 ## Usage Examples
+
+### Preparation: Getting the data required to run the examples
+
+You will need a directory with the brain templates you want to use, typically these are the fsaverage subjects that come with the FreeSurfer neuroimaging software suite. When FreeSurfer is installed and configured properly on your system, the environment variable `FREESURFER_HOME` points at installation directory, and it will be used to find the templates in `FREESURFER_HOME/subjects/`.
+
+If not, you can set the option `brainloc.fs_home` in R to any directory that contains the expected directory structure like this: `options("brainloc.fs_home"="~/my_fs_home/")`. This would mean that `~/my_fs_home/subjects/` exists on your system and holds the directories of the template subjects. We assume that you have the `fsaverage` subject in there.
+
+### Finding information on a coordinate or fsaverage vertex
+
+Let's say we have a coordinate in MNI305 surface space and want to find the closest vertex:
 
 ```{r, eval = FALSE}
 # load and turn into fs.surface
