@@ -36,10 +36,22 @@ fs.home <- function() {
 #'
 #' @description Try a number of ways to find the subjects dir, using environment variables and knowledge on common installation paths of FreeSurfer.
 #'
-#' @return character string, the subjects directory.
+#' @param mustWork whether to stop if no subjects_dir can be found.
+#'
+#' @return character string, the subjects directory. If mustWork is FALSE, it will return NULL if no directory was found. If mustWork is TRUE and nothing is found, it stops.
 #'
 #' @export
-subjects_dir <- function() {
+get_subjects_dir <- function(mustWork = TRUE) {
+
+    guessed_path = getOption("brainloc.subjects_dir");
+    if(! is.null(guessed_path)) {
+        if(dir.exists(guessed_path)) {
+            return(guessed_path);
+        } else {
+            stop(sprintf("The path given by 'getOption('brainloc.subjects_dir')', '%s', does not exist. Please fix or unset.\n", guessed_path));
+        }
+    }
+
     env_subjects_dir=Sys.getenv("SUBJECTS_DIR");
     if(nchar(env_subjects_dir) > 0) {
         guessed_path = file.path(env_subjects_dir);
@@ -49,12 +61,20 @@ subjects_dir <- function() {
     }
 
     # If not found, try based on fs home.
-    fs_home = fs.home();
-    guessed_path = file.path(fs_home, 'subjects');
-    if(dir.exists(guessed_path)) {
-        return(guessed_path);
+    fs_home = find.freesurferhome(mustWork = FALSE);
+    if(fs_home$found) {
+        fs_home = fs_home$found_at;
+        guessed_path = file.path(fs_home, 'subjects');
+        if(dir.exists(guessed_path)) {
+            return(guessed_path);
+        }
     }
-    stop("Could not find subjects_dir, please set environment variable SUBJECTS_DIR.");
+
+    if(mustWork) {
+        stop("Could not find subjects_dir, please set environment variable SUBJECTS_DIR.");
+    } else {
+        return(NULL);
+    }
 }
 
 

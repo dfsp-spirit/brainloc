@@ -28,27 +28,18 @@ This vignette describes how to perform these tasks with the brainloc package.
 
 ### Preparation: Getting the data required to run the examples
 
-You will need a directory with the brain templates you want to use, typically these are the fsaverage subjects that come with the FreeSurfer neuroimaging software suite. When FreeSurfer is installed and configured properly on your system, the environment variable `FREESURFER_HOME` points at installation directory, and it will be used to find the templates in `FREESURFER_HOME/subjects/`.
+You will need a directory with the brain templates you want to use, typically these are the fsaverage subjects that come with the FreeSurfer neuroimaging software suite. When FreeSurfer is installed and configured properly on your system, the environment variable `SUBJECTS_DIR` points at the `subjects` directory under the installation directory (`FREESURFER_HOME`), and it will be used to find the templates. You can also set `SUBJECTS_DIR` to your custom template directory, of course.
 
-If not, you can set the option `brainloc.fs_home` in R to any directory that contains the expected directory structure like this: `options("brainloc.fs_home"="~/my_fs_home/")`. This would mean that `~/my_fs_home/subjects/` exists on your system and holds the directories of the template subjects. We assume that you have the `fsaverage` subject in there.
+If you cannot or do not want to set environment variables, you can set the option `brainloc.subjects_dir` in R to any directory that contains the expected directory structure like this: `options("brainloc.subjects_dir"="~/my_fs_home/subjects/")`. This would mean that `~/my_fs_home/subjects/` exists on your system and holds the directories of the template subjects. We assume that you have the `fsaverage` subject in there. Setting this option takes precedence over any environment variables.
+
 
 ### Finding information on a coordinate or fsaverage vertex
 
 Let's say we have a coordinate in MNI305 surface space and want to find the closest vertex:
 
 ```{r, eval = FALSE}
-# load and turn into fs.surface
-bd_thickness = bssr::readdfs('~/data/brainsuite_subject1/subject1_v1_sMRI.pvc-thickness_0-6mm.right.mid.cortex.dfs');
-sfb_thickness = list('vertices'=t(bd_thickness$vertices), faces=t(bd_thickness$faces)+1L);
-class(sfb_thickness) = c(class(sfb_thickness), 'fs.surface');
+library("brainloc");
 
-# Display the vertex colors:
-fsbrain::vis.fs.surface(sfb_thickness, col=rgb(t(bd_thickness$vColor)));        
-
-# Display labels (feel free to change the colormap).
-fsbrain::vis.fs.surface(sfb_thickness, per_vertex_data = bd_thickness$labels);  
-
-# Display raw morphometry data (feel free to change the colormap).
-fsbrain::vis.fs.surface(sfb_thickness, per_vertex_data = bd_thickness$attributes);        
+query_coord = c(0.0, 0.0, 0.0);
 ```
 
