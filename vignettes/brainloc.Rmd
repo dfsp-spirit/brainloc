@@ -1,0 +1,44 @@
+---
+title: "brainloc"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{brainloc}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+## About brainloc
+
+The brainloc package serves to describe a location on a brain surface mesh that is in MNI305 space, like the surfaces of the fsaverage standard brain templates used by FreeSurfer. Typical use cases of this package in the field of computational neuroimaging include:
+
+* Finding the mesh vertex closest to a given coordinate (using Euclidean distance).
+* Finding the coordinates of a vertex on in various standard coordinate systems (MNI305, MNI152 and Talairach).
+* Finding the brain region the vertex lies in (according to any brain atlas available for the respective surface, like the Desikan atlas).
+* Finding the distances of all atlas regions to the given vertex (using Euclidean or geodesic distance).
+
+Statistical results are often presented as significant clusters of activation on a brain surface mesh (sets of connected vertices). Typical use cases for working with clusters are:
+
+* Finding the extreme value of a cluster (min, max, or absolute max).
+* Finding the peaks within a cluster.
+* Finding the brain regions that overlap with the cluster (including the degree of overlap).
+
+This vignette describes how to perform these tasks with the brainloc package.
+
+## Usage Examples
+
+```{r, eval = FALSE}
+# load and turn into fs.surface
+bd_thickness = bssr::readdfs('~/data/brainsuite_subject1/subject1_v1_sMRI.pvc-thickness_0-6mm.right.mid.cortex.dfs');
+sfb_thickness = list('vertices'=t(bd_thickness$vertices), faces=t(bd_thickness$faces)+1L);
+class(sfb_thickness) = c(class(sfb_thickness), 'fs.surface');
+
+# Display the vertex colors:
+fsbrain::vis.fs.surface(sfb_thickness, col=rgb(t(bd_thickness$vColor)));        
+
+# Display labels (feel free to change the colormap).
+fsbrain::vis.fs.surface(sfb_thickness, per_vertex_data = bd_thickness$labels);  
+
+# Display raw morphometry data (feel free to change the colormap).
+fsbrain::vis.fs.surface(sfb_thickness, per_vertex_data = bd_thickness$attributes);        
+```
+
