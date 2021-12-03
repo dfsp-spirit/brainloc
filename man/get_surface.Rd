@@ -15,3 +15,8 @@ get_surface(brainparc)
 \description{
 Extract the surface hemilist from a brainparc.
 }
+\seealso{
+Other brainparc accessors: 
+\code{\link{get_surface_coords}()}
+}
+\concept{brainparc accessors}

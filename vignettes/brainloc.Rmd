@@ -47,9 +47,9 @@ bp = brainparc_fs(sjd, "fsaverage", surface = "white", atlas = "aparc");
 ```
 
 
-### Finding information on a coordinate or fsaverage vertex
+### Finding the vertex closest to a query coordinate
 
-Let's say we have some query coordinates in MNI305 surface space and want to find the closest vertex in the brainparc for each of the coordinates. Here is how we can do that:
+Let's say we have some query coordinates in surface space and want to find the closest vertex in the `brainparc` for each of the coordinates. Here is how we can do that:
 
 ```{r, eval = TRUE}
 query_coords = matrix(seq(9)+0.1, ncol = 3, byrow = TRUE);
@@ -58,5 +58,23 @@ query_coords
 ccv = coord_closest_vertex(query_coords, get_surface(bp));
 ccv
 ```
+
+This assumes that the query coordinates are in the surfaces space and uses Euclidean distance. It works for all subjects and meshes.
+
+### Finding the MNI152 and Talairach coordinates for a point or vertex in MNI305 space
+
+This assumes that you query vertex (or coordinate) is in MNI305 space. This is true for all FreeSurfer standard template subjects, like `fsaverage`, `fsaverage6`, etc. Our `brainparc` is for `fsaverage`, so we can use the coordinates of its vertices to query.
+
+```{r, eval = TRUE}
+query_vertices = c(10L, 145029L);
+query_hemis = c("lh", "rh");
+query_coords = get_surface_coords(bp, query_vertices, query_hemis);
+query_coords
+
+coord_info = coord_MNI305_info(query_coords, surface = get_surface(bp));
+coord_info
+```
+
+Note: If you have the `regfusionr` package installed, have a look at the `method` parameter of the `coord_MNI305_info` function: you can use the more accurate `regfusionr` method to transform from MNI305 to MNI152 then. By default, the linear 4x4 matrix from the coordinate systems documentation page of FreeSurfer is used for the transformation.
 
 

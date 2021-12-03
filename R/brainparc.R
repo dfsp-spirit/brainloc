@@ -68,12 +68,52 @@ brainparc <- function(surfaces, annots) {
 #'
 #' @return \code{\link{hemilist}} of \code{fs.surface} instances.
 #'
+#' @family brainparc accessors
+#'
 #' @export
 get_surface <- function(brainparc) {
     if(! is.brainparc(brainparc)) {
         stop("Parameter 'brainparc' must be a brainparc instance.");
     }
     return(brainparc$surfaces[[1]]);
+}
+
+
+#' @title Extract the vertex coordinates of the brainparc surface.
+#'
+#' @param brainparc a \code{brainparc} instance, see \code{\link{brainparc_fs}} to get one.
+#'
+#' @param vertices integer vector, the query vertex indices.
+#'
+#' @param hemis vector of character string, the hemispheres for the query vertices. Length must match, length of 1 will be recycled to all vertices.
+#'
+#' @return numerical nx3 matrix, the coordindates for the x query vertices.
+#'
+#' @family brainparc accessors
+#'
+#' @export
+get_surface_coords <- function(brainparc, vertices, hemis) {
+    nv = length(vertices);
+    if(nv < 1L) {
+        stop("Parameter 'vertices' must not be empty.");
+    }
+    if(nv !=  length(hemis)) {
+        if(length(hemis) == 1L) {
+            hemis = rep(hemis, length(vertices));
+        } else {
+            stop("Parameter 'hemis' must have length equal to 'vertices' parameter, or exactly length 1.");
+        }
+    }
+    if(any(!(hemis %in% c("lh", "rh")) )) {
+        stop("All entries of parameter 'hemis' must be one of 'lh' or 'rh'.");
+    }
+    surfaces = get_surface(brainparc);
+    coords = matrix(rep(0.0, (nv*3L)), nrow = nv);
+    for(vidx in seq_along(vertices)) {
+        hemi = hemis[[vidx]];
+        coords[vidx, ] = surfaces[[hemi]]$vertices[vidx, ];
+    }
+    return(coords);
 }
 
 

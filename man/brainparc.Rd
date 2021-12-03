@@ -7,7 +7,7 @@
 brainparc(surfaces, annots)
 }
 \arguments{
-\item{surfaces}{a named list with a single entry, which must contain a hemilist of fs.surface instances. The name can be anything describing the surface. Typically it is something like 'white', 'pial', or 'inflated' for FreeSUrfer surfaces.}
+\item{surfaces}{a named list with a single entry, which must contain a hemilist of fs.surface instances. The name can be anything describing the surface. Typically it is something like 'white', 'pial', or 'inflated' for FreeSurfer surfaces.}
 
 \item{annots}{a named list with at least one entry, all of which must contain a hemilist of minannot (or \code{fs.annot}) instances. The name can be anything describing the atlas from which the parcellation originates. Typically it is something like 'aparc', 'aparc.a2009s', or 'Desikan' for FreeSurfer parcellations.}
 }
@@ -16,4 +16,7 @@ a \code{brainparc} instance
 }
 \description{
 Create a brain parcellation from custom data.
+}
+\note{
+A \code{minannot} for a surface is just a vector with length equal to the number of surface vertices, that holds one area label per vertex. An area label is an arbitrary character string, but typically a brain region name.
 }

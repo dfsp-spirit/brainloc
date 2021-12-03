@@ -2,7 +2,7 @@
 % Please edit documentation in R/brainparc.R
 \name{brainparc_fs}
 \alias{brainparc_fs}
-\title{Create a brain parcellation from a FreeSurfer annotation.}
+\title{Create a brain parcellation from a subject in a FreeSurfer recon-all output directory}
 \usage{
 brainparc_fs(subjects_dir, subject_id, surface = "white", atlas = c("aparc"))
 }
@@ -19,5 +19,5 @@ brainparc_fs(subjects_dir, subject_id, surface = "white", atlas = c("aparc"))
 a \code{brainparc} instance
 }
 \description{
-Create a brain parcellation from a FreeSurfer annotation.
+Create a brain parcellation from a subject in a FreeSurfer recon-all output directory
 }
