@@ -42,7 +42,7 @@ This is an R package that takes as input a vertex index of a FreeSurfer brain me
 
 ## Installation
 
-It's still a bit early, but if you want to try the current version, run the following commands from an `R` session:
+It's still rather early, but if you want to try the current version, run the following commands from an `R` session:
 
 ```R
 options(repos = c(
