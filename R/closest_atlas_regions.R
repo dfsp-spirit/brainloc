@@ -1,5 +1,51 @@
 # Functions to compute the atlas regions closest to a point/vertex coordinate on the surface.
 
+#' @title Find regions for vertices in all brainparc atlases.
+#'
+#' @inheritParams vertex_closest_regions
+#'
+#' @return a data.frame, the column names should be obvious.
+#'
+#' @examples
+#' \dontrun{
+#' bp = brainparc_fs(get_subjects_dir(), "fsaverage", atlas="aparc");
+#' vertex_region(bp, vertices=c(10, 20), hemis=c("lh", "rh"));
+#' }
+#'
+#' @seealso \code{\link{vertex_closest_regions}} to compute distance to all regions.
+#'
+#' @export
+vertex_regions <- function(brainparc, vertices, hemis) {
+    if(! is.brainparc(brainparc)) {
+        stop("Parameter 'brainparc' must contain a brainparc instance.");
+    }
+    nv = length(vertices);
+    if(nv < 1L) {
+        stop("Parameter 'vertices' must contain at least one vertex.");
+    }
+    if(nv != length(hemis)) {
+        if(length(hemis) == 1L) {
+            hemis = rep(hemis, nv); # Assume all the same hemi.
+        } else {
+            stop("Parameters 'vertices' and 'hemis' must have the same length: we need to know the hemi for each query vertex.");
+        }
+    }
+
+    atlas = rep("?", nv);
+    vertex_region = rep("?", nv);
+
+    for(vidx in seq_along(vertices)) {
+        vertex_surface_idx = vertices[vidx];
+        hemi = hemis[vidx];
+        for(atlas_name in names(brainparc$annots)) {
+            annot_min = brainparc$annots[[atlas_name]][[hemi]];
+            atlas[vidx] = atlas_name;
+            vertex_region[vidx] = annot_min[vertex_surface_idx];
+        }
+    }
+    return(data.frame("vertex"=vertices, "hemi"=hemis, "atlas"=atlas, "vertex_region"=vertex_region, stringsAsFactors = FALSE));
+}
+
 
 #' @title Find closest regions to vertex using Euclidean or geodesic distance.
 #'
@@ -23,7 +69,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' bp = brainparc_fs(fsbrain::fsaverage.path(), "fsaverage", atlas="aparc");
+#' bp = brainparc_fs(get_subjects_dir(), "fsaverage", atlas="aparc");
 #' vertex_closest_regions(bp, vertices=c(10, 20), hemis=c("lh", "rh"));
 #' }
 #'
@@ -40,7 +86,7 @@ vertex_closest_regions <- function(brainparc, vertices, hemis, linkage = "single
     if(distance == "geodesic" & linkage == "centroid") {
         stop("The distance type 'geodesic' is only supported with linkage = 'single'.");
     }
-    if(! ("brainparc" %in% class(brainparc))) {
+    if(! is.brainparc(brainparc)) {
         stop("Parameter 'brainparc' must contain a brainparc instance.");
     }
     if(length(vertices) != length(hemis)) {

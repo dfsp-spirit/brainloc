@@ -37,7 +37,7 @@ Finds the closest atlas regions according to the brain surface parcellation 'bra
 }
 \examples{
 \dontrun{
-bp = brainparc_fs(fsbrain::fsaverage.path(), "fsaverage", atlas="aparc");
+bp = brainparc_fs(get_subjects_dir(), "fsaverage", atlas="aparc");
 vertex_closest_regions(bp, vertices=c(10, 20), hemis=c("lh", "rh"));
 }
 

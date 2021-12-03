@@ -46,6 +46,13 @@ sjd = brainloc::get_subjects_dir(); # Searches for FreeSurfer SUBJECTS_DIR on ma
 bp = brainparc_fs(sjd, "fsaverage", surface = "white", atlas = "aparc");
 ```
 
+By default, many functions in the `brainloc` package print information to STDOUT, which is handy for creating command line clients from the library. We do not want that here, so we disable it globally here:
+```{r, eval = TRUE}
+options("brainloc.silent"=TRUE);
+```
+
+Note: One can also decide for each function that prints something, they all have a `silent` parameter.
+
 
 ### Finding the vertex closest to a query coordinate
 
@@ -75,6 +82,31 @@ coord_info = coord_MNI305_info(query_coords, surface = get_surface(bp));
 coord_info
 ```
 
-Note: If you have the `regfusionr` package installed, have a look at the `method` parameter of the `coord_MNI305_info` function: you can use the more accurate `regfusionr` method to transform from MNI305 to MNI152 then. By default, the linear 4x4 matrix from the coordinate systems documentation page of FreeSurfer is used for the transformation.
+Note: If you have the `regfusionr` package installed, have a look at the `method` parameter of the `coord_MNI305_info` function: you can use the more accurate `regfusionr` method to transform from MNI305 to MNI152 then. Open the docs with `?coord_MNI305_info` to learn more.
 
+
+### Finding the brain atlas region a vertex belongs to, and the distance to all other brain atlas regions from the vertex
+
+We can easily find the regions a vertex is assigned to in all atlases of a brain parcellation:
+
+```{r, eval = TRUE}
+query_vertices = c(10L, 145029L);
+query_hemis = c("lh", "rh"); # vertex 10 on left hemi and 145029L on right hemi.
+regions = vertex_regions(bp, query_vertices, query_hemis);
+
+regions
+```
+
+
+One can also compute the distance of a vertex to all atlas regions. Several definitions for the distance of a vertex to a region are available, here we go with the defaults:
+```{r, eval = TRUE}
+query_vertices = c(10L, 145029L);
+query_hemis = c("lh", "rh"); # vertex 10 on left hemi and 145029L on right hemi.
+region_dists = vertex_closest_regions(bp, query_vertices, query_hemis, num_regions_to_report=5L);
+
+region_dists
+```
+
+
+One can change the distance definition with the parameters `distance` and `linkage` of the `vertex_closest_regions` function. Open the docs with `?vertex_closest_regions` to learn more.
 
