@@ -31,6 +31,13 @@ This is an R package that takes as input a vertex index of a FreeSurfer brain me
   - `cluster_peaks()`: find all peaks of each cluster
   - `cluster_region_overlap()`: given an additional brain parcellation, find all regions the cluster overlaps with and compute the percentage overlap for both the cluster and the regions.
  
+ 
+## Documentation
+
+* A detailed vignette with explanations and examples for the functions of the package is included, run `browseVignettes("brainloc")` to see the vignette.
+* Help for a specific function can be accessed in the usual R manner: `?<function>`, where you replace `<function>` with a function name. Like this: `?vertex_closest_regions`.
+* Run `example(<function>)` to see a live demo that uses the function `<function>`. Like this: `example(vertex_closest_regions)`.
+* The [unit tests](./tests/testthat/) that come with this package are essentially a list of examples that illustrate how to use the functions.
 
 
 ## Installation
