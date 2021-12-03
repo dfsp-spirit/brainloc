@@ -8,14 +8,53 @@
 #'
 #' @param atlas vector of character strings, the brain atlases to use. For this FreeSurfer version, something like "aparc" for the Desikan-Killiani atlas, "aparc.a2009s" for Destrieux, etc.
 #'
+#' @return a \code{brainparc} instance
+#'
 #' @export
 brainparc_fs <- function(subjects_dir, subject_id, surface="white", atlas=c("aparc")) {
-    surfaces = subject.surface(subjects_dir, subject_id, hemi="both", surface = surface);
-    ret = list("surfaces"=list(), "annots"=list());
-    ret$surfaces[[surface]] = surfaces;
+    surfaces_hemilist = subject.surface(subjects_dir, subject_id, hemi="both", surface = surface);
+    surfaces = list();
+    surfaces[[surface]] = surfaces_hemilist;
+    annots = list();
     for(atlas_name in atlas) {
-        ret$annots[[atlas_name]] = subject_annot_simple_fs(subjects_dir, subject_id, atlas=atlas_name);
+        annots[[atlas_name]] = subject_minannot_fs(subjects_dir, subject_id, atlas=atlas_name);
     }
+    return(brainparc(surfaces, annots));
+}
+
+
+#' @title Create a brain parcellation from custom data.
+#'
+#' @param surfaces a named list with a single entry, which must contain a hemilist of fs.surface instances. The name can be anything describing the surface. Typically it is something like 'white', 'pial', or 'inflated' for FreeSUrfer surfaces.
+#'
+#' @param annots a named list with at least one entry, all of which must contain a hemilist of minannot (or \code{fs.annot}) instances. The name can be anything describing the atlas from which the parcellation originates. Typically it is something like 'aparc', 'aparc.a2009s', or 'Desikan' for FreeSurfer parcellations.
+#'
+#' @return a \code{brainparc} instance
+#'
+#' @export
+brainparc <- function(surfaces, annots) {
+    if(! is.list(surfaces)) {
+        stop("Parameter 'surfaces' must be a list of containing a single hemilist of surfaces, but given one is not a list.");
+    }
+    if(length(surfaces) != 1L) {
+        stop("Parameter 'surfaces' must be a list of containing a single hemilist of surfaces, but given list does not have length 1.");
+    }
+    if(! is.list(surfaces[[1]])) {
+        stop("Parameter 'surfaces' must be a list of containing a single hemilist of surfaces, but first entry of outer list is not a (hemi)list.");
+    }
+    if(! is.list(annots)) {
+        stop("Parameter 'annots' must be a list of containing a single hemilist of minannots, but given one is not a list.");
+    }
+    if(length(annots) < 1L) {
+        stop("Parameter 'annots' must be a list of containing min annots for at least 1 atlas, but list is empty.");
+    }
+    for(atlas_name in names(annots)) {
+        if(! is.list(annots[[atlas_name]])) {
+            stop(sprintf("Parameter 'annots' must be a named list containing one or more atlas parcellation hemilists, but entry '%s' of outer list is not a (hemi)list.\n", atlas_name));
+        }
+        annots[[atlas_name]] = get_minannot(annots[[atlas_name]]); # Convert possible fs.annot to minannot, fails if cannot be done.
+    }
+    ret = list("surfaces"=surfaces, "annots"=annots);
     class(ret) = c(class(ret), "brainparc");
     return(ret);
 }
@@ -41,11 +80,51 @@ get_surface <- function(brainparc) {
 #' @inheritParams subject.annot
 #'
 #' @keywords internal
-subject_annot_simple_fs <- function(subjects_dir, subject_id, atlas) {
+subject_minannot_fs <- function(subjects_dir, subject_id, atlas) {
     lh_annot = subject.annot(subjects_dir, subject_id, hemi="lh", atlas);
     rh_annot = subject.annot(subjects_dir, subject_id, hemi="rh", atlas);
-    return(list("lh"=lh_annot$label_names, "rh"=rh_annot$label_names));
+    return(list("lh"=get_minannot(lh_annot), "rh"=get_minannot(rh_annot)));
 }
+
+
+#' @title Extract minannot from fs.annot instance.
+#'
+#' @param fs.annot a \code{freesurferformats::fs.annot} instance, or a \code{minannot} instance, which will be returned as-is. Alternatively hemilist of the latter.
+#'
+#' @return a \code{minannot} instance, i.e., only the 'label_names' field of the \code{fs.annot} instance.
+#'
+#' @keywords internal
+get_minannot <- function(fs.annot) {
+    if(is.hemilist(fs.annot)) {
+        res = list();
+        if("lh" %in% names(fs.annot)) {
+            res$lh = get_minannot(fs.annot$lh);
+        }
+        if("rh" %in% names(fs.annot)) {
+            res$rh = get_minannot(fs.annot$rh);
+        }
+        return(res);
+    }
+    if(is.minannot(fs.annot)) {
+        return(fs.annot);
+    }
+    if(! freesurferformats::is.fs.annot(fs.annot)) {
+        stop("Parameter 'fs.annot' must be an fs.annot or minannot instance.");
+    }
+    minannot = fs.annot$label_names;
+    class(minannot) = c(class(minannot), "minannot");
+    return(minannot);
+}
+
+
+#' @title Check whether object is a minannot instance.
+#'
+#' @param x any `R` object
+#'
+#' @return logical, \code{TRUE} if parameter \code{x} is a minannot instance (that is, has "minannot" in its classes) and \code{FALSE} otherwise.
+#'
+#' @keywords internal
+is.minannot <- function(x) inherits(x, "minannot")
 
 
 

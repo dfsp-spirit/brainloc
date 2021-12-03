@@ -158,3 +158,21 @@ hemilist <- function(lh_data=NULL, rh_data=NULL) {
     return(list('lh' = lh_data, 'rh' = rh_data));
 }
 
+
+#' @title Find out whether x is a hemilist
+#'
+#' @param x any R object
+#'
+#' @return logical, whether x is a hemilist
+#'
+#' @keywords internal
+is.hemilist <- function(x) {
+    if(! is.list(x)) {
+        return(FALSE);
+    }
+    if(!("lh" %in% names(x) | "rh" %in% names(x))) {
+        return(FALSE)
+    }
+    return(TRUE);
+}
+

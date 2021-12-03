@@ -15,6 +15,9 @@ brainparc_fs(subjects_dir, subject_id, surface = "white", atlas = c("aparc"))
 
 \item{atlas}{vector of character strings, the brain atlases to use. For this FreeSurfer version, something like "aparc" for the Desikan-Killiani atlas, "aparc.a2009s" for Destrieux, etc.}
 }
+\value{
+a \code{brainparc} instance
+}
 \description{
 Create a brain parcellation from a FreeSurfer annotation.
 }

@@ -35,7 +35,10 @@ If you cannot or do not want to set environment variables, you can set the optio
 
 ### Finding information on a coordinate or fsaverage vertex
 
-Let's say we have a coordinate in MNI305 surface space and want to find the closest vertex:
+Let's say we have a coordinate in MNI305 surface space and want to find the closest vertex. We first load `brainloc` and create a `brainparc` object, which internally ois a named list holding the surfaces (the left and right hemisphere meshes) and the surface parcellations (according to some brain atlas) for these meshes. The parcellations assign to each vertex of a mesh a single region.
+
+One can construct a brainparc manually from arbitrary loaded meshes and parcellations using the brainparc, but here we use the function `
+
 
 ```{r, eval = FALSE}
 library("brainloc");
