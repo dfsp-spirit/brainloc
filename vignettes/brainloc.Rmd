@@ -33,16 +33,30 @@ You will need a directory with the brain templates you want to use, typically th
 If you cannot or do not want to set environment variables, you can set the option `brainloc.subjects_dir` in R to any directory that contains the expected directory structure like this: `options("brainloc.subjects_dir"="~/my_fs_home/subjects/")`. This would mean that `~/my_fs_home/subjects/` exists on your system and holds the directories of the template subjects. We assume that you have the `fsaverage` subject in there. Setting this option takes precedence over any environment variables.
 
 
+### Creating a brainparc object
+
+Let's say we have a coordinate in MNI305 surface space and want to find the closest vertex. We first load `brainloc` and create a `brainparc` object, which internally is a named list holding the surfaces (the left and right hemisphere meshes) and the surface parcellations (according to some brain atlas) for these meshes. The parcellations assign to each vertex of a mesh a single region.
+
+One can construct a brainparc manually from arbitrary loaded meshes and parcellations using the `brainparc` function, but here we use the function `brainparc_fs`, which is more convenient if you want to read it from files in a `SUBJECTS_DIR` of `recon-all` output data. We create a brainparc for the `fsaverage` template:
+
+
+```{r, eval = TRUE}
+library("brainloc");
+sjd = brainloc::get_subjects_dir(); # Searches for FreeSurfer SUBJECTS_DIR on machine.
+bp = brainparc_fs(sjd, "fsaverage", surface = "white", atlas = "aparc");
+```
+
+
 ### Finding information on a coordinate or fsaverage vertex
 
-Let's say we have a coordinate in MNI305 surface space and want to find the closest vertex. We first load `brainloc` and create a `brainparc` object, which internally ois a named list holding the surfaces (the left and right hemisphere meshes) and the surface parcellations (according to some brain atlas) for these meshes. The parcellations assign to each vertex of a mesh a single region.
+Let's say we have some query coordinates in MNI305 surface space and want to find the closest vertex in the brainparc for each of the coordinates. Here is how we can do that:
 
-One can construct a brainparc manually from arbitrary loaded meshes and parcellations using the brainparc, but here we use the function `
+```{r, eval = TRUE}
+query_coords = matrix(seq(9)+0.1, ncol = 3, byrow = TRUE);
+query_coords
 
-
-```{r, eval = FALSE}
-library("brainloc");
-
-query_coord = c(0.0, 0.0, 0.0);
+ccv = coord_closest_vertex(query_coords, get_surface(bp));
+ccv
 ```
+
 

@@ -1,6 +1,6 @@
 
 
-#' @title Create a brain parcellation from a FreeSurfer annotation.
+#' @title Create a brain parcellation from a subject in a FreeSurfer recon-all output directory
 #'
 #' @inheritParams subject.surface
 #'
@@ -25,9 +25,11 @@ brainparc_fs <- function(subjects_dir, subject_id, surface="white", atlas=c("apa
 
 #' @title Create a brain parcellation from custom data.
 #'
-#' @param surfaces a named list with a single entry, which must contain a hemilist of fs.surface instances. The name can be anything describing the surface. Typically it is something like 'white', 'pial', or 'inflated' for FreeSUrfer surfaces.
+#' @param surfaces a named list with a single entry, which must contain a hemilist of fs.surface instances. The name can be anything describing the surface. Typically it is something like 'white', 'pial', or 'inflated' for FreeSurfer surfaces.
 #'
 #' @param annots a named list with at least one entry, all of which must contain a hemilist of minannot (or \code{fs.annot}) instances. The name can be anything describing the atlas from which the parcellation originates. Typically it is something like 'aparc', 'aparc.a2009s', or 'Desikan' for FreeSurfer parcellations.
+#'
+#' @note A \code{minannot} for a surface is just a vector with length equal to the number of surface vertices, that holds one area label per vertex. An area label is an arbitrary character string, but typically a brain region name.
 #'
 #' @return a \code{brainparc} instance
 #'
