@@ -67,7 +67,7 @@ This assumes that you query vertex (or coordinate) is in MNI305 space. This is t
 
 ```{r, eval = TRUE}
 query_vertices = c(10L, 145029L);
-query_hemis = c("lh", "rh");
+query_hemis = c("lh", "rh"); # vertex 10 on left hemi and 145029L on right hemi.
 query_coords = get_surface_coords(bp, query_vertices, query_hemis);
 query_coords
 
