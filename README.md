@@ -5,6 +5,8 @@ This is currently intended to be used with [FreeSurfer](https://freesurfer.net/)
 
 
 ![Fig1](./web/brainloc.png?raw=true "Brainloc.")
+**Fig. 1*** *Left: Vertex 145029 on the left fsaverage surface (at pink marker). Screenshot from the FreeView application that comes with [FreeSurfer](https://freesurfer.net). Right: Location of MNI coordinate 39 -30  65, the result of mapping fsaverage vertex 145029 to MNI152 space. Screenshot from the [MNI - Talairach Tool](https://bioimagesuiteweb.github.io/bisweb-manual/tools/mni2tal.html).* 
+
 
 ## Features
 
