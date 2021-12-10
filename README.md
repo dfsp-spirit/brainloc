@@ -1,7 +1,7 @@
 # brainloc
 Given a vertex (point) or vertex set (cluster) on the human brain, identify standard space coordinates and find the closest and/or overlapping brain regions according to a brain atlas.
 
-This is currently intended to be used with FreeSurfer standard space templates (fsaverage, fsaverage6, ... fsaverage3).
+This is currently intended to be used with [FreeSurfer](https://freesurfer.net/) standard space templates (fsaverage, fsaverage6, ... fsaverage3).
 
 
 ![Fig1](./web/brainloc.png?raw=true "Brainloc.")
