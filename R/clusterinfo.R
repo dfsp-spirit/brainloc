@@ -2,7 +2,7 @@
 
 #' @title Create clusterinfo data structure from files or pre-loaded data.
 #'
-#' @param lh_overlay integer vector, the cluster overlay data: one integer per vertex of the left hemisphere. This assigns each vertex to a cluster, and all vertices of one cluster have the same number. Background is typically 1L. If a character string, the parameter will be interpreted as file path and loaded with \code{freesurferformats::read.fs.morph}.
+#' @param lh_overlay integer vector, the cluster overlay data: one integer per vertex of the left hemisphere. This assigns each vertex to a cluster, and all vertices of one cluster have the same number. Background is typically 1L. If a character string, the parameter will be interpreted as a file path and loaded with \code{freesurferformats::read.fs.morph}.
 #'
 #' @param rh_overlay integer vector, just like \code{lh_overlay}, but for the right hemisphere.
 #'
@@ -82,6 +82,12 @@ clusterinfo <- function(lh_overlay, rh_overlay, lh_statmap, rh_statmap, template
 #' @export
 clusterinfo_from_thresholded_overlay <- function(lh_threshmap, rh_threshmap, value_thresholded = 0.0, template_subject="fsaverage", subjects_dir=file.path(getOption("brainloc.fs_home", default = Sys.getenv("FREESURFER_HOME")), 'subjects')) {
     surfaces = subject.surface(subjects_dir, template_subject, surface = "white");
+    if(is.character(lh_threshmap)) {
+        lh_threshmap = freesurferformats::read.fs.morph(lh_threshmap);
+    }
+    if(is.character(rh_threshmap)) {
+        rh_threshmap = freesurferformats::read.fs.morph(rh_threshmap);
+    }
     lh_overlay = clusteroverlay_from_threshmap(lh_threshmap, value_thresholded = value_thresholded, surface = surfaces$lh);
     rh_overlay = clusteroverlay_from_threshmap(rh_threshmap, value_thresholded = value_thresholded, surface = surfaces$rh);
     return(clusterinfo(lh_overlay, rh_overlay, lh_threshmap, rh_threshmap, template_subject = template_subject, subjects_dir = subjects_dir));

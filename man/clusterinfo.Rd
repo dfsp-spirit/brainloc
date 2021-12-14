@@ -15,7 +15,7 @@ clusterinfo(
 )
 }
 \arguments{
-\item{lh_overlay}{integer vector, the cluster overlay data: one integer per vertex of the left hemisphere. This assigns each vertex to a cluster, and all vertices of one cluster have the same number. Background is typically 1L. If a character string, the parameter will be interpreted as file path and loaded with \code{freesurferformats::read.fs.morph}.}
+\item{lh_overlay}{integer vector, the cluster overlay data: one integer per vertex of the left hemisphere. This assigns each vertex to a cluster, and all vertices of one cluster have the same number. Background is typically 1L. If a character string, the parameter will be interpreted as a file path and loaded with \code{freesurferformats::read.fs.morph}.}
 
 \item{rh_overlay}{integer vector, just like \code{lh_overlay}, but for the right hemisphere.}
 

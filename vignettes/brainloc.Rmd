@@ -1,4 +1,4 @@
----
+`---
 title: "brainloc"
 output: rmarkdown::html_vignette
 vignette: >
@@ -24,13 +24,22 @@ Statistical results are often presented as significant clusters of activation on
 
 This vignette describes how to perform these tasks with the brainloc package.
 
-## Usage Examples
-
 ### Preparation: Getting the data required to run the examples
 
-You will need a directory with the brain templates you want to use, typically these are the fsaverage subjects that come with the FreeSurfer neuroimaging software suite. When FreeSurfer is installed and configured properly on your system, the environment variable `SUBJECTS_DIR` points at the `subjects` directory under the installation directory (`FREESURFER_HOME`), and it will be used to find the templates. You can also set `SUBJECTS_DIR` to your custom template directory, of course.
+You will need a directory with the brain templates you want to use, typically these are the fsaverage subjects that come with the FreeSurfer neuroimaging software suite. There are 2 ways to get them:
+
+#### Using the template subjects from a local FreeSurfer installation
+
+When FreeSurfer is installed and configured properly on your system, there is nothing you need to do. In that case, the environment variable `SUBJECTS_DIR` points at the `subjects` directory under the installation directory (`FREESURFER_HOME`), and it will be used to find the templates by the `get_subjects_dir` function. You can also set `SUBJECTS_DIR` to your custom template directory, of course, and that will be used instead.
 
 If you cannot or do not want to set environment variables, you can set the option `brainloc.subjects_dir` in R to any directory that contains the expected directory structure like this: `options("brainloc.subjects_dir"="~/my_fs_home/subjects/")`. This would mean that `~/my_fs_home/subjects/` exists on your system and holds the directories of the template subjects. We assume that you have the `fsaverage` subject in there. Setting this option takes precedence over any environment variables.
+
+#### Have the brainloc package download them for you from the internet
+
+This requires that you have an internet connection and accept the FreeSurfer software license. See the code in the first example of this vignette below, which downloads the templates. The templates will be downloaded only if they cannot be found, and downloaded ones will be found on the next call to the function, of course.
+
+
+## Usage Examples Part I: Location information for a vertex or coordinate
 
 
 ### Creating a brainparc object
@@ -110,4 +119,20 @@ region_dists
 
 
 One can change the distance definition with the parameters `distance` and `linkage` of the `vertex_closest_regions` function. Open the docs with `?vertex_closest_regions` to learn more.
+
+
+## Usage Examples Part II: Location information for a cluster`
+
+A cluster is a set of vertices on a surface, and the statistical values that are assigned to the cluster's vertices. Clusters are used in vertex-wise analyses to define activated brain regions (where the exact meaning of *activated* depends on the context). A clusters has a freeform label or name, but typically only consecutive numbers are used.
+
+The data structure used to store clusters in `brainloc` is called `clusterinfo`. The following two concepts are relevant to understanding how a `clusterinfo` instance is typically constructed:
+
+* a `cluster overlay` is an integer vector that assigns to each surface vertex a cluster number (zero is assigned to background/non-cluster vertices).
+* a `statistical map` contains arbitrary values, one for each surface vertex (a.k.a. per-vertex data). A *thresholded* map only contains values for the cluster vertices, the values for all non-cluster vertices are set to an arbitrary value (typically *0.0*).
+
+A `clusterinfo` object can be constructed for a subject in two ways:
+
+* if you have both a `cluster overlay` and the `statistical map` (thresholded or unthresholded), use the `clusterinfo` function.
+* if you have only a thresholded `statistical map`, use the `clusterinfo_from_thresholded_overlay` function instead.
+
 
