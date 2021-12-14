@@ -135,4 +135,45 @@ A `clusterinfo` object can be constructed for a subject in two ways:
 * if you have both a `cluster overlay` and the `statistical map` (thresholded or unthresholded), use the `clusterinfo` function.
 * if you have only a thresholded `statistical map`, use the `clusterinfo_from_thresholded_overlay` function instead.
 
+In the following example, we construct a `clusterinfo` instance from a cluster overlay and the statistical map:
+
+```{r, eval = TRUE}
+lh_tmap_file = system.file("extdata", "lh.tmap.mgh", package = "brainloc", mustWork = TRUE);
+rh_tmap_file = system.file("extdata", "rh.tmap.mgh", package = "brainloc", mustWork = TRUE);
+lh_overlay_file = system.file("extdata", "lh.cluster.overlayID.mgh", package = "brainloc", mustWork = TRUE);
+rh_overlay_file = system.file("extdata", "rh.cluster.overlayID.mgh", package = "brainloc", mustWork = TRUE);
+clinfo = clusterinfo(lh_overlay_file, rh_overlay_file, lh_tmap_file, rh_tmap_file, template_subject = "fsaverage", subjects_dir = sjd);
+is.clusterinfo(clinfo);
+```
+
+One can extract the clusters from the `clusterinfo`` instance like this:
+
+```{r, eval = TRUE}
+clusters = get_clusters(clinfo);
+```
+
+This returns a named list, where the keys are cluster names and the values are integer vectors containing the vertices that belong the the respective cluster. See `?get_clusters` for more options, like returning only the clusters for a specific hemisphere.
+
+The `clusterinfo` object can now be used to compute various information on the clusters. We will start by computing information on the location of the clusters:
+
+```{r, eval = TRUE}
+cl_details = cluster_location_details(clinfo);
+cl_details;
+```
+
+Note that the `clusterinfo` object contains a brain parcellation (a `brainparc` object, see at the top). We can also compute the overlap of the cluster with its atlas regions:
+
+```{r, eval = TRUE}
+overlap = cluster_region_overlap(clinfo);
+overlap;
+```
+
+Sometimes one wants to find all peaks of a cluster. A peak exists at vertices which have the most extreme value in their neighborhood. For a brain mesh, the neighborhood of a vertex is defined as all vertices which are reachable by one hop along the mesh edges.
+
+```{r, eval = TRUE}
+peaks = cluster_peaks(clinfo);
+peaks
+```
+
+This concludes the package vignette, thanks for reading.
 
