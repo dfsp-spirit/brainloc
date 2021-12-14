@@ -18,3 +18,4 @@ Download some relevant files from the FreeSurfer v6 fsaverage3 subject. The file
 \note{
 The subject fsaverage3 is a downsampled (low mesh resolution) version of the standard fsaverage. If you never heard about fsaverage3, you do not need it. You will have to manually re-sample your data in FreeSurfer if you want to use it with fsaverage3.
 }
+\keyword{internal}

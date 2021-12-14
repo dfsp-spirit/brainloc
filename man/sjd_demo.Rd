@@ -18,3 +18,4 @@ This is a wrapper around \code{download_fsaverage()} and \code{download_fsaverag
 \note{
 This function will stop if the data cannot be accessed, i.e., the 'subjects_dir' does not exist after trying to download the data.
 }
+\keyword{internal}

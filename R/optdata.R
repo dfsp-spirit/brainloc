@@ -6,7 +6,7 @@
 #'
 #' @return Named list. The list has entries: "available": vector of strings. The names of the files that are available in the local file cache. You can access them using get_optional_data_file(). "missing": vector of strings. The names of the files that this function was unable to retrieve.
 #'
-#' @export
+#' @keywords internal
 download_fsaverage <- function(accept_freesurfer_license=FALSE) {
 
     if(! accept_freesurfer_license) {
@@ -98,7 +98,7 @@ download_fsaverage <- function(accept_freesurfer_license=FALSE) {
 #'
 #' @note The subject fsaverage3 is a downsampled (low mesh resolution) version of the standard fsaverage. If you never heard about fsaverage3, you do not need it. You will have to manually re-sample your data in FreeSurfer if you want to use it with fsaverage3.
 #'
-#' @export
+#' @keywords internal
 download_fsaverage3 <- function(accept_freesurfer_license=FALSE) {
 
     if(! accept_freesurfer_license) {
@@ -163,7 +163,7 @@ download_fsaverage3 <- function(accept_freesurfer_license=FALSE) {
 #'
 #' @return vector of strings. The file names available, relative to the package cache.
 #'
-#' @export
+#' @keywords internal
 list_optional_data <- function() {
     pkg_info = pkgfilecache::get_pkg_info("brainloc");
     return(pkgfilecache::list_available(pkg_info));
@@ -178,7 +178,7 @@ list_optional_data <- function() {
 #'
 #' @return string. The full path to the file in the package cache or the empty string if there is no such file available. Use this in your application code to open the file.
 #'
-#' @export
+#' @keywords internal
 get_optional_data_filepath <- function(filename, mustWork=TRUE) {
     pkg_info = pkgfilecache::get_pkg_info("brainloc");
     return(pkgfilecache::get_filepath(pkg_info, filename, mustWork=mustWork));
@@ -189,7 +189,7 @@ get_optional_data_filepath <- function(filename, mustWork=TRUE) {
 #'
 #' @return integer. The return value of the unlink() call: 0 for success, 1 for failure. See the unlink() documentation for details.
 #'
-#' @export
+#' @keywords internal
 delete_all_optional_data <- function() {
     pkg_info = pkgfilecache::get_pkg_info("brainloc");
     return(pkgfilecache::erase_file_cache(pkg_info));
@@ -206,7 +206,7 @@ delete_all_optional_data <- function() {
 #'
 #' @note This function will stop if the data cannot be accessed, i.e., the 'subjects_dir' does not exist after trying to download the data.
 #'
-#' @export
+#' @keywords internal
 sjd_demo <- function(accept_freesurfer_license=FALSE) {
     download_fsaverage(accept_freesurfer_license);
     download_fsaverage3(accept_freesurfer_license);

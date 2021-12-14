@@ -1,4 +1,4 @@
-`---
+---
 title: "brainloc"
 output: rmarkdown::html_vignette
 vignette: >

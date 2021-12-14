@@ -12,3 +12,4 @@ integer. The return value of the unlink() call: 0 for success, 1 for failure. Se
 \description{
 Delete all data in the package cache.
 }
+\keyword{internal}
