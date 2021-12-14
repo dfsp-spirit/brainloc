@@ -6,7 +6,7 @@
 get_test_clusterinfo <- function() {
     fs_info = brainloc:::find.freesurferhome();
     if(! fs_info$found) {
-        stop("No FreeSurfer installation found on system, but the FreeSurfer fsaverage subject is required for this test.");
+        testthat::skip("No FreeSurfer installation found on system, but the FreeSurfer fsaverage subject is required for this test.");
     }
     sjd = file.path(fs_info$found_at, "subjects");
     sj = "fsaverage";
