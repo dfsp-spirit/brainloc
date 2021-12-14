@@ -121,7 +121,7 @@ region_dists
 One can change the distance definition with the parameters `distance` and `linkage` of the `vertex_closest_regions` function. Open the docs with `?vertex_closest_regions` to learn more.
 
 
-## Usage Examples Part II: Location information for a cluster`
+## Usage Examples Part II: Location information for a cluster
 
 A cluster is a set of vertices on a surface, and the statistical values that are assigned to the cluster's vertices. Clusters are used in vertex-wise analyses to define activated brain regions (where the exact meaning of *activated* depends on the context). A clusters has a freeform label or name, but typically only consecutive numbers are used.
 
