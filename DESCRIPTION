@@ -12,7 +12,8 @@ BugReports: https://github.com/dfsp-spirit/brainregions/issues
 Imports:
     freesurferformats (>= 0.1.16),
     Rvcg (>= 0.20.2),
-    dequer
+    dequer,
+    pkgfilecache (>= 0.1.1)
 Suggests:
     knitr,
     rmarkdown,

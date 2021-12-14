@@ -42,7 +42,8 @@ One can construct a brainparc manually from arbitrary loaded meshes and parcella
 
 ```{r, eval = TRUE}
 library("brainloc");
-sjd = brainloc::get_subjects_dir(); # Searches for FreeSurfer SUBJECTS_DIR on machine.
+# Searches for FreeSurfer SUBJECTS_DIR on machine and downloads if needed.
+sjd = get_subjects_dir(allow_download = TRUE, accept_freesurfer_license = TRUE); 
 bp = brainparc_fs(sjd, "fsaverage", surface = "white", atlas = "aparc");
 ```
 

@@ -38,10 +38,14 @@ fs.home <- function() {
 #'
 #' @param mustWork whether to stop if no subjects_dir can be found.
 #'
+#' @param allow_download logical, whether to allow downloading the data in case it is not found locally.
+#'
+#' @inheritParams sjd_demo
+#'
 #' @return character string, the subjects directory. If mustWork is FALSE, it will return NULL if no directory was found. If mustWork is TRUE and nothing is found, it stops.
 #'
 #' @export
-get_subjects_dir <- function(mustWork = TRUE) {
+get_subjects_dir <- function(mustWork = TRUE, allow_download=FALSE, accept_freesurfer_license = FALSE) {
 
     guessed_path = getOption("brainloc.subjects_dir");
     if(! is.null(guessed_path)) {
@@ -68,6 +72,13 @@ get_subjects_dir <- function(mustWork = TRUE) {
         if(dir.exists(guessed_path)) {
             return(guessed_path);
         }
+    }
+
+    if(allow_download) {
+        if(! accept_freesurfer_license) {
+            stop("You must read and accept the FreeSurfer license, and then set parameter 'accept_freesurfer_license' to TRUE to download the FreeSurfer template data.");
+        }
+        return(sjd_demo(accept_freesurfer_license = TRUE));
     }
 
     if(mustWork) {
@@ -175,4 +186,6 @@ is.hemilist <- function(x) {
     }
     return(TRUE);
 }
+
+
 
