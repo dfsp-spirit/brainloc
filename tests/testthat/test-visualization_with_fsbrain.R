@@ -59,8 +59,18 @@ test_that("We can show a vertex and the distance to surrounding brain regions.",
         region_closest_coords = as.matrix(res[c("vertex_region_n_point_x","vertex_region_n_point_y","vertex_region_n_point_z")]);
 
         fsbrain::vis.subject.annot(sjd, sj, atlas = "aparc", views = "si"); # draw brain
-        fsbrain::highlight.points.spheres(rbind(query_vertex_coords, region_closest_coords), color = c("red", rep("yellow", num_regions_to_report)), radius = 1.0); # draw spheres
-        fsbrain::vis.paths(list(rbind(query_vertex_coords, region_closest_coords))); # draw line between spheres.
+        fsbrain::highlight.points.spheres(rbind(query_vertex_coords, region_closest_coords), color = c("red", rep("yellow", num_regions_to_report)), radius = 0.3); # draw spheres
+
+        path_coords = matrix(rep(NA, (num_regions_to_report*2*3L)), ncol = 3L);
+
+        local_idx = 1L;
+        for(line_idx in seq.int(1L, num_regions_to_report*2, by=2L)) {
+            path_coords[line_idx, ] = query_vertex_coords;
+            path_coords[(line_idx+1L), ] = region_closest_coords[local_idx, ];
+            local_idx = local_idx + 1L;
+        }
+
+        fsbrain::vis.paths(list(path_coords)); # draw line between spheres.
 
         message(sprintf("Look at brain region '%s' on the '%s' hemisphere (from top).\n", as.character(res$vertex_region_direct[1]), query_hemi));
 
