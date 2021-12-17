@@ -111,7 +111,8 @@ get_surface_coords <- function(brainparc, vertices, hemis) {
     coords = matrix(rep(0.0, (nv*3L)), nrow = nv);
     for(vidx in seq_along(vertices)) {
         hemi = hemis[[vidx]];
-        coords[vidx, ] = surfaces[[hemi]]$vertices[vidx, ];
+        surf_vertex_idx = vertices[vidx];
+        coords[vidx, ] = surfaces[[hemi]]$vertices[surf_vertex_idx, ];
     }
     return(coords);
 }
