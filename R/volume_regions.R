@@ -98,7 +98,7 @@ name_regions <- function(volatlas, colorlut, ignore_not_in_lut=FALSE, warn_not_i
 }
 
 
-#' @title Find center of mass of regions in a volume segmentation.
+#' @title Find center of mass of regions in a brain volume segmentation.
 #'
 #' @inheritParams name_regions
 #'
@@ -113,6 +113,7 @@ name_regions <- function(volatlas, colorlut, ignore_not_in_lut=FALSE, warn_not_i
 #' segfile = file.path(fsh, 'subjects', 'fsaverage', 'mri', 'aseg.mgz');
 #' named_regions = name_regions(segfile, lutfile);
 #' sc = segmentation_centers(segfile, named_regions);
+#' regions_distance_matrix = dist(sc);
 #' }
 #'
 #' @return data.frame with region names and the center of mass x, y and z coordinates for the regions.
@@ -148,7 +149,7 @@ segmentation_centers <- function(volatlas, named_regions=NULL, vox2ras=diag(4)) 
         reg_center_mat[reg_idx,] = reg_com;
         reg_idx = reg_idx + 1L;
     }
-    df = data.frame("region"=names(named_regions), "cx"=reg_center_mat[,1], "cy"=reg_center_mat[,2], "cz"=reg_center_mat[,3], stringsAsFactors = FALSE);
+    df = data.frame(row.names = names(named_regions), "cx"=reg_center_mat[,1], "cy"=reg_center_mat[,2], "cz"=reg_center_mat[,3], stringsAsFactors = FALSE);
     return(df);
 }
 

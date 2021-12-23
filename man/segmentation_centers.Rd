@@ -2,7 +2,7 @@
 % Please edit documentation in R/volume_regions.R
 \name{segmentation_centers}
 \alias{segmentation_centers}
-\title{Find center of mass of regions in a volume segmentation.}
+\title{Find center of mass of regions in a brain volume segmentation.}
 \usage{
 segmentation_centers(volatlas, named_regions = NULL, vox2ras = diag(4))
 }
@@ -17,7 +17,7 @@ segmentation_centers(volatlas, named_regions = NULL, vox2ras = diag(4))
 data.frame with region names and the center of mass x, y and z coordinates for the regions.
 }
 \description{
-Find center of mass of regions in a volume segmentation.
+Find center of mass of regions in a brain volume segmentation.
 }
 \examples{
 \dontrun{
@@ -26,6 +26,7 @@ lutfile = file.path(fsh, "FreeSurferColorLUT.txt");
 segfile = file.path(fsh, 'subjects', 'fsaverage', 'mri', 'aseg.mgz');
 named_regions = name_regions(segfile, lutfile);
 sc = segmentation_centers(segfile, named_regions);
+regions_distance_matrix = dist(sc);
 }
 
 }
