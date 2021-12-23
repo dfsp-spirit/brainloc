@@ -42,16 +42,16 @@ center_of_mass <- function(coords, weights=NULL) {
 #'
 #' @param volatlas 3d integer array, the brain volume segmentation. Can be an \code{fs.volume} instance. Typically something like \code{'subject/mri/aseg.mgz'}.
 #'
-#' @param colorlut a color lookup table data.frame, as returned by \code{\link[freesurferformats]{read.fs.colortable}}.
+#' @param colorlut a color lookup table data.frame, as returned by \code{\link[freesurferformats]{read.fs.colortable}}. Can be \code{NULL} if you do not have any, in that case the region names will just be 'region_x', where 'x' is the integer region code in the volatlas.
 #'
-#' @param ignore_not_in_lut logical, whether to ignore regions that are not found in the colorLUT. If TRUE, the regions will not appear in the named output list. If FALSE, they will appear as 'unnamed_region_x', where 'x' is a consecutive integer.
+#' @param ignore_not_in_lut logical, whether to ignore regions that are not found in the colorLUT. If TRUE, the regions will not appear in the named output list. If FALSE, they will appear as 'region_x', where 'x' is the integer region code in the volatlas.
 #'
 #' @param warn_not_in_lut logical, whether to print a warning if some regions of the volume do not occur in the colorLUT.
 #'
 #' @return named list, the keys are character strings: the region names from the colorLUT, and the values are integers: the region codes from the volume.
 #'
 #' @export
-named_regions <- function(volatlas, colorlut, ignore_not_in_lut=FALSE, warn_not_in_lut=FALSE) {
+name_regions <- function(volatlas, colorlut, ignore_not_in_lut=FALSE, warn_not_in_lut=FALSE) {
     if(is.character(volatlas)) {
         volatlas = freesurferformats::read.fs.volume(volatlas);
     }
@@ -70,41 +70,66 @@ named_regions <- function(volatlas, colorlut, ignore_not_in_lut=FALSE, warn_not_
     }
     region_codes = unique(as.integer(volatlas));
     named_reg = list();
-    not_found = c();
-    num_not_found_so_far = 1L;
+    codes_not_found = c();
     for(reg_code in region_codes) {
-        if(reg_code %in% colorlut$struct_index) {
-            reg_name = colorlut[colorlut$struct_index == reg_code, ]$struct_name;
-            named_reg[reg_name] = reg_code;
-        } else {
-            not_found = c(not_found, reg_code);
+        found = FALSE;
+        if(! is.null(colorlut)) {
+            if(reg_code %in% colorlut$struct_index) {
+                reg_name = colorlut[colorlut$struct_index == reg_code, ]$struct_name;
+                named_reg[reg_name] = reg_code;
+                found = TRUE;
+            }
+        }
+
+        if(! found) {
+            codes_not_found = c(codes_not_found, reg_code);
             if(! ignore_not_in_lut) {
-                reg_name = sprintf("unnamed_region_%d", num_not_found_so_far);
+                reg_name = sprintf("region_%d", reg_code);
                 named_reg[reg_name] = reg_code;
             }
-            num_not_found_so_far = num_not_found_so_far + 1L;
         }
     }
-    if(length(not_found) > 0L) {
+    if(length(codes_not_found) > 0L) {
         if(warn_not_in_lut) {
-            warning(sprintf("There were %d region codes in the segmentation that are not listed in the colorLUT: %s.\n", length(not_found), paste(not_found, collapse = ", ")));
+            warning(sprintf("There were %d region codes in the segmentation that are not listed in the colorLUT: %s.\n", length(codes_not_found), paste(codes_not_found, collapse = ", ")));
         }
     }
-    stop("this function is WIP and still broken")
     return(named_reg);
 }
 
 
 #' @title Find center of mass of regions in a volume segmentation.
 #'
+#' @inheritParams name_regions
+#'
+#' @param named_regions the regions to consider, a named list where the keys are character strings: the region names from the colorLUT, and the values are integers: the region codes from the volume. See \code{\link{name_regions}} to get one. Can be \code{NULL}, in which case all regions in the volatlas will be used, and the region names will appear as 'region_x', where 'x' is the integer region code in the volatlas.
+#'
+#' @param regions
+#'
 #' @examples
 #' \dontrun{
 #' fsh = brainloc:::fs.home();
 #' lutfile = file.path(fsh, "FreeSurferColorLUT.txt");
-#' lut = freesurferformats::read.fs.colortable(lutfile);
-#' seg = file.path(fsh, 'subjects', 'fsaverage', 'mri', 'aseg.mgz');
-#' seg_regions = named_regions(seg, lut);
+#' segfile = file.path(fsh, 'subjects', 'fsaverage', 'mri', 'aseg.mgz');
+#' named_regions = name_regions(segfile, lutfile);
+#' segmentation_centers(segfile, named_regions);
 #' }
-segmentation_centers <- function(volume, regions, vox2ras=diag(4)) {
+segmentation_centers <- function(volatlas, named_regions=NULL, vox2ras=diag(4)) {
+    if(is.character(volatlas)) {
+        volatlas = freesurferformats::read.fs.volume(volatlas);
+    }
+    if(freesurferformats::is.fs.volume(volatlas)) {
+        if(is.null(vox2ras)) {
+            vox2ras = freesurferformats::mghheader.vox2ras(volatlas$header);
+        }
+        volatlas = volatlas$data;
+    }
+    if(is.null(named_regions)) {
+        named_regions = named_regions(volatlas, colorlut = NULL);
+    }
+    if(is.null(vox2ras)) {
+        vox2ras=diag(4);
+    }
 
 }
+
