@@ -114,6 +114,8 @@ name_regions <- function(volatlas, colorlut, ignore_not_in_lut=FALSE, warn_not_i
 #' named_regions = name_regions(segfile, lutfile);
 #' segmentation_centers(segfile, named_regions);
 #' }
+#'
+#' @export
 segmentation_centers <- function(volatlas, named_regions=NULL, vox2ras=diag(4)) {
     if(is.character(volatlas)) {
         volatlas = freesurferformats::read.fs.volume(volatlas);
@@ -131,5 +133,9 @@ segmentation_centers <- function(volatlas, named_regions=NULL, vox2ras=diag(4)) 
         vox2ras=diag(4);
     }
 
+    for(reg_name in names(named_regions)) {
+        reg_code = named_regions[[reg_name]];
+        cat(sprintf("Handling region '%s' with code %d.\n", reg_name, reg_code));
+    }
 }
 

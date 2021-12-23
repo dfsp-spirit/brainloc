@@ -24,4 +24,5 @@ segfile = file.path(fsh, 'subjects', 'fsaverage', 'mri', 'aseg.mgz');
 named_regions = name_regions(segfile, lutfile);
 segmentation_centers(segfile, named_regions);
 }
+
 }
