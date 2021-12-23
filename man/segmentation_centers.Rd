@@ -13,6 +13,9 @@ segmentation_centers(volatlas, named_regions = NULL, vox2ras = diag(4))
 
 \item{regions}{}
 }
+\value{
+data.frame with region names and the center of mass x, y and z coordinates for the regions.
+}
 \description{
 Find center of mass of regions in a volume segmentation.
 }
@@ -22,7 +25,7 @@ fsh = brainloc:::fs.home();
 lutfile = file.path(fsh, "FreeSurferColorLUT.txt");
 segfile = file.path(fsh, 'subjects', 'fsaverage', 'mri', 'aseg.mgz');
 named_regions = name_regions(segfile, lutfile);
-segmentation_centers(segfile, named_regions);
+sc = segmentation_centers(segfile, named_regions);
 }
 
 }

@@ -112,30 +112,44 @@ name_regions <- function(volatlas, colorlut, ignore_not_in_lut=FALSE, warn_not_i
 #' lutfile = file.path(fsh, "FreeSurferColorLUT.txt");
 #' segfile = file.path(fsh, 'subjects', 'fsaverage', 'mri', 'aseg.mgz');
 #' named_regions = name_regions(segfile, lutfile);
-#' segmentation_centers(segfile, named_regions);
+#' sc = segmentation_centers(segfile, named_regions);
 #' }
+#'
+#' @return data.frame with region names and the center of mass x, y and z coordinates for the regions.
 #'
 #' @export
 segmentation_centers <- function(volatlas, named_regions=NULL, vox2ras=diag(4)) {
     if(is.character(volatlas)) {
-        volatlas = freesurferformats::read.fs.volume(volatlas);
+        volatlas = freesurferformats::read.fs.volume(volatlas, with_header = TRUE);
     }
     if(freesurferformats::is.fs.volume(volatlas)) {
         if(is.null(vox2ras)) {
             vox2ras = freesurferformats::mghheader.vox2ras(volatlas$header);
         }
-        volatlas = volatlas$data;
+        volatlas = drop(volatlas$data);
     }
     if(is.null(named_regions)) {
-        named_regions = named_regions(volatlas, colorlut = NULL);
+        named_regions = name_regions(volatlas, colorlut = NULL);
     }
     if(is.null(vox2ras)) {
         vox2ras=diag(4);
     }
 
+    num_regions = length(named_regions);
+    reg_center_mat = matrix(rep(0.0, num_regions*3L), ncol=3L);
+
+    reg_idx = 1L;
     for(reg_name in names(named_regions)) {
         reg_code = named_regions[[reg_name]];
-        cat(sprintf("Handling region '%s' with code %d.\n", reg_name, reg_code));
+        reg_voxels = which(volatlas == reg_code, arr.ind = TRUE);
+        reg_ras_coords = freesurferformats::doapply.transform.mtx(reg_voxels, vox2ras);
+        #cat(sprintf("Handling region '%s' with code %d.\n", reg_name, reg_code));
+        reg_com = brainloc:::center_of_mass(reg_ras_coords);
+        reg_center_mat[reg_idx,] = reg_com;
+        reg_idx = reg_idx + 1L;
     }
+    df = data.frame("region"=names(named_regions), "cx"=reg_center_mat[,1], "cy"=reg_center_mat[,2], "cz"=reg_center_mat[,3], stringsAsFactors = FALSE);
+    return(df);
 }
+
 
