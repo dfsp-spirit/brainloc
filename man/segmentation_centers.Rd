@@ -25,6 +25,7 @@ fsh = brainloc:::fs.home();
 lutfile = file.path(fsh, "FreeSurferColorLUT.txt");
 segfile = file.path(fsh, 'subjects', 'fsaverage', 'mri', 'aseg.mgz');
 named_regions = name_regions(segfile, lutfile);
+named_regions$Unknown = NULL; # Ignore an atlas region.
 sc = segmentation_centers(segfile, named_regions);
 regions_distance_matrix = dist(sc);
 }

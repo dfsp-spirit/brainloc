@@ -98,6 +98,27 @@ name_regions <- function(volatlas, colorlut, ignore_not_in_lut=FALSE, warn_not_i
 }
 
 
+#' @title Get color string for a region code in a color lookup table.
+#'
+#' @inheritParams name_regions
+#'
+#' @param struct_idx integer vector, the region / structure codes you are interested in.
+#'
+#' @return vector of character strings, the hex color names (like '#FF0000' for red).
+#'
+#' @keywords internal
+region_color <- function(colorlut, struct_idx) {
+    nr = length(struct_idx);
+    regcol = rep("", nr);
+    for(idx in seq.int(nr)) {
+        reg_idx = struct_idx[idx];
+        reg_row = colorlut[colorlut$struct_index == reg_idx, ];
+        regcol[idx] = grDevices::rgb(reg_row$r/255.0, reg_row$g/255.0, reg_row$b/255.0);
+    }
+    return(regcol);
+}
+
+
 #' @title Find center of mass of regions in a brain volume segmentation.
 #'
 #' @inheritParams name_regions
@@ -112,6 +133,7 @@ name_regions <- function(volatlas, colorlut, ignore_not_in_lut=FALSE, warn_not_i
 #' lutfile = file.path(fsh, "FreeSurferColorLUT.txt");
 #' segfile = file.path(fsh, 'subjects', 'fsaverage', 'mri', 'aseg.mgz');
 #' named_regions = name_regions(segfile, lutfile);
+#' named_regions$Unknown = NULL; # Ignore an atlas region.
 #' sc = segmentation_centers(segfile, named_regions);
 #' regions_distance_matrix = dist(sc);
 #' }
