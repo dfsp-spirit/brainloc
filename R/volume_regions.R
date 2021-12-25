@@ -108,6 +108,9 @@ name_regions <- function(volatlas, colorlut, ignore_not_in_lut=FALSE, warn_not_i
 #'
 #' @keywords internal
 region_color <- function(colorlut, struct_idx) {
+    if(is.character(colorlut)) {
+        colorlut = freesurferformats::read.fs.colortable(colorlut);
+    }
     nr = length(struct_idx);
     regcol = rep("", nr);
     for(idx in seq.int(nr)) {

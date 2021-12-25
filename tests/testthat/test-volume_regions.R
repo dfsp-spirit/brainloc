@@ -30,5 +30,8 @@ test_that("We can compute the center of mass of all atlas regions.", {
 
       testthat::expect_equal(ncol(dm), 43L);
       testthat::expect_equal(nrow(dm), 43L);
+
+      # See the example in file `test-visualization_with_fsbrain.R` for a visualiation
+      # of the region centers and their distances.
     }
 })

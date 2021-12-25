@@ -26,7 +26,7 @@ test_that("We can show a coordinate and the vertex closest to it.", {
         fsbrain::highlight.points.spheres(rbind(query_coords, ccv_coords), color = c("red", "yellow"), radius = 5); # draw spheres
         fsbrain::vis.paths(list(rbind(query_coords, ccv_coords))); # draw line between spheres.
 
-        testthat::expect_equal(1L, 1L);
+        testthat::expect_equal(1L, 1L); # Avoid skip by testthat.
     } else {
         testthat::skip("This demo requires the optional dependency fsbrain. Please install it.");
     }
@@ -74,7 +74,36 @@ test_that("We can show a vertex and the distance to surrounding brain regions.",
 
         message(sprintf("Look at brain region '%s' on the '%s' hemisphere (from top).\n", as.character(res$vertex_region_direct[1]), query_hemi));
 
-        testthat::expect_equal(1L, 1L);
+        testthat::expect_equal(1L, 1L); # Avoid skip by testthat.
+    } else {
+        testthat::skip("This demo requires the optional dependency fsbrain. Please install it.");
+    }
+})
+
+
+test_that("We can show the regions of a volume segmentation and their distances.", {
+    testthat::skip_on_ci();
+    testthat::skip_on_cran();
+
+    if(requireNamespace("fsbrain", quietly = TRUE)) {
+        if(has_fs()) {
+            fsh = fs_home();
+            lutfile = file.path(fsh, "FreeSurferColorLUT.txt");
+            segfile = file.path(fsh, 'subjects', 'fsaverage', 'mri', 'aseg.mgz');
+            named_regions = name_regions(segfile, lutfile);
+            named_regions$Unknown = NULL; # Ignore an atlas region.
+            sc = segmentation_centers(segfile, named_regions);
+            regions_dist = dist(sc);
+            dm = as.matrix(regions_dist); # convert dist object to distance matrix.
+
+            testthat::expect_equal(ncol(dm), 43L);
+            testthat::expect_equal(nrow(dm), 43L);
+
+            reg_col = brainloc:::region_color(lutfile, unlist(unname(named_regions)));
+            fsbrain::highlight.points.spheres(sc, color = reg_col);
+
+            testthat::expect_equal(1L, 1L); # Avoid skip by testthat.
+        }
     } else {
         testthat::skip("This demo requires the optional dependency fsbrain. Please install it.");
     }
