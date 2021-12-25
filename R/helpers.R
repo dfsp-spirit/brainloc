@@ -26,8 +26,10 @@ fs.surface.to.tmesh3d <- function(surface) {
 #'
 #' @note This function will stop (i.e., raise an error) if the directory cannot be found. It calls \code{\link{find.freesurferhome}} internally, see there for more details.
 #'
-#' @keywords internal
-fs.home <- function() {
+#' @family FreeSurfer helper functions
+#'
+#' @export
+fs_home <- function() {
     return(find.freesurferhome(mustWork=TRUE));
 }
 
@@ -43,6 +45,8 @@ fs.home <- function() {
 #' @inheritParams sjd_demo
 #'
 #' @return character string, the subjects directory. If mustWork is FALSE, it will return NULL if no directory was found. If mustWork is TRUE and nothing is found, it stops.
+#'
+#' @family FreeSurfer helper functions
 #'
 #' @export
 get_subjects_dir <- function(mustWork = TRUE, allow_download=FALSE, accept_freesurfer_license = FALSE) {
@@ -88,6 +92,16 @@ get_subjects_dir <- function(mustWork = TRUE, allow_download=FALSE, accept_frees
     }
 }
 
+#' @title Check whether a FreeSurfer installation can be found on the system.
+#'
+#' @return logical, whether a FreeSurfer installation was found.
+#'
+#' @family FreeSurfer helper functions
+#'
+#' @export
+has_fs <- function() {
+    return(find.freesurferhome(mustWork = FALSE)$found);
+}
 
 #' @title Find the FREESURFER_HOME directory on disk.
 #'
@@ -97,7 +111,9 @@ get_subjects_dir <- function(mustWork = TRUE, allow_download=FALSE, accept_frees
 #'
 #' @return named list with the following entries: "found": logical, whether it was found. "found_at": Only set if found=TRUE, the path to the FreeSurfer installation directory (including the directory itself). See 'mustWork' for important information.
 #'
-#' @seealso \code{\link{fs.home}}
+#' @seealso \code{\link{fs_home}}, \code{\link{has_fs}}
+#'
+#' @family FreeSurfer helper functions
 #'
 #' @keywords internal
 find.freesurferhome <- function(mustWork=FALSE) {
@@ -175,6 +191,8 @@ hemilist <- function(lh_data=NULL, rh_data=NULL) {
 #' @param x any R object
 #'
 #' @return logical, whether x is a hemilist
+#'
+#' @family hemilist functions
 #'
 #' @keywords internal
 is.hemilist <- function(x) {

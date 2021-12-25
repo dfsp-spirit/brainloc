@@ -21,7 +21,8 @@ Wrap data into a named hemi list.
 }
 \seealso{
 Other hemilist functions: 
-\code{\link{hemilist}()}
+\code{\link{hemilist}()},
+\code{\link{is.hemilist}()}
 }
 \concept{hemilist functions}
 \keyword{internal}

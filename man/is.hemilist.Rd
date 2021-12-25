@@ -15,4 +15,10 @@ logical, whether x is a hemilist
 \description{
 Find out whether x is a hemilist
 }
+\seealso{
+Other hemilist functions: 
+\code{\link{hemilist.wrap}()},
+\code{\link{hemilist}()}
+}
+\concept{hemilist functions}
 \keyword{internal}

@@ -22,6 +22,7 @@ This function is trivial and mainly exists to document what a hemilist is (so th
 }
 \seealso{
 Other hemilist functions: 
-\code{\link{hemilist.wrap}()}
+\code{\link{hemilist.wrap}()},
+\code{\link{is.hemilist}()}
 }
 \concept{hemilist functions}

@@ -23,3 +23,10 @@ character string, the subjects directory. If mustWork is FALSE, it will return N
 \description{
 Try a number of ways to find the subjects dir, using environment variables and knowledge on common installation paths of FreeSurfer.
 }
+\seealso{
+Other FreeSurfer helper functions: 
+\code{\link{find.freesurferhome}()},
+\code{\link{fs_home}()},
+\code{\link{has_fs}()}
+}
+\concept{FreeSurfer helper functions}

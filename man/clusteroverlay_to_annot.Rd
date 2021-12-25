@@ -17,6 +17,6 @@ clusteroverlay_to_annot(clusteroverlay, background_code = 0L, hemi = NULL)
 \code{\link{hemilist}} of \code{freesurferformats::fs.annot} instances, each one representing a brain surface parcellation for one hemisphere. Each label in the parcellation (with the exception of the unknown/background region) corresponds to a cluster.
 }
 \description{
-Create a \code{\link{hemilist}} of \code{fs.annot} instances from the given cluster overlay. An \code{fs.annot} instance represents a brain surface parcellation, based on a brain atlas. See \code{\link{freesurferformats::read.fs.annot}} for details.
+Create a \code{\link{hemilist}} of \code{fs.annot} instances from the given cluster overlay. An \code{fs.annot} instance represents a brain surface parcellation, based on a brain atlas. See \code{\link[freesurferformats]{read.fs.annot}} for details.
 }
 \keyword{internal}

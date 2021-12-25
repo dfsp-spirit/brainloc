@@ -1,6 +1,6 @@
 #' @title Create a hemilist of fs.annot instances from the given cluster overlay.
 #'
-#' @description  Create a \code{\link{hemilist}} of \code{fs.annot} instances from the given cluster overlay. An \code{fs.annot} instance represents a brain surface parcellation, based on a brain atlas. See \code{\link{freesurferformats::read.fs.annot}} for details.
+#' @description  Create a \code{\link{hemilist}} of \code{fs.annot} instances from the given cluster overlay. An \code{fs.annot} instance represents a brain surface parcellation, based on a brain atlas. See \code{\link[freesurferformats]{read.fs.annot}} for details.
 #'
 #' @param clusteroverlay hemilist of integer vectors or a single integer vector of cluster overlay data: a vector that assigns each vertex to an integer class, all vertices belonging to a cluster share the same integer assignment. Non-cluster vertices are assigned the background class, see parameter 'background_code'. One can also pass character strings, which will be interpreted as path to files that should be loaded with \code{freesurferformats::read.fs.morph} to get the clusteroverlay. One can also pass a \code{clusterinfo} instance, the 'overlay' field will be extracted and used in that case.
 #'
