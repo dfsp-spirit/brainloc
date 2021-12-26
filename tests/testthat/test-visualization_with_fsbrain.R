@@ -100,7 +100,10 @@ test_that("We can show the regions of a volume segmentation and their distances.
             testthat::expect_equal(nrow(dm), 43L);
 
             reg_col = brainloc:::region_color(lutfile, unlist(unname(named_regions)));
-            fsbrain::highlight.points.spheres(sc, color = reg_col);
+
+            sjd = file.path(fsh, "subjects");
+            fsbrain::vis.subject.annot(sjd, "fsaverage", atlas = "aparc", style = "semitransparent", views = "si");
+            fsbrain::highlight.points.spheres(sc, color = reg_col, radius = 2.0);
 
             testthat::expect_equal(1L, 1L); # Avoid skip by testthat.
         }
