@@ -134,6 +134,26 @@ test_that("We can show the connections/adjacencies between the regions of a surf
 
             #fsbrain::vis.subject.annot(sjd, sj, atlas = atlas, style = "semitransparent", views = "si"); # draw brain
             fsbrain::highlight.points.spheres(rbind(lh_centroids, rh_centroids), color = "red", radius = 1.0); # draw spheres
+            for(hemi in c("lh", "rh")) {
+                neigh = region_neigh[[atlas]][[hemi]];
+                for(reg1_name in colnames(neigh)) {
+                    for(reg2_name in colnames(neigh)) {
+                        if(nchar(reg1_name) < 1L | nchar(reg2_name) < 1L | reg1_name == "_" | reg2_name == "") {  # TODO: investigate and fix empty annot region names.
+                            next;
+                        }
+                        if(reg1_name == reg2_name) {
+                            next;
+                        }
+                        if(neigh[reg1_name, reg2_name] == 1L) {
+                            hemi_centr = centr[[hemi]];
+                            reg1_center = as.vector(hemi_centr[hemi_centr$region==reg1_name, c("x", "y", "z")]);
+                            reg2_center = as.vector(hemi_centr[hemi_centr$region==reg2_name, c("x", "y", "z")]);
+                            coords = list(matrix(c(reg1_center, reg2_center), ncol = 3, byrow = TRUE));
+                            fsbrain::vis.paths(coords);
+                        }
+                    }
+                }
+            }
 
 
             testthat::expect_equal(1L, 1L); # Avoid skip by testthat.
