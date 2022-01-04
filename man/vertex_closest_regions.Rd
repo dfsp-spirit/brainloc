@@ -27,7 +27,7 @@ vertex_closest_regions(
 
 \item{silent}{logical, whether to suppress console messages.}
 
-\item{num_regions_to_report}{scalar integer, the number of closest regions to report (in increasing order, by distance).}
+\item{num_regions_to_report}{scalar integer, the number of closest regions to report (will be reported in increasing order, by distance). Pass \code{NULL} to get all regions.}
 }
 \value{
 a data.frame, the column names should be obvious.

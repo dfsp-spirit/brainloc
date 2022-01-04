@@ -112,3 +112,35 @@ test_that("We can show the regions of a volume segmentation and their distances.
     }
 })
 
+
+test_that("We can show the connections/adjacencies between the regions of a surface parcellation.", {
+    testthat::skip_on_ci();
+    testthat::skip_on_cran();
+
+    if(requireNamespace("fsbrain", quietly = TRUE)) {
+        if(has_fs()) {
+            fsh = fs_home();
+            sj = "fsaverage";
+
+            options("brainloc.silent" = TRUE);
+
+            bp = brainparc_fs(sjd, sj);
+            atlas = names(bp$annots); # 'aparc'
+
+            centr = brainloc:::region_centroids(bp);
+            lh_centroids = cbind(centr$lh$x, centr$lh$y, centr$lh$z);
+            rh_centroids = cbind(centr$rh$x, centr$rh$y, centr$rh$z);
+            region_neigh = brainparc_neighbors(bp);
+
+            #fsbrain::vis.subject.annot(sjd, sj, atlas = atlas, style = "semitransparent", views = "si"); # draw brain
+            fsbrain::highlight.points.spheres(rbind(lh_centroids, rh_centroids), color = "red", radius = 1.0); # draw spheres
+
+
+            testthat::expect_equal(1L, 1L); # Avoid skip by testthat.
+        }
+    } else {
+        testthat::skip("This demo requires the optional dependency fsbrain. Please install it.");
+    }
+})
+
+

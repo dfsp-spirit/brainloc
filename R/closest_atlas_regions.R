@@ -63,7 +63,7 @@ vertex_regions <- function(brainparc, vertices, hemis) {
 #'
 #' @param silent logical, whether to suppress console messages.
 #'
-#' @param num_regions_to_report scalar integer, the number of closest regions to report (in increasing order, by distance).
+#' @param num_regions_to_report scalar integer, the number of closest regions to report (will be reported in increasing order, by distance). Pass \code{NULL} to get all regions.
 #'
 #' @return a data.frame, the column names should be obvious.
 #'
@@ -145,7 +145,11 @@ vertex_closest_regions <- function(brainparc, vertices, hemis, linkage = "single
                 }
                 sorted_region_sort_indices = sort(regions_closest_distance_query_vertex, index.return = TRUE)$ix;
                 sorted_regions = region_names[sorted_region_sort_indices];
-                num_indices = min(length(sorted_regions), num_regions_to_report);
+                num_reg = num_regions_to_report;
+                if(is.null(num_reg)) {
+                    num_reg = length(sorted_regions);
+                }
+                num_indices = min(length(sorted_regions), num_reg);
                 if(! silent) {
                     cat(sprintf("  Vertex %s on hemi %s at (%f %f %f) belongs to atlas %s region '%s'. Closest region vertices with %s distance are:\n", vertex_surface_idx, hemi, vertex_coords[1], vertex_coords[2], vertex_coords[3], atlas_name, vertex_region, distance));
                 }
@@ -193,7 +197,11 @@ vertex_closest_regions <- function(brainparc, vertices, hemis, linkage = "single
                     vertex_dist_to_region_centers_xyz[region_idx] = euclidian.dist(vertex_coords, region_center);
                 }
                 sorted_region_indices = sort(vertex_dist_to_region_centers_xyz, index.return = TRUE)$ix;
-                num_indices = min(length(sorted_region_indices), num_regions_to_report);
+                num_reg = num_regions_to_report;
+                if(is.null(num_reg)) {
+                    num_reg = length(sorted_region_indices);
+                }
+                num_indices = min(length(sorted_region_indices), num_reg);
                 if(! silent) {
                     cat(sprintf("  Vertex %s on hemi %s at (%f %f %f) belongs to region '%s'. Closest region centers are:\n", vertex_surface_idx, hemi, vertex_coords[1], vertex_coords[2], vertex_coords[3], vertex_region));
                 }
@@ -281,6 +289,28 @@ coord_closest_regions <- function(brainparc, coordinate, linkage = "single", dis
 #'
 #' @keywords internal
 euclidian.dist <- function(x1, x2) sqrt(sum((x1 - x2) ^ 2))
+
+
+#' @title Compute centroids of surface atlas parcellation regions.
+#'
+#' @param bp a brainparc instance
+#'
+#' @return hemilist of data.frames, the centroid coordinates for the regions of the respective hemispheres.
+#'
+#' @keywords internal
+region_centroids <- function(bp) {
+    centr = list();
+
+    regions_lh = vertex_closest_regions(bp, vertices=1L, hemis="lh", linkage = "centroid", distance = "euclidean", num_regions_to_report = NULL);
+    centr$lh = regions_lh[c("vertex_region_n_name", "vertex_region_n_point_x", "vertex_region_n_point_y", "vertex_region_n_point_z")];
+    colnames(centr$lh) = c("region", "x", "y", "z");
+
+    regions_rh = vertex_closest_regions(bp, vertices=1L, hemis="rh", linkage = "centroid", distance = "euclidean", num_regions_to_report = NULL);
+    centr$rh = regions_rh[c("vertex_region_n_name", "vertex_region_n_point_x", "vertex_region_n_point_y", "vertex_region_n_point_z")];
+    colnames(centr$rh) = c("region", "x", "y", "z");
+
+    return(centr);
+}
 
 
 

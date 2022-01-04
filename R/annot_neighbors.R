@@ -74,9 +74,13 @@ annot_neighbors <- function(annot_min, surface, empty_rename="_") {
 #'
 #' @export
 brainparc_neighbors <- function(bp) {
+    if(! is.brainparc(bp)) {
+        stop("Parameter 'bp' must be a brainparc instance.");
+    }
     bp_neigh = list();
     for(atlas in names(bp$annots)) {
         bp_neigh[[atlas]] = list("lh"=annot_neighbors(bp$annots[[atlas]]$lh, get_surface(bp)$lh), "rh"=annot_neighbors(bp$annots[[atlas]]$rh, get_surface(bp)$rh));
     }
     return(bp_neigh);
 }
+

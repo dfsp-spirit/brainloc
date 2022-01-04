@@ -24,7 +24,7 @@ coord_closest_regions(
 
 \item{silent}{logical, whether to suppress console messages.}
 
-\item{num_regions_to_report}{scalar integer, the number of closest regions to report (in increasing order, by distance).}
+\item{num_regions_to_report}{scalar integer, the number of closest regions to report (will be reported in increasing order, by distance). Pass \code{NULL} to get all regions.}
 }
 \description{
 Finds the closest atlas regions according to the brain surface parcellation 'brainparc' for the given query vertex coordinates. The coordinates must be in the surface space of the surface included in the 'brainparc'.
