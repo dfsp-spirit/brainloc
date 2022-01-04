@@ -19,6 +19,7 @@ Suggests:
     rmarkdown,
     testthat (>= 2.1.0),
     fsbrain (>= 0.5.0),
+    rgl,
     regfusionr (>= 0.1.1)
 Additional_repositories: https://dfsp-spirit.r-universe.dev
 VignetteBuilder: knitr
