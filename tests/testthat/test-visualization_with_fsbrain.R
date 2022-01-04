@@ -121,6 +121,7 @@ test_that("We can show the connections/adjacencies between the regions of a surf
         if(has_fs()) {
             fsh = fs_home();
             sj = "fsaverage";
+            sjd = file.path(fsh, 'subjects');
 
             options("brainloc.silent" = TRUE);
 
