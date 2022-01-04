@@ -16,7 +16,12 @@ test_that("We can compute the neighborhood of brain surface regions.", {
 
     testthat::expect_true(is.matrix(region_neigh));
 
+    # Check neighbors of frontal pole
     frontal_pole_neighbors = colnames(region_neigh)[region_neigh["frontalpole",]==1L];
-    testthat::expect_true("frontalpole" %in% frontal_pole_neighbors);
     testthat::expect_equal(length(frontal_pole_neighbors), 5L);
+    testthat::expect_true("frontalpole" %in% frontal_pole_neighbors);
+    testthat::expect_true("lateralorbitofrontal" %in% frontal_pole_neighbors);
+    testthat::expect_true("medialorbitofrontal" %in% frontal_pole_neighbors);
+    testthat::expect_true("rostralmiddlefrontal" %in% frontal_pole_neighbors);
+    testthat::expect_true("superiorfrontal" %in% frontal_pole_neighbors);
 })
