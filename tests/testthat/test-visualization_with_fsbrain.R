@@ -137,6 +137,8 @@ test_that("We can show the connections/adjacencies between the regions of a surf
 
 
             #fsbrain::vis.subject.annot(sjd, sj, atlas = atlas, style = "semitransparent", views = "si"); # draw brain
+            rgl::open3d();
+            rgl::bg3d("white");
             fsbrain::highlight.points.spheres(lh_centroids, color = brainloc:::region_colors(full_annot$lh, centr$lh$region), radius = 1.0); # draw spheres
             fsbrain::highlight.points.spheres(rh_centroids, color = brainloc:::region_colors(full_annot$rh, centr$rh$region), radius = 1.0); # draw spheres
             for(hemi in c("lh", "rh")) {
@@ -154,7 +156,7 @@ test_that("We can show the connections/adjacencies between the regions of a surf
                             reg1_center = as.vector(hemi_centr[hemi_centr$region==reg1_name, c("x", "y", "z")]);
                             reg2_center = as.vector(hemi_centr[hemi_centr$region==reg2_name, c("x", "y", "z")]);
                             coords = list(matrix(c(reg1_center, reg2_center), ncol = 3, byrow = TRUE));
-                            fsbrain::vis.paths(coords);
+                            fsbrain::vis.paths(coords, path_color = "#777777");
                         }
                     }
                 }
