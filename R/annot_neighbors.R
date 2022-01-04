@@ -48,7 +48,7 @@ annot_neighbors <- function(annot_min, surface, empty_rename="_") {
     region_adj = diag(nr);
     colnames(region_adj) = region_names;
     rownames(region_adj) = region_names;
-    adj = Rvcg::vcgVertexNeighbors(brainloc:::fs.surface.to.tmesh3d(surface));
+    adj = Rvcg::vcgVertexNeighbors(fs.surface.to.tmesh3d(surface));
 
     for(vidx in seq.int(nv)) {
         src_region = annot_min[vidx];
@@ -62,3 +62,21 @@ annot_neighbors <- function(annot_min, surface, empty_rename="_") {
     return(region_adj);
 }
 
+
+#' @title Compute adjacency of surface parcellation (annot) regions.
+#'
+#' @description Given a brain surface and a parcellation into regions, find out which regions are adjacent to each other. A region \code{i} is adjacent to another region \code{j} if an edge connects any vertex of
+#'\code{i} with any vertex of \code{i}. Works with brainparcellations.
+#'
+#' @param bp a brainparc instance
+#'
+#' @return hemilist of named integer matrix of regions, expressing whether they are direct neighbors (value \code{1L}) or not (value \code{0L}).
+#'
+#' @export
+brainparc_neighbors <- function(bp) {
+    bp_neigh = list();
+    for(atlas in names(bp$annots)) {
+        bp_neigh[[atlas]] = list("lh"=annot_neighbors(bp$annots[[atlas]]$lh, get_surface(bp)$lh), "rh"=annot_neighbors(bp$annots[[atlas]]$rh, get_surface(bp)$rh));
+    }
+    return(bp_neigh);
+}

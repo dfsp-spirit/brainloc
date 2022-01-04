@@ -3,6 +3,7 @@
 S3method(print,brainparc)
 export(brainparc)
 export(brainparc_fs)
+export(brainparc_neighbors)
 export(cluster_location_details)
 export(cluster_peaks)
 export(cluster_region_overlap)

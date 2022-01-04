@@ -25,3 +25,24 @@ test_that("We can compute the neighborhood of brain surface regions.", {
     testthat::expect_true("rostralmiddlefrontal" %in% frontal_pole_neighbors);
     testthat::expect_true("superiorfrontal" %in% frontal_pole_neighbors);
 })
+
+
+
+test_that("We can compute the neighborhood of a brainparc.", {
+
+    sjd = get_subjects_dir(mustWork = FALSE);
+    if(is.null(sjd)) {
+        testthat::skip("No SUBJECTS_DIR found on system, but the FreeSurfer fsaverage subject is required for this test.");
+    }
+
+    bp = brainparc_fs(sjd, "fsaverage");
+
+    region_neigh = brainparc_neighbors(bp);
+    atlas = names(bp$annots); # 'aparc'
+
+    testthat::expect_true(is.list(region_neigh[[atlas]]));
+    testthat::expect_true(is.matrix(region_neigh[[atlas]]$lh));
+    testthat::expect_true(is.matrix(region_neigh[[atlas]]$rh));
+})
+
+
