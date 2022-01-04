@@ -132,8 +132,13 @@ test_that("We can show the connections/adjacencies between the regions of a surf
             rh_centroids = cbind(centr$rh$x, centr$rh$y, centr$rh$z);
             region_neigh = brainparc_neighbors(bp);
 
+            # Optional: load the full annots for the region colors.
+            full_annot = list("lh"=brainloc:::subject.annot(sjd, sj, hemi="lh", atlas = atlas), "rh"=brainloc:::subject.annot(sjd, sj, hemi="rh", atlas = atlas));
+
+
             #fsbrain::vis.subject.annot(sjd, sj, atlas = atlas, style = "semitransparent", views = "si"); # draw brain
-            fsbrain::highlight.points.spheres(rbind(lh_centroids, rh_centroids), color = "red", radius = 1.0); # draw spheres
+            fsbrain::highlight.points.spheres(lh_centroids, color = brainloc:::region_colors(full_annot$lh, centr$lh$region), radius = 1.0); # draw spheres
+            fsbrain::highlight.points.spheres(rh_centroids, color = brainloc:::region_colors(full_annot$rh, centr$rh$region), radius = 1.0); # draw spheres
             for(hemi in c("lh", "rh")) {
                 neigh = region_neigh[[atlas]][[hemi]];
                 for(reg1_name in colnames(neigh)) {

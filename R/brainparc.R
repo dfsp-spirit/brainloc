@@ -118,6 +118,35 @@ get_surface_coords <- function(brainparc, vertices, hemis) {
 }
 
 
+#' @title Get colors for fs.annot regions
+#'
+#' @param fs.annot full fs.annot instance
+#'
+#' @param region_names vector of char strings, the query regions for which to get color strings
+#'
+#' @param na_color color to assign to regions which were not found.
+#'
+#' @return vector of hex color strings
+#'
+#' @keywords internal
+region_colors <- function(annot, region_names, na_color="#FFFFFF") {
+    if(! freesurferformats::is.fs.annot(annot)) {
+        stop("Parameter 'annot' must be an fs.annot instance.");
+    }
+    nreg = length(region_names);
+    col_names = rep(na_color, nreg);
+    for(reg_idx in seq.int(nreg)) {
+        region_name = region_names[reg_idx];
+        reg = which(annot$colortable_df$struct_name == region_name);
+        if(length(reg) == 1L) {
+            col_names[reg_idx] = annot$colortable_df$hex_color_string_rgb[reg];
+        }
+    }
+    return(col_names);
+}
+
+
+
 #' @title Return simplified annotation: the region names only.
 #'
 #' @inheritParams subject.annot
