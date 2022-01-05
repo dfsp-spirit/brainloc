@@ -23,7 +23,7 @@ test_that("We can show a coordinate and the vertex closest to it.", {
 
         # Now display the source coord in red, and the closest vertex in yellow (and draw a red line between them).
         fsbrain::vis.subject.annot(sjd, sj, atlas = "aparc", views = "si"); # draw brain
-        fsbrain::highlight.points.spheres(rbind(query_coords, ccv_coords), color = c("red", "yellow"), radius = 5); # draw spheres
+        fsbrain::highlight.points.spheres(rbind(query_coords, ccv_coords), color = c("red", "yellow"), radius = 2.0); # draw spheres
         fsbrain::vis.paths(list(rbind(query_coords, ccv_coords))); # draw line between spheres.
 
         testthat::expect_equal(1L, 1L); # Avoid skip by testthat.
@@ -58,7 +58,7 @@ test_that("We can show a vertex and the distance to surrounding brain regions.",
         query_vertex_coords = get_surface_coords(bp, query_vertex, query_hemi);
         region_closest_coords = as.matrix(res[c("vertex_region_n_point_x","vertex_region_n_point_y","vertex_region_n_point_z")]);
 
-        fsbrain::vis.subject.annot(sjd, sj, atlas = "aparc", views = "si"); # draw brain
+        fsbrain::vis.subject.annot(sjd, sj, atlas = "aparc", views = "si", style = "default"); # draw brain
         fsbrain::highlight.points.spheres(rbind(query_vertex_coords, region_closest_coords), color = c("red", rep("yellow", num_regions_to_report)), radius = 0.3); # draw spheres
 
         path_coords = matrix(rep(NA, (num_regions_to_report*2*3L)), ncol = 3L);
@@ -103,7 +103,16 @@ test_that("We can show the regions of a volume segmentation and their distances.
 
             sjd = file.path(fsh, "subjects");
             fsbrain::vis.subject.annot(sjd, "fsaverage", atlas = "aparc", style = "semitransparent", views = "si");
-            fsbrain::highlight.points.spheres(sc, color = reg_col, radius = 2.0);
+            # Transform point coords from volume to surface space (just different origin):
+            sc2 = sc;
+            sc2$cx = sc$cx - 128.0;
+            sc2$cy = sc$cy - 128.0;
+            sc2$cz = sc$cz - 128.0;
+            fsbrain::highlight.points.spheres(sc2, color = reg_col, radius = 2.0);
+
+            # Show legend (optional, requires fsbrain > 0.5.2)
+            #fsbrain::vis.seg.legend(lutfile, segfile);
+
 
             testthat::expect_equal(1L, 1L); # Avoid skip by testthat.
         }
