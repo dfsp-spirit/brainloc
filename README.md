@@ -47,7 +47,9 @@ This is an R package that takes as input a vertex index of a FreeSurfer brain me
 
 The source code that was used to generate these images is [available in this unit test file](tests/testthat/test-visualization_with_fsbrain.R).
 
+
 ![Fig2](./web/brainloc_coordinate_closest_vertex.png?raw=true "Brainloc: closest vertex to a query coordinate.")
+
 **Fig. 2** *An arbitrary query coordinate (yellow sphere) and the closest mesh vertex.*
 
 
