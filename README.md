@@ -50,7 +50,7 @@ The source code that was used to generate these images is [available in this uni
 
 ![Fig2](./web/brainloc_coordinate_closest_vertex.png?raw=true "Brainloc: closest vertex to a query coordinate.")
 
-**Fig. 2** *An arbitrary query coordinate (yellow sphere) and the closest mesh vertex.*
+**Fig. 2** *An arbitrary query coordinate (yellow sphere) and the closest mesh vertex (red sphere).*
 
 
 
