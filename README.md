@@ -50,7 +50,11 @@ The source code that was used to generate these images is [available in this uni
 
 ![Fig2](./web/brainloc_coordinate_closest_vertex.png?raw=true "Brainloc: closest vertex to a query coordinate.")
 
-**Fig. 2** *An arbitrary query coordinate (yellow sphere) and the closest mesh vertex (red sphere).*
+**Fig. 2** *An arbitrary query coordinate (red sphere) and the closest mesh vertex (yellow sphere).*
+
+![Fig3](./web/brainloc_parcellation_region_center_neighborhoods.png?raw=true "Brainloc: brain atlas regions with neighborhood relationships.")
+
+**Fig. 3** *Brain atlas regions with neighborhood relationship. Each sphere representes the centroid of a brain atlas region from the Desikan atlas. Each edge represents a spatial neighborhood relationship between the respective pair of brain regions.*
 
 
 
