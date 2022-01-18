@@ -79,7 +79,7 @@ get_surface <- function(brainparc) {
 }
 
 
-#' @title Extract the vertex coordinates of the brainparc surface.
+#' @title Extract the vertex coordinates from the brainparc surface.
 #'
 #' @param brainparc a \code{brainparc} instance, see \code{\link{brainparc_fs}} to get one.
 #'
@@ -118,7 +118,7 @@ get_surface_coords <- function(brainparc, vertices, hemis) {
 }
 
 
-#' @title Get colors for fs.annot regions
+#' @title Get colors for \code{fs.annot} regions.
 #'
 #' @param fs.annot full fs.annot instance
 #'
@@ -328,7 +328,7 @@ subject.surface <- function(subjects_dir, subject_id, surface = "white", hemi = 
 is.brainparc <- function(x) inherits(x, "brainparc")
 
 
-#' @title Print description of a brainparce.
+#' @title Print description of a brainparc instance (S3).
 #'
 #' @param x brainparc instance, with class `brainparc`.
 #'

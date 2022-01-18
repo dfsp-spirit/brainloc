@@ -2,7 +2,7 @@
 % Please edit documentation in R/brainparc.R
 \name{print.brainparc}
 \alias{print.brainparc}
-\title{Print description of a brainparce.}
+\title{Print description of a brainparc instance (S3).}
 \usage{
 \method{print}{brainparc}(x, ...)
 }
@@ -15,5 +15,5 @@
 Called for side effects.
 }
 \description{
-Print description of a brainparce.
+Print description of a brainparc instance (S3).
 }

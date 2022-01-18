@@ -2,7 +2,7 @@
 % Please edit documentation in R/brainparc.R
 \name{get_surface_coords}
 \alias{get_surface_coords}
-\title{Extract the vertex coordinates of the brainparc surface.}
+\title{Extract the vertex coordinates from the brainparc surface.}
 \usage{
 get_surface_coords(brainparc, vertices, hemis)
 }
@@ -17,7 +17,7 @@ get_surface_coords(brainparc, vertices, hemis)
 numerical nx3 matrix, the coordindates for the x query vertices.
 }
 \description{
-Extract the vertex coordinates of the brainparc surface.
+Extract the vertex coordinates from the brainparc surface.
 }
 \seealso{
 Other brainparc accessors: 

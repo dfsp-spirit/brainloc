@@ -2,7 +2,7 @@
 % Please edit documentation in R/brainparc.R
 \name{region_colors}
 \alias{region_colors}
-\title{Get colors for fs.annot regions}
+\title{Get colors for \code{fs.annot} regions.}
 \usage{
 region_colors(annot, region_names, na_color = "#FFFFFF")
 }
@@ -17,6 +17,6 @@ region_colors(annot, region_names, na_color = "#FFFFFF")
 vector of hex color strings
 }
 \description{
-Get colors for fs.annot regions
+Get colors for \code{fs.annot} regions.
 }
 \keyword{internal}
