@@ -389,3 +389,44 @@ cluster_location_details <- function(clusterinfo, silent = getOption("brainloc.s
     return(extrema);
 }
 
+
+#' @title Retrieve Talairach label from talairach.org for Talairach coordinate.
+#'
+#' @param talfile the NIFTI Talairach label file from talairach.org
+#'
+#' @param lookup_table_file the Talairach label index text file from talairach.org
+#'
+#' @param tal_coords nx3 numeric matrix, the n query Talairach coordinates
+#'
+#' @return the labels for the coordinates
+#'
+#' @keywords internal
+get_talairach_label <- function(talfile="~/develop/talairach/talairach.nii", lookup_table_file="~/develop/talairach/labels.txt", tal_coords=matrix(seq.int(15), nrow=5, ncol=3)) {
+    tal = freesurferformats::read.fs.volume(talfile, with_header = TRUE);
+    lab = read.table(lookup_table_file, sep = "\t", col.names = c("index", "region"));
+
+    taldata = drop(tal$data);
+
+    r2v = freesurferformats::mghheader.ras2vox(tal);
+    voxels = freesurferformats::doapply.transform.mtx(tal_coords, r2v);
+
+    label_indices = taldata[voxels];
+    voxel_labels = lab$region[label_indices]; # each label is single string that looks like: ''
+    voxel_labels_split = strsplit(voxel_labels, split = ".", fixed = TRUE);
+
+    res = data.frame("cx"=tal_coords[,1], "cy"=tal_coords[,2], "cz"=tal_coords[,3], "v1"=voxels[,1], "v2"=voxels[,2], "v3"=voxels[,3], stringsAsFactors = FALSE);
+
+    ncoords = length(voxel_labels_split); # Could also use the number of query voxels.
+    nlevels = 5L;
+    for(level_idx in seq(nlevels)) {
+        level_names = c();
+        for(coord_idx in seq(ncoords)) {
+            level_names = c(level_names, voxel_labels_split[[coord_idx]][level_idx]);
+            key = paste("label_lvl", level_idx, sep = "");
+        }
+        res[[key]] = level_names;
+    }
+    res$label_full = voxel_labels;
+    return(res);
+}
+
