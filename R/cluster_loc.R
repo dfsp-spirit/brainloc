@@ -390,7 +390,7 @@ cluster_location_details <- function(clusterinfo, silent = getOption("brainloc.s
 }
 
 
-#' @title Retrieve Talairach label from talairach.org for Talairach coordinate.
+#' @title Retrieve Talairach labels for Talairach coordinates from talairach.org files.
 #'
 #' @param talfile the NIFTI Talairach label file from talairach.org
 #'
@@ -400,8 +400,18 @@ cluster_location_details <- function(clusterinfo, silent = getOption("brainloc.s
 #'
 #' @return the labels for the coordinates
 #'
+#' @note You need to download the required files from \code{talairach.org}.
+#'
 #' @keywords internal
 get_talairach_label <- function(talfile="~/develop/talairach/talairach.nii", lookup_table_file="~/develop/talairach/labels.txt", tal_coords=matrix(seq.int(15), nrow=5, ncol=3)) {
+
+    if(! file.exists(talfile)) {
+        stop(sprintf("Please download the 'talairach.nii' file from talairach.org and specify the correct path. Expected file not found at '%s'.\n", talfile));
+    }
+    if(! file.exists(lookup_table_file)) {
+        stop(sprintf("Please download the 'labels.txt' file from talairach.org and specify the correct path. Expected file not found at '%s'.\n", lookup_table_file));
+    }
+
     tal = freesurferformats::read.fs.volume(talfile, with_header = TRUE);
     lab = read.table(lookup_table_file, sep = "\t", col.names = c("index", "region"));
 
