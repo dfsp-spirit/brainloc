@@ -374,6 +374,9 @@ cluster_location_details <- function(clusterinfo, silent = getOption("brainloc.s
         all_Tal_S[cluster_idx] = coord_info$talairach[3];
         if(! silent) {
             cat(sprintf(" - Cluster %s on hemi %s extremum vertex %d has MNI152 coords (%f %f %f) and Talairach coords (%f %f %f).\n", extrema$cluster[cluster_idx], hemi, query_vertex, coord_info$mni152[1], coord_info$mni152[2], coord_info$mni152[3], coord_info$talairach[1], coord_info$talairach[2], coord_info$talairach[3]));
+            for(atlas in names(clusterinfo$brainparc$annots)) {
+                cat(sprintf("   * Cluster %s on hemi %s: extremum vertex %d is located in region '%s' of brain atlas '%s'.\n", extrema$cluster[cluster_idx], hemi, query_vertex, clusterinfo$brainparc$annots[[atlas]][[hemi]][query_vertex], atlas));
+            }
         }
     }
 
