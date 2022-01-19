@@ -412,13 +412,18 @@ get_talairach_label <- function(talfile="~/develop/talairach/talairach.nii", loo
         stop(sprintf("Please download the 'labels.txt' file from talairach.org and specify the correct path. Expected file not found at '%s'.\n", lookup_table_file));
     }
 
+    if(is.vector(tal_coords)) {
+        tal_coords = matrix(tal_coords, ncol = 3L);
+    }
+
+
     tal = freesurferformats::read.fs.volume(talfile, with_header = TRUE);
     lab = read.table(lookup_table_file, sep = "\t", col.names = c("index", "region"));
 
     taldata = drop(tal$data);
 
     r2v = freesurferformats::mghheader.ras2vox(tal);
-    voxels = freesurferformats::doapply.transform.mtx(tal_coords, r2v);
+    voxels = floor(freesurferformats::doapply.transform.mtx(tal_coords, r2v, as_mat = TRUE));
 
     label_indices = taldata[voxels];
     voxel_labels = lab$region[label_indices]; # each label is single string that looks like: ''
