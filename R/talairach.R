@@ -10,9 +10,9 @@
 #'
 #' @param tal_coords \code{nx3} numeric matrix, the \code{n} query Talairach coordinates for which you want to retrieve the labels.
 #'
-#' @return data.frame describing labels for the coordinates. The following columns are included: \code{cx,cy,cz}: the query coordinates, as given in parameter 'tal_coords'. \code{v1,v2,v3}: The voxel indices in the talairach.nii file that map to the query coordinates. \code{label_lvl1,...,label_lvl5}: the label strings for the location, in 5 levels (parsed from \code{label_full} for you as a convenience). \code{label_full}: The raw, full label string for the location.
+#' @return data.frame describing labels for the coordinates. The following columns are included: \code{cx,cy,cz}: the query coordinates, as given in parameter 'tal_coords'. \code{v1,v2,v3}: The voxel indices in the talairach.nii file that map to the query coordinates. \code{label_lvl1,...,label_lvl5}: the label strings for the location, in a hierarchy with 5 levels (parsed from \code{label_full} for you as a convenience). \code{label_full}: The raw, full label string for the location. A star \code{*} means that no label name is available for the given coordinate at this level.
 #'
-#' @note You need to download the required files from \code{talairach.org}. It can be found directly on the \code{home} page in the section \code{Talairach Label Data}.
+#' @note You need to download the required files from \code{talairach.org}. They can be found directly on the \code{home} page in the section \code{Talairach Label Data}.
 #'
 #' @note When using this function or the Talairach.org data in your research, please cite the following two publications: \code{Lancaster JL, Woldorff MG, Parsons LM, Liotti M, Freitas CS, Rainey L, Kochunov PV, Nickerson D, Mikiten SA, Fox PT, "Automated Talairach Atlas labels for functional brain mapping". Human Brain Mapping 10:120-131, 2000.} and \code{Lancaster JL, Rainey LH, Summerlin JL, Freitas CS, Fox PT, Evans AC, Toga AW, Mazziotta JC. Automated labeling of the human brain: A preliminary report on the development and evaluation of a forward-transform method. Hum Brain Mapp 5, 238-242, 1997.}
 #'
