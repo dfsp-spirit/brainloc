@@ -2,7 +2,7 @@
 % Please edit documentation in R/optdata.R
 \name{sjd_demo}
 \alias{sjd_demo}
-\title{Download FreeSurfer template data if needed and return its path.}
+\title{Download FreeSurfer template and demo data if needed and return its path (subjects_dir).}
 \usage{
 sjd_demo(accept_freesurfer_license = FALSE)
 }

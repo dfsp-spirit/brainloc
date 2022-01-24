@@ -156,6 +156,42 @@ download_fsaverage3 <- function(accept_freesurfer_license=FALSE) {
 }
 
 
+#' @title Download the talairach volume and labels from talairach.org.
+#'
+#' @description Download the talairach volume \code{talairach.nii} and labels \code{labels.txt} from talairach.org.
+#'
+#' @return Named list. The list has entries: "available": vector of strings. The names of the files that are available in the local file cache. You can access them using get_optional_data_file(). "missing": vector of strings. The names of the files that this function was unable to retrieve.
+#'
+#' @note This function requires and internet connection. Files will only be downloaded if they are not already available on the local computer.
+#'
+#' @keywords internal
+download_talairach <- function(accept_talairach_usage=FALSE) {
+
+    if(! accept_talairach_usage) {
+        cat(sprintf("Nothing downloaded. You have to accept the talairach.org usage conditions to download the data.\n"));
+        cat(sprintf("Read which publications to cite when using these data at http://talairach.org/ and set parameter 'accept_talairach_usage' to TRUE if you accept it.\n"));
+        return(invisible(NULL));
+    }
+
+    pkg_info = pkgfilecache::get_pkg_info("brainloc");
+    base_path_tal = c('talairach');
+    local_filenames = list(c(base_path_tal, 'talairach.nii'),
+                           c(base_path_tal, 'labels.txt'));
+
+    md5sums = c('6ddca3a02fd8a90e1b6daf827d4a9d98', # talairach.nii
+                'f4c0bc758696ea52be6c11848df4786d'  # labels.txt
+    );
+
+    ext_urls = c('talairach.nii', 'labels.txt'); # the files are directly in the main dir on the web server, no subdirs/other URL parts needed
+    base_url = 'http://www.talairach.org/';
+    urls = paste(base_url, ext_urls, sep='');
+
+    cfiles = pkgfilecache::ensure_files_available(pkg_info, local_filenames, urls, md5sums=md5sums);
+    cfiles$file_status = NULL; # not exposed to end user
+    return(invisible(cfiles));
+}
+
+
 
 #' @title Get file names available in package cache.
 #'
@@ -196,7 +232,7 @@ delete_all_optional_data <- function() {
 }
 
 
-#' @title Download FreeSurfer template data if needed and return its path.
+#' @title Download FreeSurfer template and demo data if needed and return its path (subjects_dir).
 #'
 #' @description This is a wrapper around \code{download_fsaverage()} and \code{download_fsaverage3())}. It will download the data from the internet unless it already exists locally.
 #'
