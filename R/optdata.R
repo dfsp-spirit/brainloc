@@ -165,7 +165,7 @@ download_fsaverage3 <- function(accept_freesurfer_license=FALSE) {
 #' @note This function requires and internet connection. Files will only be downloaded if they are not already available on the local computer.
 #'
 #' @keywords internal
-download_talairach <- function(accept_talairach_usage=FALSE) {
+download_talairach <- function(accept_talairach_usage=TRUE) {
 
     if(! accept_talairach_usage) {
         cat(sprintf("Nothing downloaded. You have to accept the talairach.org usage conditions to download the data.\n"));

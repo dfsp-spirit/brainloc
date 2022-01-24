@@ -4,23 +4,35 @@
 
 #' @title Retrieve Talairach labels for Talairach coordinates from \code{talairach.org} files.
 #'
-#' @param talfile the NIFTI Talairach label volume file from \code{talairach.org}. It is named \code{talairach.nii} on the website. You can also gzip it and use a much smaller \code{.nii.gz} version of the file.
+#' @param tal_coords \code{nx3} numeric matrix, the \code{n} query Talairach coordinates for which you want to retrieve the labels. (Three columns, each row represents the x,y,z coordinates of a point in Talairach space.)
 #'
-#' @param lookup_table_file the Talairach label index text file from \code{talairach.org}. It is named \code{labels.txt} on the website.
+#' @param talairach_vol_file optional character string, the path to the NIFTI Talairach label volume file from \code{talairach.org}. It is named \code{talairach.nii} on the website. You can also gzip it and use a much smaller \code{.nii.gz} version of the file. Leave at \code{NULL} to auto-download from \code{talairach.org} if needed.
 #'
-#' @param tal_coords \code{nx3} numeric matrix, the \code{n} query Talairach coordinates for which you want to retrieve the labels.
+#' @param lookup_table_file optional character string, the path to the Talairach label index text file from \code{talairach.org}. It is named \code{labels.txt} on the website. Leave at \code{NULL} to auto-download from \code{talairach.org} if needed.
 #'
 #' @return data.frame describing labels for the coordinates. The following columns are included: \code{cx,cy,cz}: the query coordinates, as given in parameter 'tal_coords'. \code{v1,v2,v3}: The voxel indices in the talairach.nii file that map to the query coordinates. \code{label_lvl1,...,label_lvl5}: the label strings for the location, in a hierarchy with 5 levels (parsed from \code{label_full} for you as a convenience). \code{label_full}: The raw, full label string for the location. A star \code{*} means that no label name is available for the given coordinate at this level.
 #'
-#' @note You need to download the required files from \code{talairach.org}. They can be found directly on the \code{home} page in the section \code{Talairach Label Data}.
+#' @note If you leave the file path arguments \code{talairach_vol_file} and {lookup_table_file} at NULL, the files will be downloaded from \code{talairach.org} automatically if that is possible (e.g., you have a working internet connection and the server is up). If it fails, the function will stop in the next step.
 #'
 #' @note When using this function or the Talairach.org data in your research, please cite the following two publications: \code{Lancaster JL, Woldorff MG, Parsons LM, Liotti M, Freitas CS, Rainey L, Kochunov PV, Nickerson D, Mikiten SA, Fox PT, "Automated Talairach Atlas labels for functional brain mapping". Human Brain Mapping 10:120-131, 2000.} and \code{Lancaster JL, Rainey LH, Summerlin JL, Freitas CS, Fox PT, Evans AC, Toga AW, Mazziotta JC. Automated labeling of the human brain: A preliminary report on the development and evaluation of a forward-transform method. Hum Brain Mapp 5, 238-242, 1997.}
 #'
-#' @keywords internal
-get_talairach_label <- function(talfile="~/develop/talairach/talairach.nii", lookup_table_file="~/develop/talairach/labels.txt", tal_coords=matrix(seq.int(15), nrow=5, ncol=3)) {
+#' @examples
+#' \dontrun{
+#' query_tal_coords = matrix(seq.int(15), nrow=5, ncol=3);
+#' get_talairach_label(query_tal_coords);
+#' }
+#'
+#' @export
+get_talairach_label <- function(tal_coords, talairach_vol_file=NULL, lookup_table_file=NULL) {
 
-    if(! file.exists(talfile)) {
-        stop(sprintf("Please download the 'talairach.nii' file from talairach.org and specify the correct path. Expected file not found at '%s'.\n", talfile));
+    if(is.null(talairach_vol_file) | is.null(lookup_table_file)) {
+        download_talairach(accept_talairach_usage =  TRUE);
+        talairach_vol_file = brainloc:::get_optional_data_filepath('talairach/talairach.nii');
+        lookup_table_file = brainloc:::get_optional_data_filepath('talairach/labels.txt');
+    }
+
+    if(! file.exists(talairach_vol_file)) {
+        stop(sprintf("Please download the 'talairach.nii' file from talairach.org and specify the correct path. Expected file not found at '%s'.\n", talairach_vol_file));
     }
     if(! file.exists(lookup_table_file)) {
         stop(sprintf("Please download the 'labels.txt' file from talairach.org and specify the correct path. Expected file not found at '%s'.\n", lookup_table_file));
@@ -30,8 +42,14 @@ get_talairach_label <- function(talfile="~/develop/talairach/talairach.nii", loo
         tal_coords = matrix(tal_coords, ncol = 3L);
     }
 
+    if(is.matrix(tal_coords)) {
+        if(ncol(tal_coords) != 3L) {
+            stop("Matrix 'tal_coords' must have exactly 3 columns.");
+        }
+    }
 
-    tal = freesurferformats::read.fs.volume(talfile, with_header = TRUE);
+
+    tal = freesurferformats::read.fs.volume(talairach_vol_file, with_header = TRUE);
     lab = read.table(lookup_table_file, sep = "\t", col.names = c("index", "region"));
 
     taldata = drop(tal$data);
