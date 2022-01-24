@@ -33,7 +33,7 @@ This is an R package that takes as input a vertex index of a FreeSurfer brain me
   - `cluster_peaks()`: find all peaks of each cluster
   - `cluster_region_overlap()`: given an additional brain parcellation, find all regions the cluster overlaps with and compute the percentage overlap for both the cluster and the regions.
 - Given a coordinate in Talairach space:
-  - `get_talairach_label()`: retrieve the Talairach volume label for the point (5 level hierarchy, e.g., 'Right Cerebrum, Temporal Lobe, Sub-Gyral, Gray Matter, Brodmann area 20'). Please cite the two Talariach References papers listed on [talairach.org](http://www.talairach.org/) when using this functionality.
+  - `get_talairach_label()`: retrieve the Talairach volume label for the point (5 level hierarchy, e.g., 'Right Cerebrum, Temporal Lobe, Sub-Gyral, Gray Matter, Brodmann area 20'). Please cite the two [Talairach References papers listed on talairach.org](http://www.talairach.org/) when using this functionality.
   
  
 ## Documentation
