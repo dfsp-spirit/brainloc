@@ -16,19 +16,23 @@
 #'
 #' @note When using this function or the Talairach.org data in your research, please cite the following two publications: \code{Lancaster JL, Woldorff MG, Parsons LM, Liotti M, Freitas CS, Rainey L, Kochunov PV, Nickerson D, Mikiten SA, Fox PT, "Automated Talairach Atlas labels for functional brain mapping". Human Brain Mapping 10:120-131, 2000.} and \code{Lancaster JL, Rainey LH, Summerlin JL, Freitas CS, Fox PT, Evans AC, Toga AW, Mazziotta JC. Automated labeling of the human brain: A preliminary report on the development and evaluation of a forward-transform method. Hum Brain Mapp 5, 238-242, 1997.}
 #'
+#' @note Currently it is not possible to search 'in the vicinity' to compensate for a slightly inaccurate query coordinate that may be outside of the brain by just a tiny bit. Please open an issue if you feel this is required.
+#'
 #' @examples
 #' \dontrun{
 #' query_tal_coords = matrix(seq.int(15), nrow=5, ncol=3);
 #' get_talairach_label(query_tal_coords);
 #' }
 #'
+#' @importFrom utils read.table
+#'
 #' @export
 get_talairach_label <- function(tal_coords, talairach_vol_file=NULL, lookup_table_file=NULL) {
 
     if(is.null(talairach_vol_file) | is.null(lookup_table_file)) {
         download_talairach(accept_talairach_usage =  TRUE);
-        talairach_vol_file = brainloc:::get_optional_data_filepath('talairach/talairach.nii');
-        lookup_table_file = brainloc:::get_optional_data_filepath('talairach/labels.txt');
+        talairach_vol_file = get_optional_data_filepath('talairach/talairach.nii');
+        lookup_table_file = get_optional_data_filepath('talairach/labels.txt');
     }
 
     if(! file.exists(talairach_vol_file)) {

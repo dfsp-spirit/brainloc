@@ -27,6 +27,8 @@ Retrieve Talairach labels for Talairach coordinates from \code{talairach.org} fi
 If you leave the file path arguments \code{talairach_vol_file} and {lookup_table_file} at NULL, the files will be downloaded from \code{talairach.org} automatically if that is possible (e.g., you have a working internet connection and the server is up). If it fails, the function will stop in the next step.
 
 When using this function or the Talairach.org data in your research, please cite the following two publications: \code{Lancaster JL, Woldorff MG, Parsons LM, Liotti M, Freitas CS, Rainey L, Kochunov PV, Nickerson D, Mikiten SA, Fox PT, "Automated Talairach Atlas labels for functional brain mapping". Human Brain Mapping 10:120-131, 2000.} and \code{Lancaster JL, Rainey LH, Summerlin JL, Freitas CS, Fox PT, Evans AC, Toga AW, Mazziotta JC. Automated labeling of the human brain: A preliminary report on the development and evaluation of a forward-transform method. Hum Brain Mapp 5, 238-242, 1997.}
+
+Currently it is not possible to search 'in the vicinity' to compensate for a slightly inaccurate query coordinate that may be outside of the brain by just a tiny bit. Please open an issue if you feel this is required.
 }
 \examples{
 \dontrun{
