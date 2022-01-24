@@ -22,7 +22,7 @@ This is an R package that takes as input a vertex index of a FreeSurfer brain me
   - `coord_MNI305_info()`: find its MNI152 coordinate using one of the following two methods:
     - with the FreeSurfer 4x4 matrix or
     - with the more accurate [regfusionr](https://github.com/dfsp-spirit/regfusionr) method by [Wu *et al.*](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6239990/) (requires optional [regfusionr](https://github.com/dfsp-spirit/regfusionr) package).
-  - `coord_MNI305_info()`: find its Talairach coordinates (using [Matthew Brett's non-linear transform from MNI152](https://brainmap.org/training/BrettTransform.html))
+  - `coord_MNI305_info()`: find its Talairach coordinates (using [Matthew Brett's non-linear transform from MNI152](https://brainmap.org/training/BrettTransform.html)). You can also get the Talairach label (Brodmann area etc.) for the point, see `get_talairach_label() below.
   - `vertex_closest_regions()`: find the region the vertex is assigned to in a brain atlas parcellation like the Desikan atlas that comes with FreeSurfer (trivial)
   - `vertex_closest_regions()`: find the distances to all other atlas regions, with different distance methods (Euclidean, geodesic along the mesh) and different linkages (defining the reference point when measuring the distance to a region, e.g., closest vertex in region, or center vertex)
   - `coord_closest_regions()`: do the same for a coordinate instead of a vertex index.
