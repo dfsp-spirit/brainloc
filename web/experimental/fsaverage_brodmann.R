@@ -14,7 +14,7 @@ fsaverage_brodmann_atlas <- function() {
     sjd = fsbrain::fsaverage.path(T);
     sj = "fsaverage";
 
-    surfaces = fsbrain::subject.surface(sjd, sj, surface="pial");
+    surfaces = fsbrain::subject.surface(sjd, sj, surface="pial"); # Note that which surface is used can make a large difference.
     talairach_coords = list("lh"= brainloc::coord_MNI305_info(surfaces$lh$vertices)$talairach, "rh"= brainloc::coord_MNI305_info(surfaces$rh$vertices)$talairach);
     talairach_labels = list("lh"=brainloc::get_talairach_label(talairach_coords$lh), "rh"=brainloc::get_talairach_label(talairach_coords$rh));
     labels_int = list("lh"=as.integer(as.factor(talairach_labels$lh$label_lvl5)), "rh"=as.integer(as.factor(talairach_labels$rh$label_lvl5)) );
@@ -22,5 +22,5 @@ fsaverage_brodmann_atlas <- function() {
     return(talairach_labels);
 }
 
-fsaverage_brodmann_atlas();
+tl = fsaverage_brodmann_atlas();
 
