@@ -77,7 +77,7 @@ get_talairach_label <- function(tal_coords, talairach_vol_file=NULL, lookup_tabl
 
     if(length(oob) > 0L) {
         voxels[oob,] = c(1L,1L,1L); # replace
-        message(sprintf("Ignoring %d of %d query coordinates that mapped to voxel indices outside of NIFTI volume.\n", (length(oob), nrow(tal_coords))));
+        message(sprintf("Ignoring %d of %d query coordinates that mapped to voxel indices outside of NIFTI volume.\n", length(oob), nrow(tal_coords)));
     }
 
     label_indices = taldata[voxels];
@@ -94,9 +94,9 @@ get_talairach_label <- function(tal_coords, talairach_vol_file=NULL, lookup_tabl
     ncoords = length(voxel_labels_split); # Could also use the number of query voxels.
     nlevels = 5L;
     for(level_idx in seq(nlevels)) {
-        level_names = c();
+        level_names = rep("*", ncoords);
         for(coord_idx in seq(ncoords)) {
-            level_names = c(level_names, voxel_labels_split[[coord_idx]][level_idx]);
+            level_names[coord_idx] = voxel_labels_split[[coord_idx]][level_idx];
             key = paste("label_lvl", level_idx, sep = "");
         }
         if(length(oob) > 0L) {
