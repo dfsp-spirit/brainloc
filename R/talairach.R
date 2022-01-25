@@ -10,6 +10,8 @@
 #'
 #' @param lookup_table_file optional character string, the path to the Talairach label index text file from \code{talairach.org}. It is named \code{labels.txt} on the website. Leave at \code{NULL} to auto-download from \code{talairach.org} if needed.
 #'
+#' @param check_oob logical, whether to check for out-of-bounds voxels, which do not fall into the NIFTI volume during the computation (because the talairach coordinate is a off). Checking is slower, but if such coordinates exist in your query and you do not check, the function will stop with an error. Leave this alone if in doubt.
+#'
 #' @return data.frame describing labels for the coordinates. The following columns are included: \code{cx,cy,cz}: the query coordinates, as given in parameter 'tal_coords'. \code{v1,v2,v3}: The voxel indices in the talairach.nii file that map to the query coordinates. \code{label_lvl1,...,label_lvl5}: the label strings for the location, in a hierarchy with 5 levels (parsed from \code{label_full} for you as a convenience). \code{label_full}: The raw, full label string for the location. A star \code{*} means that no label name is available for the given coordinate at this level.
 #'
 #' @note If you leave the file path arguments \code{talairach_vol_file} and {lookup_table_file} at NULL, the files will be downloaded from \code{talairach.org} automatically if that is possible (e.g., you have a working internet connection and the server is up). If it fails, the function will stop in the next step.
@@ -27,7 +29,7 @@
 #' @importFrom utils read.table
 #'
 #' @export
-get_talairach_label <- function(tal_coords, talairach_vol_file=NULL, lookup_table_file=NULL) {
+get_talairach_label <- function(tal_coords, talairach_vol_file=NULL, lookup_table_file=NULL, check_oob=TRUE) {
 
     if(is.null(talairach_vol_file) | is.null(lookup_table_file)) {
         download_talairach(accept_talairach_usage =  TRUE);
@@ -61,7 +63,29 @@ get_talairach_label <- function(tal_coords, talairach_vol_file=NULL, lookup_tabl
     r2v = freesurferformats::mghheader.ras2vox(tal);
     voxels = floor(freesurferformats::doapply.transform.mtx(tal_coords, r2v, as_mat = TRUE));
 
+    oob = NULL;
+    if(check_oob) {
+        # Find out-of-bounds voxels, which do not fall into the NIFTI volume. These need to be ignored.
+        oob = which(voxels[,1] > dim(taldata)[1]);
+        oob = c(oob, which(voxels[,2] > dim(taldata)[2]));
+        oob = c(oob, which(voxels[,3] > dim(taldata)[3]));
+        # We should also ignore voxels < 1 here.
+        oob = c(oob, which(voxels[,1] < 1L));
+        oob = c(oob, which(voxels[,2] < 1L));
+        oob = c(oob, which(voxels[,3] < 1L));
+    }
+
+    if(length(oob) > 0L) {
+        voxels[oob,] = c(1L,1L,1L); # replace
+        message(sprintf("Ignoring %d of %d query coordinates that mapped to voxel indices outside of NIFTI volume.\n", (length(oob), nrow(tal_coords))));
+    }
+
     label_indices = taldata[voxels];
+
+    if(length(oob) > 0L) {
+        label_indices[label_indices < 1L] = 1L; # fix label_indices for out-of-bounds voxels from 0 to 1. 1 is an arbitrary but working index that ensures the computation finishes. The label values will be replaced with 'out-of-bounds' later.
+    }
+
     voxel_labels = lab$region[label_indices]; # each label is single string that looks like: ''
     voxel_labels_split = strsplit(voxel_labels, split = ".", fixed = TRUE);
 
@@ -75,7 +99,14 @@ get_talairach_label <- function(tal_coords, talairach_vol_file=NULL, lookup_tabl
             level_names = c(level_names, voxel_labels_split[[coord_idx]][level_idx]);
             key = paste("label_lvl", level_idx, sep = "");
         }
+        if(length(oob) > 0L) {
+            level_names[oob] = "out-of-bounds";
+        }
         res[[key]] = level_names;
+
+    }
+    if(length(oob) > 0L) {
+        voxel_labels[oob] = "out-of-bounds";
     }
     res$label_full = voxel_labels;
     return(res);

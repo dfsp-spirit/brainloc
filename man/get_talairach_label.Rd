@@ -7,7 +7,8 @@
 get_talairach_label(
   tal_coords,
   talairach_vol_file = NULL,
-  lookup_table_file = NULL
+  lookup_table_file = NULL,
+  check_oob = TRUE
 )
 }
 \arguments{
@@ -16,6 +17,8 @@ get_talairach_label(
 \item{talairach_vol_file}{optional character string, the path to the NIFTI Talairach label volume file from \code{talairach.org}. It is named \code{talairach.nii} on the website. You can also gzip it and use a much smaller \code{.nii.gz} version of the file. Leave at \code{NULL} to auto-download from \code{talairach.org} if needed.}
 
 \item{lookup_table_file}{optional character string, the path to the Talairach label index text file from \code{talairach.org}. It is named \code{labels.txt} on the website. Leave at \code{NULL} to auto-download from \code{talairach.org} if needed.}
+
+\item{check_oob}{logical, whether to check for out-of-bounds voxels, which do not fall into the NIFTI volume during the computation (because the talairach coordinate is a off). Checking is slower, but if such coordinates exist in your query and you do not check, the function will stop with an error. Leave this alone if in doubt.}
 }
 \value{
 data.frame describing labels for the coordinates. The following columns are included: \code{cx,cy,cz}: the query coordinates, as given in parameter 'tal_coords'. \code{v1,v2,v3}: The voxel indices in the talairach.nii file that map to the query coordinates. \code{label_lvl1,...,label_lvl5}: the label strings for the location, in a hierarchy with 5 levels (parsed from \code{label_full} for you as a convenience). \code{label_full}: The raw, full label string for the location. A star \code{*} means that no label name is available for the given coordinate at this level.
