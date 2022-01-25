@@ -97,13 +97,12 @@ get_talairach_label <- function(tal_coords, talairach_vol_file=NULL, lookup_tabl
         level_names = rep("*", ncoords);
         for(coord_idx in seq(ncoords)) {
             level_names[coord_idx] = voxel_labels_split[[coord_idx]][level_idx];
-            key = paste("label_lvl", level_idx, sep = "");
         }
         if(length(oob) > 0L) {
             level_names[oob] = "out-of-bounds";
         }
+        key = paste("label_lvl", level_idx, sep = "");
         res[[key]] = level_names;
-
     }
     if(length(oob) > 0L) {
         voxel_labels[oob] = "out-of-bounds";
