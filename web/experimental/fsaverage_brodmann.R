@@ -9,6 +9,8 @@ library("brainloc");
 #'
 #' @description This bold demo function tries to create a visualization of Brodmann areas on the FreeSurfer MNI305 space fsaverage subject. As the Brodmann data comes from a NIFTI volume in Talairach space and goes via MNI152 (piecewise-linear) to MNI305, the result is expected to be very rough. A better approach would most likely be to map from Talairach to MIN152 volume, then MNI305 volume, the project to the surface.
 #'
+#' @seealso \code{https://surfer.nmr.mgh.harvard.edu/fswiki/BrodmannAreaMaps}
+#'
 #' @return hemilist of level 5 Talairach label for the fsaverage vertices, but it is rather called for the side effect of plotting the atlas.
 fsaverage_brodmann_atlas <- function() {
     sjd = fsbrain::fsaverage.path(T);
