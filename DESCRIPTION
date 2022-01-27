@@ -7,8 +7,8 @@ Maintainer: Tim Schäfer <ts+code@rcmd.org>
 Description: Given a point on the human brain, identify the closest brain regions according to a brain atlas.
 License: MIT + file LICENSE
 Encoding: UTF-8
-URL: https://github.com/dfsp-spirit/brainregions
-BugReports: https://github.com/dfsp-spirit/brainregions/issues
+URL: https://github.com/dfsp-spirit/brainloc
+BugReports: https://github.com/dfsp-spirit/brainloc/issues
 Imports:
     freesurferformats (>= 0.1.16),
     Rvcg (>= 0.20.2),
