@@ -27,6 +27,7 @@
 #' }
 #'
 #' @importFrom utils read.table
+#' @importFrom freesurferformats mghheader.ras2vox read.fs.volume doapply.transform.mtx
 #'
 #' @export
 get_talairach_label <- function(tal_coords, talairach_vol_file=NULL, lookup_table_file=NULL, check_oob=TRUE) {
