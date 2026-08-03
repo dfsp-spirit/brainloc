@@ -31,19 +31,22 @@ vertex_regions <- function(brainparc, vertices, hemis) {
         }
     }
 
-    atlas = rep("?", nv);
-    vertex_region = rep("?", nv);
-
+    res_list = list();
+    row_idx = 1L;
     for(vidx in seq_along(vertices)) {
         vertex_surface_idx = vertices[vidx];
         hemi = hemis[vidx];
         for(atlas_name in names(brainparc$annots)) {
             annot_min = brainparc$annots[[atlas_name]][[hemi]];
-            atlas[vidx] = atlas_name;
-            vertex_region[vidx] = annot_min[vertex_surface_idx];
+            res_list[[row_idx]] = data.frame(
+                "vertex"=vertex_surface_idx, "hemi"=hemi,
+                "atlas"=atlas_name,
+                "vertex_region"=annot_min[vertex_surface_idx],
+                stringsAsFactors = FALSE);
+            row_idx = row_idx + 1L;
         }
     }
-    return(data.frame("vertex"=vertices, "hemi"=hemis, "atlas"=atlas, "vertex_region"=vertex_region, stringsAsFactors = FALSE));
+    return(do.call(rbind, res_list));
 }
 
 
@@ -128,15 +131,18 @@ vertex_closest_regions <- function(brainparc, vertices, hemis, linkage = "single
                 }
                 annot_min = brainparc$annots[[atlas_name]][[hemi]];
                 region_names = unique(annot_min);
+                region_names = region_names[nchar(region_names) > 0L];
                 vertex_region = annot_min[vertex_surface_idx];
                 nr = length(region_names); # num regions
+
+                region_vertex_lists = split(seq_along(annot_min), annot_min);
 
                 region_idx = 0L;
                 regions_closest_vertex_to_query_vertex = rep(NA, nr);
                 regions_closest_distance_query_vertex = rep(NA, nr);
                 for(region_name in region_names) {
                     region_idx = region_idx + 1L;
-                    region_vertex_indices = which(annot_min == region_name);
+                    region_vertex_indices = region_vertex_lists[[region_name]];
                     region_vertex_dists_to_query_vertex = vdists[region_vertex_indices];
                     local_regions_closest_vertex_to_query_vertex = which.min(region_vertex_dists_to_query_vertex);
                     closest_vertex_in_region_to_query_vertex = region_vertex_indices[local_regions_closest_vertex_to_query_vertex];
@@ -183,14 +189,16 @@ vertex_closest_regions <- function(brainparc, vertices, hemis, linkage = "single
                 }
                 annot_min = brainparc$annots[[atlas_name]][[hemi]];
                 region_names = unique(annot_min);
+                region_names = region_names[nchar(region_names) > 0L];
                 vertex_region = annot_min[vertex_surface_idx];
                 nr = length(region_names); # num regions
+                region_vertex_lists = split(seq_along(annot_min), annot_min);
                 region_centers_xyz = matrix(rep(NA, nr*3L), nrow = nr);
                 vertex_dist_to_region_centers_xyz = rep(NA, nr);
                 region_idx = 0L;
                 for(region_name in region_names) {
                     region_idx = region_idx + 1L;
-                    region_vertex_indices = which(annot_min == region_name);
+                    region_vertex_indices = region_vertex_lists[[region_name]];
                     region_vertex_coords = surface$vertices[region_vertex_indices, ];
                     region_center = colMeans(region_vertex_coords);
                     region_centers_xyz[region_idx, ] = region_center;

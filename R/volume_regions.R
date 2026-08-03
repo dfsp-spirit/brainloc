@@ -71,11 +71,15 @@ name_regions <- function(volatlas, colorlut, ignore_not_in_lut=FALSE, warn_not_i
     region_codes = unique(as.integer(volatlas));
     named_reg = list();
     codes_not_found = c();
-    for(reg_code in region_codes) {
+    if(! is.null(colorlut)) {
+        lut_idx = match(region_codes, colorlut$struct_index);
+    }
+    for(rc_idx in seq_along(region_codes)) {
+        reg_code = region_codes[rc_idx];
         found = FALSE;
         if(! is.null(colorlut)) {
-            if(reg_code %in% colorlut$struct_index) {
-                reg_name = colorlut[colorlut$struct_index == reg_code, ]$struct_name;
+            if(! is.na(lut_idx[rc_idx])) {
+                reg_name = colorlut$struct_name[lut_idx[rc_idx]];
                 named_reg[reg_name] = reg_code;
                 found = TRUE;
             }
@@ -113,10 +117,12 @@ region_color <- function(colorlut, struct_idx) {
     }
     nr = length(struct_idx);
     regcol = rep("", nr);
-    for(idx in seq.int(nr)) {
-        reg_idx = struct_idx[idx];
-        reg_row = colorlut[colorlut$struct_index == reg_idx, ];
-        regcol[idx] = grDevices::rgb(reg_row$r/255.0, reg_row$g/255.0, reg_row$b/255.0);
+    lut_idx = match(struct_idx, colorlut$struct_index);
+    valid = !is.na(lut_idx);
+    if(any(valid)) {
+        regcol[valid] = grDevices::rgb(colorlut$r[lut_idx[valid]]/255.0,
+                                        colorlut$g[lut_idx[valid]]/255.0,
+                                        colorlut$b[lut_idx[valid]]/255.0);
     }
     return(regcol);
 }
@@ -166,12 +172,17 @@ segmentation_centers <- function(volatlas, named_regions=NULL, vox2ras=diag(4)) 
     num_regions = length(named_regions);
     reg_center_mat = matrix(rep(0.0, num_regions*3L), ncol=3L);
 
+    # Pre-compute voxel index lists for all regions in one pass.
+    vol_vec = as.integer(volatlas);
+    all_idx = seq_along(vol_vec);
+    code_to_idx = split(all_idx, vol_vec);
+
     reg_idx = 1L;
     for(reg_name in names(named_regions)) {
         reg_code = named_regions[[reg_name]];
-        reg_voxels = which(volatlas == reg_code, arr.ind = TRUE);
+        reg_linear_idx = code_to_idx[[as.character(reg_code)]];
+        reg_voxels = arrayInd(reg_linear_idx, dim(volatlas));
         reg_ras_coords = freesurferformats::doapply.transform.mtx(reg_voxels, vox2ras);
-        #cat(sprintf("Handling region '%s' with code %d.\n", reg_name, reg_code));
         reg_com = center_of_mass(reg_ras_coords);
         reg_center_mat[reg_idx,] = reg_com;
         reg_idx = reg_idx + 1L;

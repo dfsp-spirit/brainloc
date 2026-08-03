@@ -124,7 +124,8 @@ cluster_region_overlap <- function(clusterinfo, silent = getOption("brainloc.sil
         stop("The clusterinfo instance must contain a valid brainparc for this function to be able to work.");
     }
 
-    full_df = NULL;
+    full_df_list = list();
+    df_count = 0L;
 
     for (hemi in c("lh", "rh")) {
         clusters = get_clusters(clusterinfo, hemi = hemi);
@@ -144,15 +145,15 @@ cluster_region_overlap <- function(clusterinfo, silent = getOption("brainloc.sil
                         cat(sprintf("     * Region %s: %d of %d cluster vertices in region (%.2f percent). Cluster covers %.2f percent of the region.\n", overlap_df$region[row_idx], overlap_df$num_shared_vertices[row_idx], cluster_num_vertices, overlap_df$percent_shared_vertices[row_idx], overlap_df$cluster_percent_of_region[row_idx]));
                     }
                 }
-                if(is.null(full_df)) {
-                    full_df = overlap_df;
-                } else {
-                    full_df = rbind(full_df, overlap_df);
-                }
+                df_count = df_count + 1L;
+                full_df_list[[df_count]] = overlap_df;
             }
         }
     }
-    return(full_df);
+    if(df_count == 0L) {
+        return(NULL);
+    }
+    return(do.call(rbind, full_df_list));
 }
 
 
@@ -243,13 +244,17 @@ single_cluster_peaks <- function(cluster_vertices, statmap, surface, type = "ext
         stop("Parameter 'statmap' must be an numeric vector.");
     }
 
-    peak_vertices = c();
-    peak_values = c();
+    peak_vertices = integer(length(cluster_vertices)); # pre-allocate, max possible
+    peak_values = numeric(length(cluster_vertices));
+    num_peaks = 0L;
+
+    in_cluster = logical(length(statmap));
+    in_cluster[cluster_vertices] = TRUE;
 
     adj = Rvcg::vcgVertexNeighbors(fs.surface.to.tmesh3d(surface));
     for(cl_vertex in cluster_vertices) {
         neigh = adj[[cl_vertex]];
-        neigh_within_cluster = neigh[neigh %in% cluster_vertices];
+        neigh_within_cluster = neigh[in_cluster[neigh]];
         neigh_stat_values = statmap[c(neigh_within_cluster, cl_vertex)];
         cluster_neigh_max_statvalue = max(neigh_stat_values, na.rm = TRUE);
         cluster_neigh_min_statvalue = min(neigh_stat_values, na.rm = TRUE);
@@ -269,16 +274,12 @@ single_cluster_peaks <- function(cluster_vertices, statmap, surface, type = "ext
         }
 
         if(cluster_neigh_extreme_value == statmap[cl_vertex]) { # The vertex is a peak.
-            if(is.null(peak_vertices)) {
-                peak_vertices = cl_vertex;
-                peak_values = statmap[cl_vertex];
-            } else {
-                peak_vertices = c(peak_vertices, cl_vertex);
-                peak_values = c(peak_values, statmap[cl_vertex]);
-            }
+            num_peaks = num_peaks + 1L;
+            peak_vertices[num_peaks] = cl_vertex;
+            peak_values[num_peaks] = statmap[cl_vertex];
         }
     }
-    return(list("vertex"=peak_vertices, "value"=peak_values));
+    return(list("vertex"=peak_vertices[seq_len(num_peaks)], "value"=peak_values[seq_len(num_peaks)]));
 }
 
 

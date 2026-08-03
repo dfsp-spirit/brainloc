@@ -64,16 +64,12 @@ get_talairach_label <- function(tal_coords, talairach_vol_file=NULL, lookup_tabl
     r2v = freesurferformats::mghheader.ras2vox(tal);
     voxels = floor(freesurferformats::doapply.transform.mtx(tal_coords, r2v, as_mat = TRUE));
 
-    oob = NULL;
+    oob = integer(0);
     if(check_oob) {
         # Find out-of-bounds voxels, which do not fall into the NIFTI volume. These need to be ignored.
-        oob = which(voxels[,1] > dim(taldata)[1]);
-        oob = c(oob, which(voxels[,2] > dim(taldata)[2]));
-        oob = c(oob, which(voxels[,3] > dim(taldata)[3]));
-        # We should also ignore voxels < 1 here.
-        oob = c(oob, which(voxels[,1] < 1L));
-        oob = c(oob, which(voxels[,2] < 1L));
-        oob = c(oob, which(voxels[,3] < 1L));
+        oob = which(voxels[,1] < 1L | voxels[,1] > dim(taldata)[1] |
+                    voxels[,2] < 1L | voxels[,2] > dim(taldata)[2] |
+                    voxels[,3] < 1L | voxels[,3] > dim(taldata)[3]);
     }
 
     if(length(oob) > 0L) {
@@ -94,11 +90,8 @@ get_talairach_label <- function(tal_coords, talairach_vol_file=NULL, lookup_tabl
 
     ncoords = length(voxel_labels_split); # Could also use the number of query voxels.
     nlevels = 5L;
-    for(level_idx in seq(nlevels)) {
-        level_names = rep("*", ncoords);
-        for(coord_idx in seq(ncoords)) {
-            level_names[coord_idx] = voxel_labels_split[[coord_idx]][level_idx];
-        }
+    for(level_idx in seq_len(nlevels)) {
+        level_names = vapply(voxel_labels_split, `[`, character(1L), level_idx);
         if(length(oob) > 0L) {
             level_names[oob] = "out-of-bounds";
         }

@@ -109,10 +109,13 @@ get_surface_coords <- function(brainparc, vertices, hemis) {
     }
     surfaces = get_surface(brainparc);
     coords = matrix(rep(0.0, (nv*3L)), nrow = nv);
-    for(vidx in seq_along(vertices)) {
-        hemi = hemis[[vidx]];
-        surf_vertex_idx = vertices[vidx];
-        coords[vidx, ] = surfaces[[hemi]]$vertices[surf_vertex_idx, ];
+    lh_idx = which(hemis == "lh");
+    rh_idx = which(hemis == "rh");
+    if(length(lh_idx) > 0L) {
+        coords[lh_idx, ] = surfaces$lh$vertices[vertices[lh_idx], , drop = FALSE];
+    }
+    if(length(rh_idx) > 0L) {
+        coords[rh_idx, ] = surfaces$rh$vertices[vertices[rh_idx], , drop = FALSE];
     }
     return(coords);
 }
@@ -135,13 +138,9 @@ region_colors <- function(annot, region_names, na_color="#FFFFFF") {
     }
     nreg = length(region_names);
     col_names = rep(na_color, nreg);
-    for(reg_idx in seq.int(nreg)) {
-        region_name = region_names[reg_idx];
-        reg = which(annot$colortable_df$struct_name == region_name);
-        if(length(reg) == 1L) {
-            col_names[reg_idx] = annot$colortable_df$hex_color_string_rgb[reg];
-        }
-    }
+    lut_idx = match(region_names, annot$colortable_df$struct_name);
+    valid = !is.na(lut_idx);
+    col_names[valid] = annot$colortable_df$hex_color_string_rgb[lut_idx[valid]];
     return(col_names);
 }
 

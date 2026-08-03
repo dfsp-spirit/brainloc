@@ -39,12 +39,13 @@ clusteroverlay_to_annot <- function(clusteroverlay, background_code=0L, hemi=NUL
 
             current_region_idx = 1L;
             index_of_unknown_region = -1L;
+            vertex_lists = split(seq_along(clusteroverlay), clusteroverlay);
             for(region_code in region_int_codes) {
                 if(region_code == background_code) {
                     index_of_unknown_region = current_region_idx;
                 } else {
                     label_name = paste(hemi, "cluster", region_code, sep="_");
-                    label_vertices_by_region[[label_name]] = which(clusteroverlay == region_code);
+                    label_vertices_by_region[[label_name]] = vertex_lists[[as.character(region_code)]];
                 }
                 current_region_idx = current_region_idx + 1L;
             }
@@ -129,20 +130,14 @@ cluster_overlapping_regions <- function(annot_min, cluster_vertices) {
     }
 
 
-    overlapping_region_names = unique(annot_min[cluster_vertices]);
-    nr = length(overlapping_region_names); # num overlapping regions
-    overlapping_region_num_vertex_overlap = rep(0L, nr);
-    overlapping_region_percent_overlap = rep(0.0, nr);
-    cluster_size_percent_of_region = rep(0.0, nr);
-
-    region_idx = 0L;
-    for(region_name in overlapping_region_names) {
-        region_idx = region_idx + 1L;
-        region_vertex_indices = which(annot_min == region_name);
-        overlapping_region_num_vertex_overlap[region_idx] = length(which(annot_min[cluster_vertices] == region_name));
-        overlapping_region_percent_overlap[region_idx] = overlapping_region_num_vertex_overlap[region_idx] / cluster_size * 100.0;
-        cluster_size_percent_of_region[region_idx] = overlapping_region_num_vertex_overlap[region_idx] / length(region_vertex_indices) * 100.0;
-    }
+    cluster_region_labels = annot_min[cluster_vertices];
+    overlap_table = table(cluster_region_labels);
+    overlapping_region_names = names(overlap_table);
+    nr = length(overlapping_region_names);
+    overlapping_region_num_vertex_overlap = as.integer(overlap_table);
+    overlapping_region_percent_overlap = as.numeric(overlap_table) / cluster_size * 100.0;
+    all_region_sizes = table(annot_min);
+    cluster_size_percent_of_region = as.numeric(overlap_table) / as.numeric(all_region_sizes[overlapping_region_names]) * 100.0;
     df = data.frame("region"=overlapping_region_names, "num_shared_vertices"=overlapping_region_num_vertex_overlap, "percent_shared_vertices"=overlapping_region_percent_overlap, "cluster_percent_of_region"=cluster_size_percent_of_region);
     return(df[order(df$percent_shared_vertices, decreasing = TRUE),]);
 }
