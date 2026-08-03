@@ -328,7 +328,7 @@ get_clusters <- function(clusterinfo, hemi="both") {
 #'
 #' @param ... passed on to \code{\link{cluster_extrema}}.
 #'
-#' @return a new version of the input data.frame, with additional columns appended.
+#' @return a data.frame with cluster location details, including MNI152 and Talairach coordinates, Talairach Daemon labels (5 hierarchy levels + full label), and the atlas region name from the first atlas in the brainparc. The column names should be self-explanatory.
 #'
 #' @export
 cluster_location_details <- function(clusterinfo, silent = getOption("brainloc.silent", default = FALSE), ...) {
@@ -357,6 +357,16 @@ cluster_location_details <- function(clusterinfo, silent = getOption("brainloc.s
     all_Tal_R = rep(0.0, nc);
     all_Tal_A = rep(0.0, nc);
     all_Tal_S = rep(0.0, nc);
+    all_tal_label_lvl1 = rep(NA_character_, nc);
+    all_tal_label_lvl2 = rep(NA_character_, nc);
+    all_tal_label_lvl3 = rep(NA_character_, nc);
+    all_tal_label_lvl4 = rep(NA_character_, nc);
+    all_tal_label_lvl5 = rep(NA_character_, nc);
+    all_tal_label_full = rep(NA_character_, nc);
+    all_atlas_region = rep(NA_character_, nc);
+
+    # Determine the first atlas name (used for the atlas_region column).
+    first_atlas = names(clusterinfo$brainparc$annots)[1];
 
     for(cluster_idx in seq.int(nc)) {
         hemi = extrema$hemi[cluster_idx];
@@ -373,11 +383,35 @@ cluster_location_details <- function(clusterinfo, silent = getOption("brainloc.s
         all_Tal_R[cluster_idx] = coord_info$talairach[1];
         all_Tal_A[cluster_idx] = coord_info$talairach[2];
         all_Tal_S[cluster_idx] = coord_info$talairach[3];
+
+        # Get Talairach Daemon labels (Brodmann area, lobe, etc.).
+        tal_labels = tryCatch({
+            get_talairach_label(coord_info$talairach, check_oob = TRUE);
+        }, error = function(e) {
+            if(! silent) {
+                warning(sprintf("Could not retrieve Talairach label for cluster '%s': %s", extrema$cluster[cluster_idx], e$message));
+            }
+            return(NULL);
+        });
+        if(! is.null(tal_labels) && nrow(tal_labels) == 1L) {
+            all_tal_label_lvl1[cluster_idx] = tal_labels$label_lvl1;
+            all_tal_label_lvl2[cluster_idx] = tal_labels$label_lvl2;
+            all_tal_label_lvl3[cluster_idx] = tal_labels$label_lvl3;
+            all_tal_label_lvl4[cluster_idx] = tal_labels$label_lvl4;
+            all_tal_label_lvl5[cluster_idx] = tal_labels$label_lvl5;
+            all_tal_label_full[cluster_idx] = tal_labels$label_full;
+        }
+
+        # Get the atlas region name for this vertex.
+        annot_min = clusterinfo$brainparc$annots[[first_atlas]][[hemi]];
+        all_atlas_region[cluster_idx] = annot_min[query_vertex];
+
         if(! silent) {
             cat(sprintf(" - Cluster %s on hemi %s extremum vertex %d has MNI152 coords (%f %f %f) and Talairach coords (%f %f %f).\n", extrema$cluster[cluster_idx], hemi, query_vertex, coord_info$mni152[1], coord_info$mni152[2], coord_info$mni152[3], coord_info$talairach[1], coord_info$talairach[2], coord_info$talairach[3]));
-            for(atlas in names(clusterinfo$brainparc$annots)) {
-                cat(sprintf("   * Cluster %s on hemi %s: extremum vertex %d is located in region '%s' of brain atlas '%s'.\n", extrema$cluster[cluster_idx], hemi, query_vertex, clusterinfo$brainparc$annots[[atlas]][[hemi]][query_vertex], atlas));
+            if(! is.na(all_tal_label_full[cluster_idx])) {
+                cat(sprintf("   * Talairach label: %s\n", all_tal_label_full[cluster_idx]));
             }
+            cat(sprintf("   * Atlas region (%s): %s\n", first_atlas, all_atlas_region[cluster_idx]));
         }
     }
 
@@ -387,6 +421,13 @@ cluster_location_details <- function(clusterinfo, silent = getOption("brainloc.s
     extrema$talairach_r = all_Tal_R;
     extrema$talairach_a = all_Tal_A;
     extrema$talairach_s = all_Tal_S;
+    extrema$talairach_label_lvl1 = all_tal_label_lvl1;
+    extrema$talairach_label_lvl2 = all_tal_label_lvl2;
+    extrema$talairach_label_lvl3 = all_tal_label_lvl3;
+    extrema$talairach_label_lvl4 = all_tal_label_lvl4;
+    extrema$talairach_label_lvl5 = all_tal_label_lvl5;
+    extrema$talairach_label_full = all_tal_label_full;
+    extrema$atlas_region = all_atlas_region;
     return(extrema);
 }
 

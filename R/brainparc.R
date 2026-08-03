@@ -236,7 +236,7 @@ subject.annot <- function(subjects_dir, subject_id, hemi, atlas) {
         }
         rh_annot = freesurferformats::read.fs.annot(rh_annot_file);
 
-        merged_annot = merge.hemi.annots(lh_annot, rh_annot);
+        merged_annot = merge_hemi_annots(lh_annot, rh_annot);
         return(merged_annot);
     }
     else {
@@ -258,7 +258,7 @@ subject.annot <- function(subjects_dir, subject_id, hemi, atlas) {
 #' @return annot, the merged annotation.
 #'
 #' @keywords internal
-merge.hemi.annots <- function(lh_annot, rh_annot) {
+merge_hemi_annots <- function(lh_annot, rh_annot) {
     merged_annot = list();
     merged_annot$colortable = lh_annot$colortable;        # randomly use the lh one, they must be identical for lh nad rh anyways
     merged_annot$colortable_df = lh_annot$colortable_df;  # same

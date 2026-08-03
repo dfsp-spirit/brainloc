@@ -5,7 +5,7 @@ This is currently intended to be used with [FreeSurfer](https://freesurfer.net/)
 
 
 ![Fig1](./web/brainloc.png?raw=true "Brainloc.")
-**Fig. 1** *Left: Vertex 145029 on the left fsaverage surface (at pink marker). Screenshot from the FreeView application that comes with [FreeSurfer](https://freesurfer.net). Right: Location of MNI coordinate 39 -30  65, the result of mapping fsaverage vertex 145029 to MNI152 space. Screenshot from the [MNI - Talairach Tool](https://bioimagesuiteweb.github.io/bisweb-manual/tools/mni2tal.html).* 
+**Fig. 1** *Left: Vertex 145029 on the left fsaverage surface (at pink marker). Screenshot from the FreeView application that comes with [FreeSurfer](https://freesurfer.net). Right: Location of MNI coordinate 39 -30  65, the result of mapping fsaverage vertex 145029 to MNI152 space. Screenshot from the [MNI - Talairach Tool](https://bioimagesuiteweb.github.io/bisweb-manual/tools/mni2tal.html).*
 
 
 ## Features
@@ -30,13 +30,13 @@ This is an R package that takes as input a vertex index of a FreeSurfer brain me
   - **Important:** The overlay and statmap data must be in the same template space as the subject used (typically MNI305 / fsaverage space). Passing native-space data will produce incorrect coordinates and atlas assignments. You can specify a different template via the `template_subject` parameter.
   - `clusterinfo()`: read such cluster information from a statistical map (e.g., t-value map for all mesh vertices) and an overlay map assigning a cluster identifier to each vertex.
   - `clusterinfo_from_thresholded_overlay()`: read such cluster information only from a thresholded statistical map, using BFS on the mesh to identify the clusters.
-  - `cluster_location_details()`: find the extremum value and vertex of each cluster
+  - `cluster_location_details()`: find the extremum value, vertex, MNI152 coordinates, Talairach coordinates, Talairach Daemon labels (Brodmann area, lobe, etc.), and atlas region name for each cluster. This is the main function for producing a results table.
   - `cluster_peaks()`: find all peaks of each cluster
   - `cluster_region_overlap()`: given an additional brain parcellation, find all regions the cluster overlaps with and compute the percentage overlap for both the cluster and the regions.
 - Given a coordinate in Talairach space:
   - `get_talairach_label()`: retrieve the Talairach volume label for the point (5 level hierarchy, e.g., 'Right Cerebrum, Temporal Lobe, Sub-Gyral, Gray Matter, Brodmann area 20'). Please cite the two [Talairach References papers listed on talairach.org](http://www.talairach.org/) when using this functionality.
-  
- 
+
+
 ## Documentation
 
 * A detailed vignette with explanations and examples for the functions of the package is included, run `browseVignettes("brainloc")` to see the vignette. If the last build succeeded, you may be able to [read the vignette online here on r-universe](https://dfsp-spirit.r-universe.dev/ui#view:brainloc/brainloc.html).

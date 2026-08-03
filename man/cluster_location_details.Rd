@@ -18,7 +18,7 @@ cluster_location_details(
 \item{...}{passed on to \code{\link{cluster_extrema}}.}
 }
 \value{
-a new version of the input data.frame, with additional columns appended.
+a data.frame with cluster location details, including MNI152 and Talairach coordinates, Talairach Daemon labels (5 hierarchy levels + full label), and the atlas region name from the first atlas in the brainparc. The column names should be self-explanatory.
 }
 \description{
 Get details on cluster locations.
