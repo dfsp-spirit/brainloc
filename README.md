@@ -63,7 +63,7 @@ The source code that was used to generate these images is [available in this uni
 
 ## Installation
 
-It's still rather early, but if you want to try the current version, run the following commands from an `R` session:
+Run the following commands from an `R` session:
 
 ```R
 options(repos = c(
