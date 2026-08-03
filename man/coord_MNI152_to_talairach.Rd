@@ -6,6 +6,12 @@
 \usage{
 coord_MNI152_to_talairach(mni152_coords)
 }
+\arguments{
+\item{mni152_coords}{nx3 numerical matrix of RAS coordinates in MNI152 space.}
+}
+\value{
+nx3 numerical matrix of approximate Talairach coordinates.
+}
 \description{
 Transform MNI152 coordinates to Talairach space using the piecewise linear transform described by Matthew Brett at \code{http://brainmap.org/training/BrettTransform.html}. This is an **approximation** of Talairach space, not the original Talairach atlas space (which is defined by the AC-PC line and a bounding box from a single post-mortem brain). The transform applies different scaling factors above and below the AC line to account for differences between the MNI152 template brain and the Talairach atlas brain.
 }

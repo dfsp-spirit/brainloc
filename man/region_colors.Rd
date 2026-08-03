@@ -7,11 +7,11 @@
 region_colors(annot, region_names, na_color = "#FFFFFF")
 }
 \arguments{
+\item{annot}{full fs.annot instance}
+
 \item{region_names}{vector of char strings, the query regions for which to get color strings}
 
 \item{na_color}{color to assign to regions which were not found.}
-
-\item{fs.annot}{full fs.annot instance}
 }
 \value{
 vector of hex color strings

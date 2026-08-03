@@ -115,6 +115,10 @@ mni152reg_mtx <- function() {
 #'
 #' @note This implementation is published under the GPL license. See \code{https://github.com/sccn/dipfit/blob/master/mni2tal_matrix.m} and \code{https://github.com/sccn/dipfit/blob/master/mni2tal.m} for a Matlab implementation of the method. All credits go to Matthew Brett.
 #'
+#' @param mni152_coords nx3 numerical matrix of RAS coordinates in MNI152 space.
+#'
+#' @return nx3 numerical matrix of approximate Talairach coordinates.
+#'
 #' @examples
 #'     mni_coords = matrix(c(10, 12, 14), nrow = 1, ncol = 3, byrow = TRUE);
 #'     coord_MNI152_to_talairach(mni_coords);

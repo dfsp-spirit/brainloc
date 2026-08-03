@@ -27,7 +27,7 @@ data.frame describing labels for the coordinates. The following columns are incl
 Retrieve Talairach labels for Talairach coordinates from \code{talairach.org} files.
 }
 \note{
-If you leave the file path arguments \code{talairach_vol_file} and {lookup_table_file} at NULL, the files will be downloaded from \code{talairach.org} automatically if that is possible (e.g., you have a working internet connection and the server is up). If it fails, the function will stop in the next step.
+If you leave the file path arguments \code{talairach_vol_file} and \code{lookup_table_file} at NULL, the files will be downloaded from \code{talairach.org} automatically if that is possible (e.g., you have a working internet connection and the server is up). If it fails, the function will stop in the next step.
 
 When using this function or the Talairach.org data in your research, please cite the following two publications: \code{Lancaster JL, Woldorff MG, Parsons LM, Liotti M, Freitas CS, Rainey L, Kochunov PV, Nickerson D, Mikiten SA, Fox PT, "Automated Talairach Atlas labels for functional brain mapping". Human Brain Mapping 10:120-131, 2000.} and \code{Lancaster JL, Rainey LH, Summerlin JL, Freitas CS, Fox PT, Evans AC, Toga AW, Mazziotta JC. Automated labeling of the human brain: A preliminary report on the development and evaluation of a forward-transform method. Hum Brain Mapp 5, 238-242, 1997.}
 

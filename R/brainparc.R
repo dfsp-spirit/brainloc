@@ -123,7 +123,7 @@ get_surface_coords <- function(brainparc, vertices, hemis) {
 
 #' @title Get colors for \code{fs.annot} regions.
 #'
-#' @param fs.annot full fs.annot instance
+#' @param annot full fs.annot instance
 #'
 #' @param region_names vector of char strings, the query regions for which to get color strings
 #'

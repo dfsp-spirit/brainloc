@@ -7,11 +7,11 @@
 clusteroverlay_from_threshmap(threshmap, value_thresholded, surface)
 }
 \arguments{
+\item{threshmap}{double vector, the stats map. Typically a thresholded t-value map (cluster map). Must have one value per vertex. The value assigned to vertices that have been removed by the thresholding can be set with parameter 'value_thresholded'.}
+
 \item{value_thresholded}{scalar double, the data value of thresholded vertices in the \code{lh_threshmap} and \code{rh_threshmap}.}
 
 \item{surface}{a single \code{fs.surface} instance, used for neighborhood computation.}
-
-\item{theshmap}{double vector, the stats map. Typically a thresholded t-value map (cluster map). Must have one value per vertex. The value assigned to vertices that have been removed by the thresholding can be set with parameter 'value_thresholded'.}
 }
 \value{
 integer vector, the clusterID overlay.

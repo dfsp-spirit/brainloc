@@ -100,7 +100,7 @@ clusterinfo_from_thresholded_overlay <- function(lh_threshmap, rh_threshmap, val
 #'
 #' @inheritParams clusterinfo_from_thresholded_overlay
 #'
-#' @param theshmap double vector, the stats map. Typically a thresholded t-value map (cluster map). Must have one value per vertex. The value assigned to vertices that have been removed by the thresholding can be set with parameter 'value_thresholded'.
+#' @param threshmap double vector, the stats map. Typically a thresholded t-value map (cluster map). Must have one value per vertex. The value assigned to vertices that have been removed by the thresholding can be set with parameter 'value_thresholded'.
 #'
 #' @param surface a single \code{fs.surface} instance, used for neighborhood computation.
 #'
