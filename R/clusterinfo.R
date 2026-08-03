@@ -132,10 +132,10 @@ clusteroverlay_from_threshmap <- function(threshmap, value_thresholded, surface)
             next;
         }
         current_cluster_label_int = current_cluster_label_int + 1L;   # Start a new cluster: when we get here this vertex was not reachable from the previous one.
-        q = dequer::queue();
-        dequer::pushback(q, start_vertex);
+        q = collections::queue();
+        collections::pushback(q, start_vertex);
         while(length(q) > 0L) {
-            v = dequer::pop(q);
+            v = collections::pop(q);
             vertex_visited[v] = TRUE;
             if(threshmap[v] != value_thresholded) {
                 overlay[v] = current_cluster_label_int;
@@ -143,7 +143,7 @@ clusteroverlay_from_threshmap <- function(threshmap, value_thresholded, surface)
             for(v_neighbor in adj[[v]]) {
                 if(! vertex_visited[v_neighbor]) {
                     vertex_visited[v_neighbor] = TRUE;
-                    dequer::pushback(q, v_neighbor);
+                    collections::pushback(q, v_neighbor);
                 }
             }
         }

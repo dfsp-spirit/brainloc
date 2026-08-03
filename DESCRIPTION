@@ -12,7 +12,7 @@ BugReports: https://github.com/dfsp-spirit/brainloc/issues
 Imports:
     freesurferformats (>= 0.1.16),
     Rvcg (>= 0.20.2),
-    dequer,
+    collections,
     pkgfilecache (>= 0.1.1)
 Suggests:
     knitr,
