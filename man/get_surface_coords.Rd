@@ -20,7 +20,7 @@ numerical nx3 matrix, the coordindates for the x query vertices.
 Extract the vertex coordinates from the brainparc surface.
 }
 \seealso{
-Other brainparc accessors: 
-\code{\link{get_surface}()}
+Other brainparc accessors:
+\code{\link[=get_surface]{get_surface()}}
 }
 \concept{brainparc accessors}

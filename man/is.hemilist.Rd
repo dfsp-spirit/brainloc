@@ -16,9 +16,9 @@ logical, whether x is a hemilist
 Find out whether x is a hemilist
 }
 \seealso{
-Other hemilist functions: 
-\code{\link{hemilist.wrap}()},
-\code{\link{hemilist}()}
+Other hemilist functions:
+\code{\link[=hemilist]{hemilist()}},
+\code{\link[=hemilist.wrap]{hemilist.wrap()}}
 }
 \concept{hemilist functions}
 \keyword{internal}

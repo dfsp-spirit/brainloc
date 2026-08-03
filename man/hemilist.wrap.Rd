@@ -20,9 +20,9 @@ a \code{\link{hemilist}}: a named list, with the 'data' in the name given by par
 Wrap data into a named hemi list.
 }
 \seealso{
-Other hemilist functions: 
-\code{\link{hemilist}()},
-\code{\link{is.hemilist}()}
+Other hemilist functions:
+\code{\link[=hemilist]{hemilist()}},
+\code{\link[=is.hemilist]{is.hemilist()}}
 }
 \concept{hemilist functions}
 \keyword{internal}

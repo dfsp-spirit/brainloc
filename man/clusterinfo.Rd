@@ -23,7 +23,7 @@ clusterinfo(
 
 \item{rh_statmap}{double vector, just like \code{lh_statmap}, but for the right hemisphere.}
 
-\item{template_subject}{character string, the template subject name. Typically 'fsaverage' or 'fsaverage6'. Must be some MNI305 space subject.}
+\item{template_subject}{character string, the template subject name. Typically 'fsaverage' or 'fsaverage6'. Must be a subject in MNI305 space (i.e., the standard FreeSurfer template space). **Important:** The overlay and statmap data passed to this function must be in the same space as the template_subject (usually MNI305 / fsaverage space). Passing data from a different space (e.g., native subject space) will produce silently incorrect coordinate transforms and atlas region assignments.}
 
 \item{subjects_dir}{character string, file system path to a directory containing the recon-all data for the template_subject. Used to load surfaces and annotations to identify cluster coordinates and atlas regions.}
 }

@@ -21,8 +21,8 @@ A hemilist is a named list which has at least one of the following fields: \code
 This function is trivial and mainly exists to document what a hemilist is (so this explanation can be linked to from the documentation of other functions which use the concept).
 }
 \seealso{
-Other hemilist functions: 
-\code{\link{hemilist.wrap}()},
-\code{\link{is.hemilist}()}
+Other hemilist functions:
+\code{\link[=hemilist.wrap]{hemilist.wrap()}},
+\code{\link[=is.hemilist]{is.hemilist()}}
 }
 \concept{hemilist functions}

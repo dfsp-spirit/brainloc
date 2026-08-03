@@ -18,10 +18,10 @@ Try to find directory containing the FreeSurfer installation, based on environme
 \seealso{
 \code{\link{fs_home}}, \code{\link{has_fs}}
 
-Other FreeSurfer helper functions: 
-\code{\link{fs_home}()},
-\code{\link{get_subjects_dir}()},
-\code{\link{has_fs}()}
+Other FreeSurfer helper functions:
+\code{\link[=fs_home]{fs_home()}},
+\code{\link[=get_subjects_dir]{get_subjects_dir()}},
+\code{\link[=has_fs]{has_fs()}}
 }
 \concept{FreeSurfer helper functions}
 \keyword{internal}

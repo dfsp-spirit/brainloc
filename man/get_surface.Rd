@@ -16,7 +16,7 @@ get_surface(brainparc)
 Extract the surface hemilist from a brainparc.
 }
 \seealso{
-Other brainparc accessors: 
-\code{\link{get_surface_coords}()}
+Other brainparc accessors:
+\code{\link[=get_surface_coords]{get_surface_coords()}}
 }
 \concept{brainparc accessors}

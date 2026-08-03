@@ -16,9 +16,9 @@ Return FreeSurfer path.
 This function will stop (i.e., raise an error) if the directory cannot be found. It calls \code{\link{find.freesurferhome}} internally, see there for more details.
 }
 \seealso{
-Other FreeSurfer helper functions: 
-\code{\link{find.freesurferhome}()},
-\code{\link{get_subjects_dir}()},
-\code{\link{has_fs}()}
+Other FreeSurfer helper functions:
+\code{\link[=find.freesurferhome]{find.freesurferhome()}},
+\code{\link[=get_subjects_dir]{get_subjects_dir()}},
+\code{\link[=has_fs]{has_fs()}}
 }
 \concept{FreeSurfer helper functions}

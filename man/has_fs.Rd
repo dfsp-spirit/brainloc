@@ -13,9 +13,9 @@ logical, whether a FreeSurfer installation was found.
 Check whether a FreeSurfer installation can be found on the system.
 }
 \seealso{
-Other FreeSurfer helper functions: 
-\code{\link{find.freesurferhome}()},
-\code{\link{fs_home}()},
-\code{\link{get_subjects_dir}()}
+Other FreeSurfer helper functions:
+\code{\link[=find.freesurferhome]{find.freesurferhome()}},
+\code{\link[=fs_home]{fs_home()}},
+\code{\link[=get_subjects_dir]{get_subjects_dir()}}
 }
 \concept{FreeSurfer helper functions}
