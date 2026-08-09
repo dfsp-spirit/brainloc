@@ -21,3 +21,6 @@ docker/
 ^doc$
 ^\.github$
 
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
