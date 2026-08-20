@@ -68,6 +68,10 @@ jobs:
 
       - name: Install dependencies
         run: |
+          # regfusionr (Suggests) is not on CRAN, only on the dfsp-spirit r-universe.
+          # The repo must be set explicitly: pak/remotes do NOT reliably pick up
+          # `Additional_repositories` from DESCRIPTION (pak ignores it against an
+          # empty library -> "Can't find package called regfusionr" in CI).
           options(repos = c(dfspspirit = 'https://dfsp-spirit.r-universe.dev', CRAN = 'https://cloud.r-project.org'))
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("rcmdcheck")
