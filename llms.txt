@@ -114,7 +114,7 @@ brain mesh that is closest to a given coordinate.
   Like this:
   [`?vertex_closest_regions`](https://dfsp-spirit.github.io/brainloc/reference/vertex_closest_regions.md).
 - To see all functions which are part of the package API, run:
-  [`help(package="brainloc")`](https://rdrr.io/pkg/brainloc/man).
+  [`help(package="brainloc")`](https://dfsp-spirit.github.io/brainloc/reference).
 - Run `example(<function>)` to see a live demo that uses the function
   `<function>`. Like this: `example(vertex_closest_regions)`.
 - The [unit
