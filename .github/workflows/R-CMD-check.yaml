@@ -38,6 +38,12 @@ jobs:
         with:
           r-version: ${{ matrix.config.r }}
           http-user-agent: ${{ matrix.config.http-user-agent }}
+          # regfusionr (a Suggests dependency) is only available on the
+          # dfsp-spirit r-universe, not on CRAN. pak (used by
+          # setup-r-dependencies) does not honor `Additional_repositories` from
+          # DESCRIPTION when resolving against an empty library, so we expose
+          # the r-universe to it explicitly via the repos option.
+          extra-repositories: https://dfsp-spirit.r-universe.dev
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
