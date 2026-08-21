@@ -8,7 +8,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/dfsp-spirit/brainloc/blob/develop/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/dfsp-spirit/brainloc/blob/main/DESCRIPTION)
 
 Schäfer T (2026). *brainloc: Find Region Names and Coordinates for a
 Point on the Human Brain*. R package version 0.1.0,
