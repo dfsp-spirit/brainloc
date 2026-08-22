@@ -2,5 +2,12 @@ brainloc Changes
 ================
 
 
+Version 0.2.0 -- MacOS Fixes, Better docs
+-----------------------------------------
+* FIX: fix vignette online link
+* BRK: require pkgfilecache >= 0.2.0 to fix MacOS download issue
+
+
 Version 0.1.0 -- Initial release
 ---------------------------------
+* see README for features
