@@ -86,30 +86,30 @@ library("brainloc");
 sjd = get_subjects_dir(allow_download = TRUE, accept_freesurfer_license = TRUE); 
 ```
 
-    ## Download file to '~/.local/share/brainloc/subjects_dir/fsaverage/label/lh.aparc.a2009s.annot' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/label/lh.aparc.a2009s.annot'
-    ## Download file to '~/.local/share/brainloc/subjects_dir/fsaverage/label/rh.aparc.a2009s.annot' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/label/rh.aparc.a2009s.annot'
-    ## Download file to '~/.local/share/brainloc/subjects_dir/fsaverage/label/lh.aparc.annot' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/label/lh.aparc.annot'
-    ## Download file to '~/.local/share/brainloc/subjects_dir/fsaverage/label/rh.aparc.annot' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/label/rh.aparc.annot'
-    ## Download file to '~/.local/share/brainloc/subjects_dir/fsaverage/label/lh.cortex.label' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/label/lh.cortex.label'
-    ## Download file to '~/.local/share/brainloc/subjects_dir/fsaverage/label/rh.cortex.label' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/label/rh.cortex.label'
-    ## Download file to '~/.local/share/brainloc/subjects_dir/fsaverage/mri/brain.mgz' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/mri/brain.mgz'
-    ## Download file to '~/.local/share/brainloc/subjects_dir/fsaverage/surf/lh.white' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/surf/lh.white'
-    ## Download file to '~/.local/share/brainloc/subjects_dir/fsaverage/surf/rh.white' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/surf/rh.white'
-    ## Download file to '~/.local/share/brainloc/subjects_dir/fsaverage/surf/lh.pial' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/surf/lh.pial'
-    ## Download file to '~/.local/share/brainloc/subjects_dir/fsaverage/surf/rh.pial' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/surf/rh.pial'
-    ## Download file to '~/.local/share/brainloc/subjects_dir/fsaverage/surf/lh.inflated' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/surf/lh.inflated'
-    ## Download file to '~/.local/share/brainloc/subjects_dir/fsaverage/surf/rh.inflated' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/surf/rh.inflated'
-    ## Download file to '~/.local/share/brainloc/subjects_dir/fsaverage/surf/lh.curv' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/surf/lh.curv'
-    ## Download file to '~/.local/share/brainloc/subjects_dir/fsaverage/surf/rh.curv' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/surf/rh.curv'
-    ## Download file to '~/.local/share/brainloc/subjects_dir/fsaverage/ext/FreeSurferColorLUT.txt' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/ext/FreeSurferColorLUT.txt'
-    ## Download file to '~/.local/share/brainloc/subjects_dir/fsaverage/LICENSE' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/LICENSE'
-    ## Download file to '~/.local/share/brainloc/subjects_dir/fsaverage3/label/lh.cortex.label' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage3/label/lh.cortex.label'
-    ## Download file to '~/.local/share/brainloc/subjects_dir/fsaverage3/label/rh.cortex.label' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage3/label/rh.cortex.label'
-    ## Download file to '~/.local/share/brainloc/subjects_dir/fsaverage3/surf/lh.white' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage3/surf/lh.white'
-    ## Download file to '~/.local/share/brainloc/subjects_dir/fsaverage3/surf/rh.white' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage3/surf/rh.white'
-    ## Download file to '~/.local/share/brainloc/subjects_dir/fsaverage3/LICENSE' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage3/LICENSE'
-    ## Download file to '~/.local/share/brainloc/subjects_dir/subject1/surf/lh.thickness.fwhm0.fsaverage3.mgz' from 'http://rcmd.org/projects/nitestdata/subjects_dir/subject1/surf/lh.thickness.fwhm0.fsaverage3.mgz'
-    ## Download file to '~/.local/share/brainloc/subjects_dir/subject1/surf/rh.thickness.fwhm0.fsaverage3.mgz' from 'http://rcmd.org/projects/nitestdata/subjects_dir/subject1/surf/rh.thickness.fwhm0.fsaverage3.mgz'
+    ## Download file to '/home/runner/.local/share/R/brainloc/subjects_dir/fsaverage/label/lh.aparc.a2009s.annot' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/label/lh.aparc.a2009s.annot'
+    ## Download file to '/home/runner/.local/share/R/brainloc/subjects_dir/fsaverage/label/rh.aparc.a2009s.annot' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/label/rh.aparc.a2009s.annot'
+    ## Download file to '/home/runner/.local/share/R/brainloc/subjects_dir/fsaverage/label/lh.aparc.annot' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/label/lh.aparc.annot'
+    ## Download file to '/home/runner/.local/share/R/brainloc/subjects_dir/fsaverage/label/rh.aparc.annot' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/label/rh.aparc.annot'
+    ## Download file to '/home/runner/.local/share/R/brainloc/subjects_dir/fsaverage/label/lh.cortex.label' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/label/lh.cortex.label'
+    ## Download file to '/home/runner/.local/share/R/brainloc/subjects_dir/fsaverage/label/rh.cortex.label' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/label/rh.cortex.label'
+    ## Download file to '/home/runner/.local/share/R/brainloc/subjects_dir/fsaverage/mri/brain.mgz' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/mri/brain.mgz'
+    ## Download file to '/home/runner/.local/share/R/brainloc/subjects_dir/fsaverage/surf/lh.white' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/surf/lh.white'
+    ## Download file to '/home/runner/.local/share/R/brainloc/subjects_dir/fsaverage/surf/rh.white' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/surf/rh.white'
+    ## Download file to '/home/runner/.local/share/R/brainloc/subjects_dir/fsaverage/surf/lh.pial' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/surf/lh.pial'
+    ## Download file to '/home/runner/.local/share/R/brainloc/subjects_dir/fsaverage/surf/rh.pial' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/surf/rh.pial'
+    ## Download file to '/home/runner/.local/share/R/brainloc/subjects_dir/fsaverage/surf/lh.inflated' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/surf/lh.inflated'
+    ## Download file to '/home/runner/.local/share/R/brainloc/subjects_dir/fsaverage/surf/rh.inflated' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/surf/rh.inflated'
+    ## Download file to '/home/runner/.local/share/R/brainloc/subjects_dir/fsaverage/surf/lh.curv' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/surf/lh.curv'
+    ## Download file to '/home/runner/.local/share/R/brainloc/subjects_dir/fsaverage/surf/rh.curv' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/surf/rh.curv'
+    ## Download file to '/home/runner/.local/share/R/brainloc/subjects_dir/fsaverage/ext/FreeSurferColorLUT.txt' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/ext/FreeSurferColorLUT.txt'
+    ## Download file to '/home/runner/.local/share/R/brainloc/subjects_dir/fsaverage/LICENSE' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage/LICENSE'
+    ## Download file to '/home/runner/.local/share/R/brainloc/subjects_dir/fsaverage3/label/lh.cortex.label' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage3/label/lh.cortex.label'
+    ## Download file to '/home/runner/.local/share/R/brainloc/subjects_dir/fsaverage3/label/rh.cortex.label' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage3/label/rh.cortex.label'
+    ## Download file to '/home/runner/.local/share/R/brainloc/subjects_dir/fsaverage3/surf/lh.white' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage3/surf/lh.white'
+    ## Download file to '/home/runner/.local/share/R/brainloc/subjects_dir/fsaverage3/surf/rh.white' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage3/surf/rh.white'
+    ## Download file to '/home/runner/.local/share/R/brainloc/subjects_dir/fsaverage3/LICENSE' from 'http://rcmd.org/projects/nitestdata/subjects_dir/fsaverage3/LICENSE'
+    ## Download file to '/home/runner/.local/share/R/brainloc/subjects_dir/subject1/surf/lh.thickness.fwhm0.fsaverage3.mgz' from 'http://rcmd.org/projects/nitestdata/subjects_dir/subject1/surf/lh.thickness.fwhm0.fsaverage3.mgz'
+    ## Download file to '/home/runner/.local/share/R/brainloc/subjects_dir/subject1/surf/rh.thickness.fwhm0.fsaverage3.mgz' from 'http://rcmd.org/projects/nitestdata/subjects_dir/subject1/surf/rh.thickness.fwhm0.fsaverage3.mgz'
 
 ``` r
 
@@ -352,8 +352,8 @@ of the clusters:
 cl_details = cluster_location_details(clinfo);
 ```
 
-    ## Download file to '~/.local/share/brainloc/talairach/talairach.nii' from 'http://www.talairach.org/talairach.nii'
-    ## Download file to '~/.local/share/brainloc/talairach/labels.txt' from 'http://www.talairach.org/labels.txt'
+    ## Download file to '/home/runner/.local/share/R/brainloc/talairach/talairach.nii' from 'http://www.talairach.org/talairach.nii'
+    ## Download file to '/home/runner/.local/share/R/brainloc/talairach/labels.txt' from 'http://www.talairach.org/labels.txt'
 
 ``` r
 
