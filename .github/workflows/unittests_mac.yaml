@@ -1,0 +1,55 @@
+# Workflow that ONLY runs the package's unit tests on macOS.
+#
+# This deliberately does NOT run `R CMD build` / `R CMD check`. The package
+# vignette downloads optional FreeSurfer data during the build and has been
+# causing a silent process crash on the macOS (Apple Silicon) runner inside
+# `R CMD build` ("Build process failed" with no R error). Running the unit
+# tests directly tells us whether at least the tested package code works on
+# macOS, independent of the vignette build.
+
+name: unittests_mac
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+
+permissions: read-all
+
+jobs:
+  unittests-mac:
+    runs-on: macos-latest
+    name: macOS unit tests (${{ matrix.config.r }})
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {r: 'release'}
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+      NOT_CRAN: 'true'
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: ${{ matrix.config.r }}
+          # regfusionr (a Suggests dependency) is only available on the
+          # dfsp-spirit r-universe, not on CRAN.
+          extra-repositories: https://dfsp-spirit.r-universe.dev
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::testthat
+          needs: test
+
+      - name: Run unit tests
+        run: testthat::test_local(reporter = "summary")
+        shell: Rscript {0}
